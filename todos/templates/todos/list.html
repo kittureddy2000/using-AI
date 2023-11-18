@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}To-Do List{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">To-Do List</h1>
+    <a href="{% url 'todos:add_task' %}" class="btn btn-primary mb-3">Add New Task</a>
+
+    <div class="list-group">
+        {% for task in tasks %}
+            <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ task.title }}</h5>
+                    <small>{{ task.created_at|date:"SHORT_DATE_FORMAT" }}</small>
+                </div>
+                <p class="mb-1">{{ task.description }}</p>
+                <small>Status: {{ task.completed|yesno:"Completed,Pending" }}</small>
+            </a>
+        {% empty %}
+            <div class="alert alert-info">No tasks found.</div>
+        {% endfor %}
+    </div>
+{% endblock %}
