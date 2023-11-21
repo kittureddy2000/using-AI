@@ -12,24 +12,45 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+from google.cloud import secretmanager
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+env = environ.Env()  # Initialize environ
+environ.Env.read_env()  # Read .env file
+
+#Google Secret Manager Helper fuction
+def access_secret_version(project_id, secret_id, version_id="latest"):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8")
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+&^un(msi47ggou(0=u%39k9wpz*^e3tkoiy61#co4qetrmme('
+#SECRET_KEY = 'django-insecure-+&^un(msi47ggou(0=u%39k9wpz*^e3tkoiy61#co4qetrmme('
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='Default Testkey')
+DEBUG = env.bool('DJANGO_DEBUG', default=False)
+
+#ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = ['*']
+
+project_id = env('PROJECT_ID',default='111')
+
+#values from Secret Manager
+#SECRET_KEY_val_Test = access_secret_version(project_id, 'TEST_SECRET_KEY')
+#DATABASE_PASSWORD = access_secret_version(project_id,'POSTEGRE-DB-PWD')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
-ALLOWED_HOSTS = []
 SITE_ID = 2
-
-# settings.py
 
 # Where to go after logging in (defaults to '/accounts/profile/')
 LOGIN_REDIRECT_URL = '/todos/'
@@ -105,7 +126,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'samaan-db',
         'USER': 'mypostgres',
-        'PASSWORD': 'Vtnkpv55!@#',
+        'PASSWORD': 'Vtnkpv55!@#', #DATABASE_PASSWORD,
         'HOST': '127.0.0.1', # Use Cloud SQL Proxy address for local development
         'PORT': '5432', # Default port for PostgreSQL
         }
@@ -146,7 +167,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'using-ai-samaan>'
+
+
+MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'using-ai-samaan'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -168,25 +197,3 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
-#Loggin
-#LOGGING = {
-#    'version': 1,  # This line is required and indicates the schema version
-#    'disable_existing_loggers': False,
-#    'handlers': {
-#        'console': {
-#            'level': 'DEBUG',
-#            'class': 'logging.StreamHandler',
-#        },
-#    },
-#    'loggers': {
-#        'django': {
-#            'handlers': ['console'],
-#            'level': 'DEBUG',
-#        },
-#        'allauth': {
-#            'handlers': ['console'],
-#            'level': 'DEBUG',
-#        },
-#        # You can add more loggers here...
-#    },
-#}
