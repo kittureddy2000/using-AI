@@ -1,11 +1,11 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/using-AI':$SHORT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/using-AI:$SHORT_SHA', '.']
 
   # Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/using-AI':$SHORT_SHA']
+    args: ['push', 'gcr.io/$PROJECT_ID/using-AI:$SHORT_SHA']
 
   # Deploy the image to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
