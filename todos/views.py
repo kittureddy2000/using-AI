@@ -10,9 +10,11 @@ from django.shortcuts import render
 
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_at')
+
     return render(request, 'todos/list.html', {'tasks': tasks})
 
 def add_task(request):
+    print(request.method)
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
