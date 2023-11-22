@@ -21,7 +21,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA']
 
-# Step 5: Print a message after the push
+  # Step 5: Print a message after the push
   - name: 'ubuntu'
     entrypoint: '/bin/bash'
     args: ['-c', 'echo "Docker image pushed to Container Registry"']
@@ -30,10 +30,10 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['run', 'deploy', 'using-ai', '--image', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA', '--region', 'us-west1', '--platform', 'managed', '--allow-unauthenticated']
 
-# Step 7: Print a concluding message
-- name: 'ubuntu'
-  entrypoint: '/bin/bash'
-  args: ['-c', 'echo "Deployment completed"']
-  
+  # Step 7: Print a concluding message
+  - name: 'ubuntu'
+    entrypoint: '/bin/bash'
+    args: ['-c', 'echo "Deployment completed"']
+
 images:
   - 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
