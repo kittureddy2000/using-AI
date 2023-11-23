@@ -16,7 +16,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 8000 available to the world outside this container
-EXPOSE 8000
+EXPOSE 8080
 
 # Copy Google Cloud credentials into the container
 #COPY using-ai-405105-5e2a1c2c69d8.json /app
@@ -28,4 +28,4 @@ EXPOSE 8000
 #RUN ./cloud-sql-proxy -instances=using-ai-405105:us-west1:mypostgres=tcp:5432 &
 
 # Run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "samaanaiapps.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "samaanaiapps.wsgi:application"]
