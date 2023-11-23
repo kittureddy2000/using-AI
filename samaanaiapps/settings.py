@@ -127,7 +127,7 @@ DATABASES = {
         'NAME': 'samaan-db',
         'USER': 'mypostgres',
         'PASSWORD': 'Vtnkpv55!@#', #DATABASE_PASSWORD,
-        'HOST': '127.0.0.1', # Use Cloud SQL Proxy address for local development
+        'HOST': '34.82.137.151' #'127.0.0.1', # Use Cloud SQL Proxy address for local development
         'PORT': '5432', # Default port for PostgreSQL
         }
 }
