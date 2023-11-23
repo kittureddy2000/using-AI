@@ -31,7 +31,7 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            print("Log : Register dd Save")
+            print("Log : Register dddd Save")
             # Specify the backend to use
             backend = 'django.contrib.auth.backends.ModelBackend'  # Adjust if using a different backend
             user.backend = backend
