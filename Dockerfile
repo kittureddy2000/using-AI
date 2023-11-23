@@ -19,13 +19,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Copy Google Cloud credentials into the container
-COPY using-ai-405105-5e2a1c2c69d8.json /app
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/using-ai-405105-5e2a1c2c69d8.json
+#COPY using-ai-405105-5e2a1c2c69d8.json /app
+#ENV GOOGLE_APPLICATION_CREDENTIALS=/app/using-ai-405105-5e2a1c2c69d8.json
 
 # Start Cloud SQL Proxy
-COPY cloud-sql-proxy /app
-RUN chmod +x /app/cloud-sql-proxy
-RUN ./cloud-sql-proxy -instances=using-ai-405105:us-west1:mypostgres=tcp:5432 &
+#COPY cloud-sql-proxy /app
+#RUN chmod +x /app/cloud-sql-proxy
+#RUN ./cloud-sql-proxy -instances=using-ai-405105:us-west1:mypostgres=tcp:5432 &
 
 # Run the application using Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "samaanaiapps.wsgi:application"]
