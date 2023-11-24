@@ -44,7 +44,7 @@ RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
 
 if RUNNING_ON_CLOUD_RUN:
     project_id = os.getenv('PROJECT_ID',default='111')
-    DEBUG = env.bool('DJANGO_DEBUG', default=False)
+    DEBUG = 'True' #env.bool('DJANGO_DEBUG', default=False)
 
     SECRET_KEY = access_secret_version(project_id, 'PROD_SECRET_KEY')
     DB_NAME = access_secret_version(project_id,'DB_NAME')
