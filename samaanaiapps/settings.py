@@ -34,21 +34,33 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = 'django-insecure-+&^un(msi47ggou(0=u%39k9wpz*^e3tkoiy61#co4qetrmme('
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='Default Testkey')
-DEBUG = env.bool('DJANGO_DEBUG', default=False)
+
 
 #ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 ALLOWED_HOSTS = ['*']
 
-project_id = env('PROJECT_ID',default='111')
 
-#values from Secret Manager
-#SECRET_KEY_val_Test = access_secret_version(project_id, 'TEST_SECRET_KEY')
-#DATABASE_PASSWORD = access_secret_version(project_id,'POSTEGRE-DB-PWD')
+RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
 
+if RUNNING_ON_CLOUD_RUN:
+    project_id = os.getenv('PROJECT_ID',default='111')
+    DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+    SECRET_KEY = access_secret_version(project_id, 'PROD_SECRET_KEY')
+    DB_NAME = access_secret_version(project_id,'DB_NAME')
+    DB_USER = access_secret_version(project_id,'DB_USER')
+    DB_PASSWORD = access_secret_version(project_id,'DB_PASSWORD')
+    DB_HOST = access_secret_version(project_id,'DB_HOST')
+    DB_PORT = access_secret_version(project_id,'DB_PORT')
+
+else :
+    SECRET_KEY = env('DJANGO_SECRET_KEY', default='Default Testkey')
+    DEBUG = env.bool('DJANGO_DEBUG', default=False)
+    DB_NAME=env('samaan-db', default='Default_db')
+    DB_USER=env('mypostgres', default='Default_user')
+    DB_PASSWORD=env('Vtnkpv55!@#', default='password') #DATABASE_PASSWORD,
+    DB_HOST=env('127.0.0.1' , default='localhost')#'34.82.137.151' Use Cloud SQL Proxy address for local development
+    DB_PORT=env('5432', default='0000') # Default port for PostgreSQL
 
 SITE_ID = 2
 
@@ -124,11 +136,11 @@ WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'samaan-db',
-        'USER': 'mypostgres',
-        'PASSWORD': 'Vtnkpv55!@#', #DATABASE_PASSWORD,
-        'HOST': '127.0.0.1', #'34.82.137.151' Use Cloud SQL Proxy address for local development
-        'PORT': '5432', # Default port for PostgreSQL
+        'NAME': DB_NAME
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD, #DATABASE_PASSWORD,
+        'HOST': DB_HOST, #'34.82.137.151' Use Cloud SQL Proxy address for local development
+        'PORT': DB_PORT, # Default port for PostgreSQL
         }
 }
 
