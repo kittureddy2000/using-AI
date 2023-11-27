@@ -43,8 +43,10 @@ ALLOWED_HOSTS = ['*']
 RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
 
 if RUNNING_ON_CLOUD_RUN:
+    print("Running Google cloud Run")
     project_id = os.getenv('PROJECT_ID',default='111')
     DEBUG = 'True' #env.bool('DJANGO_DEBUG', default=False)
+
 
     SECRET_KEY = access_secret_version(project_id, 'PROD_SECRET_KEY')
     DB_NAME = access_secret_version(project_id,'DB_NAME')
@@ -54,13 +56,15 @@ if RUNNING_ON_CLOUD_RUN:
     DB_PORT = access_secret_version(project_id,'DB_PORT')
 
 else :
-    SECRET_KEY = env('DJANGO_SECRET_KEY', default='Default Testkey')
+    print("Running Locally and will read variables from local environment")
+
+    SECRET_KEY=env('DJANGO_SECRET_KEY', default='Default Testkey')
     DEBUG = env.bool('DJANGO_DEBUG', default=False)
-    DB_NAME=env('samaan-db', default='Default_db')
-    DB_USER=env('mypostgres', default='Default_user')
-    DB_PASSWORD=env('Vtnkpv55!@#', default='password') #DATABASE_PASSWORD,
-    DB_HOST=env('127.0.0.1' , default='localhost')#'34.82.137.151' Use Cloud SQL Proxy address for local development
-    DB_PORT=env('5432', default='0000') # Default port for PostgreSQL
+    DB_NAME=env('DB_NAME', default='Default_db')
+    DB_USER=env('DB_USER', default='Default_user')
+    DB_PASSWORD=env('DB_PASSWORD', default='password') #DATABASE_PASSWORD,
+    DB_HOST=env('DB_HOST' , default='localhost')#'34.82.137.151' Use Cloud SQL Proxy address for local development
+    DB_PORT=env('DB_PORT', default='0000') # Default port for PostgreSQL
 
 SITE_ID = 2
 
@@ -136,7 +140,7 @@ WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME
+        'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD, #DATABASE_PASSWORD,
         'HOST': DB_HOST, #'34.82.137.151' Use Cloud SQL Proxy address for local development
