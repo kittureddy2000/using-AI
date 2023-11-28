@@ -57,6 +57,8 @@ if RUNNING_ON_CLOUD_RUN:
 
 else :
     print("Running Locally and will read variables from local environment")
+    project_id = os.getenv('PROJECT_ID',default='111')
+    print("Project Id :  " + project_id ) 
 
     SECRET_KEY=env('DJANGO_SECRET_KEY', default='Default Testkey')
     DEBUG = env.bool('DJANGO_DEBUG', default=False)
@@ -84,6 +86,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'todos',
+    'core',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -110,7 +113,7 @@ ROOT_URLCONF = 'samaanaiapps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add this line
+        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],  # Add this line
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
@@ -184,6 +187,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
+
 STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'using-ai-samaan>'
 
