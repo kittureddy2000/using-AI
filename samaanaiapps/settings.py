@@ -58,8 +58,6 @@ if RUNNING_ON_CLOUD_RUN:
 else :
     print("Running Locally and will read variables from local environment")
     project_id = os.getenv('PROJECT_ID',default='111')
-    print("Project Id :  " + project_id ) 
-
     SECRET_KEY=env('DJANGO_SECRET_KEY', default='Default Testkey')
     DEBUG = env.bool('DJANGO_DEBUG', default=False)
     DB_NAME=env('DB_NAME', default='Default_db')
@@ -67,6 +65,15 @@ else :
     DB_PASSWORD=env('DB_PASSWORD', default='password') #DATABASE_PASSWORD,
     DB_HOST=env('DB_HOST' , default='localhost')#'34.82.137.151' Use Cloud SQL Proxy address for local development
     DB_PORT=env('DB_PORT', default='0000') # Default port for PostgreSQL
+
+    print("project Id : " + project_id)
+    print("DB_NAME Id :  " + DB_NAME ) 
+    print("DB_NAME Id :  " + DB_NAME ) 
+    print("DB_USER Id :  " + DB_USER ) 
+    print("DB_PASSWORD Id :  " + DB_PASSWORD ) 
+    print("DB_HOST Id :  " + DB_HOST ) 
+    print("DB_PORT Id :  " + DB_PORT ) 
+
 
 SITE_ID = 2
 
@@ -132,13 +139,6 @@ WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 DATABASES = {
     'default': {
