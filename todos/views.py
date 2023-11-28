@@ -6,6 +6,7 @@ from .models import Task
 from .forms import TaskForm, CustomUserCreationForm
 from django.contrib.auth import login
 from django.shortcuts import render
+from core.utils import get_secrets
 
 
 def task_list(request):
@@ -20,7 +21,14 @@ def add_task(request):
             return redirect('todos:task_list')
     else:
         form = TaskForm()
-    return render(request, 'todos/add.html', {'form': form})
+
+    project_id = 'using-ai-405105'
+    secret_ids = ['PROD_SECRET_KEY', 'DB_NAME','DB_USER', 'DB_HOST','DB_PORT']  # Add your secret IDs
+
+    secrets = get_secrets(project_id,secret_ids)
+    context = {'secrets': secrets}
+
+    return render(request, 'todos/add.html', {'form': form,'secrets': secrets})
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page
