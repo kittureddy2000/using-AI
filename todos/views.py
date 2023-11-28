@@ -28,7 +28,11 @@ def add_task(request):
     #secrets = get_secrets(project_id,secret_ids)
     #context = {'secrets': secrets}
 
-    return render(request, 'todos/add.html', {'form': form}) #,'secrets': secrets})
+    #RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
+    secrets["test1"] = "Test1"
+    secrets["test2"] = "Test2"
+
+    return render(request, 'todos/add.html', {'form': form, 'secrets': secrets})
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page
