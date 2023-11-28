@@ -32,7 +32,7 @@ def add_task(request):
     secrets111["test1"] = "Test1"
     secrets111["test2"] = "Test2"
 
-    return render(request, 'todos/add.html', {'form': form, 'secrets': secrets111})
+    return render(request, 'todos/add.html', {'form': form})#, 'secrets': secrets111
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page
