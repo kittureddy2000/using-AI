@@ -62,6 +62,7 @@ if os.path.isfile(env_file):
 elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    print("project Id : " + project_id)
     print("Inside Google Cloud Project Environment")
     test_setting_variable = os.environ.get("TEST_KEY")
     print ("TEST VARIABLE start")
