@@ -7,6 +7,10 @@ from .forms import TaskForm, CustomUserCreationForm
 from django.contrib.auth import login
 from django.shortcuts import render
 from core.utils import get_secrets
+import google.auth
+import os
+from google.cloud import secretmanager
+
 
 
 def task_list(request):
@@ -29,10 +33,23 @@ def add_task(request):
     #context = {'secrets': secrets}
 
     #RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
-    secrets111["test1"] = "Test1"
-    secrets111["test2"] = "Test2"
 
-    return render(request, 'todos/add.html', {'form': form})#, 'secrets': secrets111
+    try:
+        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+    except google.auth.exceptions.DefaultCredentialsError:
+        pass
+    # Pull secrets from Secret Manager
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    print("Inside Google Cloud Project Environment")
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+
+    env.read_env(io.StringIO(payload))
+        
+    return render(request, 'todos/add.html', {'form': form , 'payload' : payload}) 
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page

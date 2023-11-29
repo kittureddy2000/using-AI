@@ -1,18 +1,23 @@
 # core/views.py (assuming 'core' is one of your apps)
-
+import os
 from django.shortcuts import render
 from .utils import get_secrets
+import google.auth
+from google.cloud import secretmanager
+
 
 def dashboard(request):
 
-   project_id = 'using-ai-405105'
-   secret_ids = ['PROD_SECRET_KEY', 'DB_NAME','DB_USER','DB_PASSWORD', 'DB_HOST','DB_PORT']  # Add your secret IDs
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    print("Inside Google Cloud Project Environment")
 
-   secrets = get_secrets(project_id,secret_ids)
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
-   context = {
-        'secrets': secrets,
-   }
 
-   return render(request, 'dashboard.html',context)
+    context = {'secrets': secrets}
+
+    return render(request, 'dashboard.html',context)
 

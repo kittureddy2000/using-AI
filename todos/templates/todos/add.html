@@ -20,20 +20,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
-
-    <table border="1">
-        <tr>
-            <th>Secret ID</th>
-            <th>Value</th>
-        </tr>
-        {% for secret_id, secret_value in secrets.items %}
-            <tr>
-                <td>{{ secret_id }}</td>
-                <td>{{ secret_value }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    
+    payload
+   
     <a href="{% url 'todos:task_list' %}" class="btn btn-secondary">Back to List</a>
 {% endblock %}

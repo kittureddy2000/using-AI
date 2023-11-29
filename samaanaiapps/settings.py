@@ -13,10 +13,20 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 import environ
+from urllib.parse import urlparse
+import google.auth
 from google.cloud import secretmanager
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR_G = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+print("Base Directory : "  )
+print(BASE_DIR)
+print("Base Directory Google : " )
+print( BASE_DIR_G)
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -24,13 +34,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()  # Initialize environ
 environ.Env.read_env()  # Read .env file
 
-#Google Secret Manager Helper fuction
-def access_secret_version(project_id, secret_id, version_id="latest"):
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(request={"name": name})
-    return response.payload.data.decode("UTF-8")
+env_file = os.path.join(BASE_DIR, ".env")
 
+if os.path.isfile(env_file):
+    # Use a local secret file, if provided
+    env.read_env(env_file)
+    print("Local file env exists")
+else:
+    print("Local file env doesnt exists")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = 'django-insecure-+&^un(msi47ggou(0=u%39k9wpz*^e3tkoiy61#co4qetrmme('
@@ -40,45 +51,62 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
 ALLOWED_HOSTS = ['*']
 
 
-RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
+try:
+    _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+except google.auth.exceptions.DefaultCredentialsError:
+    pass
 
-if RUNNING_ON_CLOUD_RUN:
-    print("Running Google cloud Run")
-    project_id = os.getenv('PROJECT_ID',default='111')
-    DEBUG = 'True' #env.bool('DJANGO_DEBUG', default=False)
+if os.path.isfile(env_file):
+    # Use a local secret file, if provided
+    env.read_env(env_file)
+elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+    # Pull secrets from Secret Manager
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    print("Inside Google Cloud Project Environment")
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+
+    env.read_env(io.StringIO(payload))
+else:
+    raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+# [END cloudrun_django_secret_config]
+
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+DEBUG = env("DJANGO_DEBUG")
+DB_NAME= env("DB_NAME")
+DB_USER= env("DB_USER")
+DB_PASSWORD = env("DB_PASSWORD")
+DB_HOST= env("DB_HOST")
+DB_PORT= env("DB_PORT")
+
+print( "DB_NAME  " + DB_NAME )
+print( "DB_USER " + DB_USER )
+print( "DB_PASSWORD  " + DB_PASSWORD )
+print( "DB_HOST  " + DB_HOST )
+print( "DB_PORT  " + DB_PORT )
+print( "SECRET_KEY  " + SECRET_KEY )
 
 
-    SECRET_KEY = access_secret_version(project_id, 'PROD_SECRET_KEY')
-    DB_NAME = access_secret_version(project_id,'DB_NAME')
-    DB_USER = access_secret_version(project_id,'DB_USER')
-    DB_PASSWORD = access_secret_version(project_id,'DB_PASSWORD')
-    DB_HOST = access_secret_version(project_id,'DB_HOST')
-    DB_PORT = access_secret_version(project_id,'DB_PORT')
-
-else :
-    print("Running Locally and will read variables from local environment")
-    project_id = os.getenv('PROJECT_ID',default='111')
-    SECRET_KEY=env('DJANGO_SECRET_KEY', default='Default Testkey')
-    DEBUG = env.bool('DJANGO_DEBUG', default=False)
-    DB_NAME=env('DB_NAME', default='Default_db')
-    DB_USER=env('DB_USER', default='Default_user')
-    DB_PASSWORD=env('DB_PASSWORD', default='password') #DATABASE_PASSWORD,
-    DB_HOST=env('DB_HOST' , default='localhost')#'34.82.137.151' Use Cloud SQL Proxy address for local development
-    DB_PORT=env('DB_PORT', default='0000') # Default port for PostgreSQL
-
-    print("project Id : " + project_id)
-    print("DB_NAME Id :  " + DB_NAME ) 
-    print("DB_NAME Id :  " + DB_NAME ) 
-    print("DB_USER Id :  " + DB_USER ) 
-    print("DB_PASSWORD Id :  " + DB_PASSWORD ) 
-    print("DB_HOST Id :  " + DB_HOST ) 
-    print("DB_PORT Id :  " + DB_PORT ) 
-
+# [START cloudrun_django_csrf]
+# SECURITY WARNING: It's recommended that you use this when
+# running in production. The URL will be known once you first deploy
+# to Cloud Run. This code takes the URL and converts it to both these settings formats.
+CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
+if CLOUDRUN_SERVICE_URL:
+    ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
+    CSRF_TRUSTED_ORIGINS = [CLOUDRUN_SERVICE_URL]
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+else:
+    ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 2
 
 # Where to go after logging in (defaults to '/accounts/profile/')
-LOGIN_REDIRECT_URL = '/todos/'
+LOGIN_REDIRECT_URL = '/'
 # Where to go after logging out (defaults to '/accounts/login/')
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
