@@ -64,8 +64,10 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
     print("Inside Google Cloud Project Environment")
     test_setting_variable = os.environ.get("TEST_KEY")
-    print ("TEST VARIABLE")
+    print ("TEST VARIABLE start")
     print(test_setting_variable)
+    print ("TEST VARIABLE end")
+
     client = secretmanager.SecretManagerServiceClient()
     settings_name = os.environ.get("SETTINGS_NAME", "django_settingswerwer")
 
