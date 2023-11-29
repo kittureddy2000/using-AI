@@ -25,31 +25,7 @@ def add_task(request):
             return redirect('todos:task_list')
     else:
         form = TaskForm()
-
-    #project_id = 'using-ai-405105'
-    #secret_ids = ['PROD_SECRET_KEY', 'DB_NAME','DB_USER', 'DB_HOST','DB_PORT']  # Add your secret IDs
-
-    #secrets = get_secrets(project_id,secret_ids)
-    #context = {'secrets': secrets}
-
-    #RUNNING_ON_CLOUD_RUN = os.getenv('GOOGLE_CLOUD_RUN') == 'True'
-
-    try:
-        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
-    except google.auth.exceptions.DefaultCredentialsError:
-        pass
-    # Pull secrets from Secret Manager
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    print("Inside Google Cloud Project Environment")
-
-    client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
-    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
-
-    env.read_env(io.StringIO(payload))
-        
-    return render(request, 'todos/add.html', {'form': form , 'payload' : payload}) 
+   return render(request, 'todos/add.html', {'form': form }) 
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page
