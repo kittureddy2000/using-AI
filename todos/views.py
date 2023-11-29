@@ -18,7 +18,7 @@ def task_list(request):
     tasks = Task.objects.all().order_by('-created_at')
     print("task_list: After getting list of objects")
     for task in tasks:
-    print(task)
+        print(task)
 
     return render(request, 'todos/list.html', {'tasks': tasks})
 
