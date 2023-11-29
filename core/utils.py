@@ -1,7 +1,7 @@
 # core/utils.py
 from google.cloud import secretmanager
 
-def access_secret_version(project_id, secret_id, version_id="latest"):
+def access_secret(project_id, secret_id, version_id="latest"):
     """
     Access a single secret version in Google Secret Manager.
     """

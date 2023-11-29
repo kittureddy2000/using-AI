@@ -16,6 +16,8 @@ import environ
 from urllib.parse import urlparse
 import google.auth
 from google.cloud import secretmanager
+from core.utils import access_secret
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -68,6 +70,10 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     print ("TEST VARIABLE start")
     print(test_setting_variable)
     print ("TEST VARIABLE end")
+    print(access_secret (project_id,'TEST_KEY'))
+    print ("TEST VARIABLE end from util api")
+    print(access_secret (project_id,'SETTINGS_NAME'))
+    print('settings name above from util api')
 
     client = secretmanager.SecretManagerServiceClient()
     settings_name = os.environ.get("SETTINGS_NAME", "django_settingswerwer")
@@ -77,6 +83,7 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     print(settings_name )
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+
 
     env.read_env(io.StringIO(payload))
 else:
