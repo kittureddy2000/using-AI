@@ -65,9 +65,9 @@ if os.path.isfile(env_file):
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", None)
     print("Getting Secret manage from local")
     print("Getting Secret manager for TEST_KEY")
-    print(access_secret (project_id,'TESTING_KEY'))
+    #print(access_secret (project_id,'TESTING_KEY'))
     print("Getting Secret manager for SETTINGS_NAME")
-    print(access_secret (project_id,'SETTINGS_NAME'))
+    #print(access_secret (project_id,'SETTINGS_NAME'))
 elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")

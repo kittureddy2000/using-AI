@@ -25,7 +25,7 @@ def add_task(request):
             return redirect('todos:task_list')
     else:
         form = TaskForm()
-   return render(request, 'todos/add.html', {'form': form }) 
+    return render(request, 'todos/add.html', {'form': form }) 
 
 def profile(request):
     return render(request, 'users/profile.html')  # or redirect to another page
