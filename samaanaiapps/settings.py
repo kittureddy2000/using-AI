@@ -66,7 +66,7 @@ if os.path.isfile(env_file):
     print("Getting Secret manage from local")
     print("Getting Secret manager for TEST_KEY")
     #print(access_secret (project_id,'TESTING_KEY'))
-    print("Getting Secret manager for SETTINGS_NAME")
+    print("Getting Secret manager for DJANGO_SETTINGS")
     #print(access_secret (project_id,'SETTINGS_NAME'))
 elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
@@ -74,7 +74,7 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
 
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
     print("project Id : " + project_id)
-    payload = access_secret (project_id,'SETTINGS_NAME')
+    payload = access_secret (project_id,'DJANGO_SETTINGS')
     env.read_env(io.StringIO(payload))
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
