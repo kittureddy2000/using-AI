@@ -16,9 +16,14 @@ from google.cloud import secretmanager
 def task_list(request):
     print("task_list: In Task List")
     tasks = Task.objects.all().order_by('-created_at')
+    
+    number_of_tasks = tasks.count()
+    print("Number of tasks retrieved:", number_of_tasks)
+
     print("task_list: After getting list of objects")
     for task in tasks:
         print(task)
+    print("task_list: After displaying list of objects")
 
     return render(request, 'todos/list.html', {'tasks': tasks})
 
