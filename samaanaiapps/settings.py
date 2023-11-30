@@ -22,14 +22,6 @@ from core.utils import access_secret
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR_G = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-print("Base Directory : "  )
-print(BASE_DIR)
-print("Base Directory Google : " )
-print( BASE_DIR_G)
-
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -224,7 +216,7 @@ STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
 
 STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = 'using-ai-samaan>'
+GS_BUCKET_NAME = 'using-ai-samaan'
 
 
 MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
