@@ -10,13 +10,13 @@ steps:
   # Step 2: Database Migration
   - name: 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
     entrypoint: 'bash'
-    args: ['-c', 'python manage.py migrate']
+    args: ['-c', 'python3 manage.py migrate']
     secretEnv: ['DATABASE_URL']
 
   # Step 3: Collect Static Files
   - name: 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
     entrypoint: 'bash'
-    args: ['-c', 'python manage.py collectstatic --noinput']
+    args: ['-c', 'python3 manage.py collectstatic --noinput']
 
   # Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
