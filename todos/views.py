@@ -17,8 +17,11 @@ def task_list(request):
     print("task_list: In Task List")
     tasks = Task.objects.all().order_by('-created_at')
     
-    number_of_tasks = tasks.count()
-    print("Number of tasks retrieved:", number_of_tasks)
+    if tasks.exists():
+        number_of_tasks = tasks.count()
+        print("Number of tasks retrieved:", number_of_tasks)
+    else:
+        print("No tasks found.")
 
     print("task_list: After getting list of objects")
     for task in tasks:
