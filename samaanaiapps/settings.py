@@ -96,6 +96,8 @@ print( "DB_PORT  " + DB_PORT )
 # to Cloud Run. This code takes the URL and converts it to both these settings formats.
 CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
 if CLOUDRUN_SERVICE_URL:
+    print("Cloud Service URL")
+    print(CLOUDRUN_SERVICE_URL)
     ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
     CSRF_TRUSTED_ORIGINS = [CLOUDRUN_SERVICE_URL]
     SECURE_SSL_REDIRECT = True
