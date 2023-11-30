@@ -68,7 +68,8 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     print("project Id : " + project_id)
     payload = access_secret (project_id,'DJANGO_SETTINGS')
     GOOGLE_APPLICATION_CREDENTIALS = access_secret (project_id,'GOOGLE_APPLICATION_CREDENTIALS')
-
+    print(GOOGLE_APPLICATION_CREDENTIALS)
+    print("Gogole App Credentials")
     env.read_env(io.StringIO(payload))
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
