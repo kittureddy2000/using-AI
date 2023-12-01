@@ -7,6 +7,18 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA', '.']
  
+  - name: 'python'
+    script: |
+      #!/usr/bin/env python
+      print('hello from python')
+  - name: 'bash'
+    script: |
+      #!/usr/bin/env bash
+      echo "Hello World"
+
+  - name: 'ubuntu'
+    script: echo hello
+
   - name: 'python:3.10-slim'
     entrypoint: 'sh'
     args: ['-c', 'echo "This is a print statement for debugging"']
@@ -40,6 +52,6 @@ images:
   - 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
 
 
-secrets:
+availableSecrets:
   - secretEnv:
       DATABASE_URL: 'projects/using-ai-405105/secrets/DATABASE_URL/versions/latest'
