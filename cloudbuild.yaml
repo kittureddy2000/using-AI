@@ -6,8 +6,17 @@ steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA', '.']
-    cmd: ['echo', 'Building Docker image...']
+ 
+  - name: 'python:3.10-slim'
+    entrypoint: 'sh'
+    args: ['-c', 'echo "This is a print statement for debugging"']
 
+  # Another example with a different message
+  - name: 'python:3.10-slim'
+    entrypoint: 'sh'
+    args: ['-c', 'echo "Another print statement for logging"']
+
+ 
   # Step 2: Database Migration
   - name: 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
     entrypoint: 'bash'
