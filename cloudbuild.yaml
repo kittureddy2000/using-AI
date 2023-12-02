@@ -30,7 +30,7 @@ steps:
 
  
   # Step 2: Database Migration
-  - name: 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
+  - name: 'gcr.io/google-appengine/exec-wrapper'
     entrypoint: 'bash'
     args: ['-c', 'python3 manage.py migrate']
     secretEnv: ['DATABASE_URL']
