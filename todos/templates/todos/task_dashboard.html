@@ -1,0 +1,387 @@
+{% extends 'base.html' %} {% block title %}To-Do List{% endblock %} {% block additional_head %}
+<meta name="csrf-token" content="{{ csrf_token }}" />
+{% endblock %} {% block content %}
+<div id="success-message" style="display: none"></div>
+<hr class="hr" />
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Boot strap side bar Start -->
+    <div class="col-md-2" id="lists-section">
+
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+          <i class="fas fa-tasks" style="margin-right: 5px;" ></i> Task List
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        {% for tasklist in task_lists %}
+           <a href="#" class="nav-link task-list-item text-white" data-id="{{ tasklist.id }}">
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+              {{ tasklist.list_name }}
+          </a>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+    <!-- Boot strap side bar End -->
+    <div class="col-md-8">
+      <!-- Search and Add Task Section -->
+      <div class="input-group">
+      <div class="row justify-content-end mb-3">
+        <div class="col-auto">
+        <input
+          class="form-control w-100"
+          id="search-task"
+          type="text"
+          placeholder="Search tasks..."
+        />
+      </div>
+      <div class="col-auto">
+        <!-- <a href="{% url 'todos:add_task' %}" class="btn btn-primary add-task-btn mb-3"><i class="fas fa-plus"></i> Add</a> -->
+        <button type="button" class="btn btn-primary add-task-btn"> <i class="fas fa-plus"></i> Add Task </button>
+      </div>
+
+      <!-- Task Container -->
+      <div id="task-container" class="w-100">
+        <!-- Tasks will be loaded here using AJAX -->
+        <table id="task-table" class="table table-hover table-striped w-100">
+          <thead>
+            <tr>
+              <th>Important</th>
+              <th>Task Name</th>
+              <th>Description</th>
+              <th>Due Date</th>
+              <th>Mark Complete</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Tasks will be inserted here by AJAX -->
+          </tbody>
+        </table>
+      </div>
+        <div id="pagination">
+          <button id="prev-page" class="btn btn-primary">  <i class="fas fa-chevron-left"></i> Previous  </button> 
+          <span id="current-page">1</span>
+          <button id="next-page" class="btn btn-primary">  Next <i class="fas fa-chevron-right"></i>   </button>        
+        </div>
+    </div>
+  </div>
+
+<!-- Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="taskModalLabel">Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form content will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveTask">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} 
+
+
+
+{% block script_block %}
+<script>
+  $(document).ready(function () {
+    console.log("In Document Ready Function");
+    // Function to update the task table
+    function updateTaskTable(tasks) {
+      var tasksHtml = "";
+      tasks.forEach(function (task) {
+        tasksHtml +=
+        '<tr id="task-' + task.id + '">' +
+          '<td><a href="#" class="text-primary mark-favorite" data-id="' + task.id + '">' +
+          '<i id="favorite-icon-' + task.id + '" class="' + (task.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star") + '"></i></a></td>' +
+          '<td class="' + (task.task_completed ? "strikethrough" : "") + '">' + task.task_name + '</td>' +
+          '<td>' + task.task_description + '</td>' +
+          '<td>' + formatDate(task.due_date) + '</td>' +
+          '<td><a href="#" class="text-success complete-task" data-id="' + task.id + '">' +
+          '<i class="fas fa-check fa-lg"></i></a></td>' +
+          '<td><a href="#" class="text-primary edit-task-btn edit-task" data-id="' + task.id + '">' +
+          '<i class="fas fa-edit fa-lg"></i></a></td>' +
+          '</tr>';
+      });
+      $("#task-table tbody").html(tasksHtml); // Insert tasks into the table
+    }
+    //Start pagination  
+    function updatePaginationButtons(currentPage, totalPages) {
+      // Disable 'Previous' button if on the first page
+      if (currentPage <= 1) {
+          $('#prev-page').prop('disabled', true);
+      } else {
+          $('#prev-page').prop('disabled', false);
+      }
+  
+      // Disable 'Next' button if on the last page
+      if (currentPage >= totalPages) {
+          $('#next-page').prop('disabled', true);
+      } else {
+          $('#next-page').prop('disabled', false);
+      }
+    }
+  
+    function fetchTasks(page) {
+      fetch('/todos/get_all_tasks?page='+ page)
+      .then(response => response.json())
+      .then(data => {
+          updateTaskTable(data.tasks);  // Function to update the table with new data
+          $('#current-page').text(data.current_page);  // Update current page text
+
+          // Update the state of pagination buttons
+          updatePaginationButtons(data.current_page, data.total_pages);
+      });
+    }
+    $("#prev-page").click(function () {
+      var currentPage = parseInt($("#current-page").text());
+      if (currentPage > 1) {
+        fetchTasks(currentPage - 1);
+      }
+    });
+
+    $("#next-page").click(function () {
+      var currentPage = parseInt($("#current-page").text());
+      fetchTasks(currentPage + 1);
+    });
+
+    // Initial fetch for page 1
+    fetchTasks(1);
+
+    // end Pagination 
+
+    //Live Search Tasks
+    $("#search-task").on("keyup", function () {
+      var searchTerm = $(this).val();
+
+      $.ajax({
+        url: "{% url 'todos:search_tasks' %}", // URL to the Django view
+        data: { q: searchTerm },
+        dataType: "json",
+        success: function (response) {
+          console.log("Received Search data:", response);
+          updateTaskTable(response.tasks);
+          if (response.tasks && Array.isArray(response.tasks)) {
+            response.tasks.forEach(function (task) {
+              console.log("Response has tasks and its an arry");
+            });
+          } else {
+            console.error("Tasks is not an array:", response.tasks);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Error occurred: " + error);
+        },
+      });
+    });
+
+    // Fetch and display tasks for a specific list
+    $(".task-list-item").click(function () {
+      var listId = $(this).data("id");
+      console.log("list Id : " + listId);
+      $.ajax({
+        url: `/todos/get_tasks/${listId}`,
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          console.log("Received data:", response);
+          updateTaskTable(response.tasks); // Call function to update table
+        },
+        error: function (xhr, status, error) {
+          console.error("An error occurred while fetching tasks: " + error);
+        },
+      });
+    });
+    // Initial fetch and display of all tasks when the page is first loaded
+    $.ajax({
+      url: "{% url 'todos:get_all_tasks' %}",
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        console.log("Received initial data:", response);
+        updateTaskTable(response.tasks);
+        if (response.tasks && Array.isArray(response.tasks)) {
+          response.tasks.forEach(function (task) {
+            console.log("Response has tasks and its an arry");
+          });
+        } else {
+          console.error("Tasks is not an array:", response.tasks);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error(
+          "An error occurred while fetching initial tasks: " + error
+        );
+      },
+    });
+
+    //Start Task Table Actions
+    //Mark Complete Function
+    $("#task-container").on("click", ".complete-task", function () {
+      var taskId = $(this).data("id");
+      var taskRow = $("#task-" + taskId);
+      var taskName = taskRow.find("td:first").text().trim(); // Assuming the first column is the task name
+      var csrfToken = $('meta[name="csrf-token"]').attr("content");
+      console.log("Task_id : " + taskId);
+      console.log("Task_name : " + taskName);
+
+      $.ajax({
+        url: "{% url 'todos:complete_task' %}",
+        type: "POST",
+        data: {
+          id: taskId,
+          csrfmiddlewaretoken: csrfToken,
+        },
+        success: function (response) {
+          if (response.completed) {
+            taskRow.css("text-decoration", "line-through");
+            $("#success-message")
+              .text("Deleted task: " + taskName)
+              .show();
+            setTimeout(function () {
+              $("#success-message").hide();
+            }, 5000);
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle any error here
+          console.error("Error in AJAX request:", status, error);
+        },
+      });
+    });
+    //Mark Favorite Function
+    $("#task-container").on("click", ".mark-favorite", function () {
+      var taskId = $(this).data("id");
+      var taskRow = $("#task-" + taskId);
+      var csrfToken = $('meta[name="csrf-token"]').attr("content");
+      console.log("Mark Favorite Task_id : " + taskId);
+
+      $.ajax({
+        url: "{% url 'todos:mark_favorite' %}",
+        type: "POST",
+        data: {
+          id: taskId,
+          csrfmiddlewaretoken: csrfToken,
+        },
+        success: function (response) {
+            var iconClass = response.Important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star";
+            
+            $("#favorite-icon-" + response.task_id).attr('class', iconClass);
+
+            $("#success-message")
+              .text("Marked task as a important: " + response.task_name)
+              .show();
+            setTimeout(function () {
+              $("#success-message").hide();
+            }, 5000);
+        },
+        error: function (xhr, status, error) {
+          // Handle any error here
+          console.error("Error in AJAX request:", status, error);
+        },
+      });
+    });
+    //Add Model
+    $(document).on('click', '.add-task-btn', function() {
+      // Load the form for adding a new task
+      $('#taskModal').data('mode', 'add');
+      console.log(" Task Model Mode in Create ")
+      console.log($('#taskModal').data('mode')); // Test if the mode is set correctly
+      $('#taskModal .modal-body').load('/todos/add/', function() {
+        $('#taskModal').modal('show');
+      });
+    });
+    //edit model
+    $(document).on('click', '.edit-task-btn', function() {
+      var taskId = $(this).data('id');
+      $('#taskModal').data('mode', 'edit');
+      $('#taskModal').data('taskId', taskId);  // Assuming taskId is the ID of the task being edited
+      console.log(" Task Model Mode in Edit ")
+      console.log($('#taskModal').data('mode')); // Test if the mode is set correctly
+      console.log($('#taskModal').data('taskId')); // Test if the taskId is
+
+      // Load the form for editing an existing task
+      $('#taskModal .modal-body').load('/todos/edit_task/' + taskId + '/', function() {
+        $('#taskModal').modal('show');
+      });
+    });
+    //save model
+    $('#saveTask').click(function() {
+      console.log("Saving Task function called")
+      var mode = $('#taskModal').data('mode');
+      var taskId = $('#taskModal').data('taskId');
+
+      var url = '';
+      console.log("Save Model : " + mode )
+      console.log(taskId); // Check the taskId
+
+      if (mode === 'edit') {
+        var taskId = $('#taskModal').data('taskId');
+        url = '/todos/edit_task/' + taskId + '/';
+      } else {  // 'add' mode
+        url = '/todos/add/';
+      }
+      console.log(" Save URL :  " + url)
+      var formData = new FormData($('#taskModal form')[0]);
+      $.ajax({
+        url: url,  // The URL to submit the form data
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          // Handle success (e.g., close the modal, update the task list on the page)
+          console.log("Success from Save Task : " + response.task_name)
+          $('#taskModal').modal('hide');
+          console.log("Task Id  from Edit Save model : " + response.task_id)
+          // Reload or update tasks on the page
+          var updatedRowHtml =
+              '<td><a href="#" class="text-primary mark-favorite" data-id="' + response.task_id + '">' +
+              '<i id="favorite-icon-' + response.task_id + '" class="' + (response.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star") + '"></i></a></td>' +
+              '<td class="' + (response.task_completed ? "strikethrough" : "") + '">' + response.task_name + '</td>' +
+              '<td>' + response.task_description + '</td>' +
+              '<td>' + formatDate(response.due_date) + '</td>' +
+              '<td><a href="#" class="text-success complete-task" data-id="' + response.task_id + '">' +
+              '<i class="fas fa-check fa-lg"></i></a></td>' +
+              '<td><a href="#" class="text-primary edit-task-btn edit-task" data-id="' + response.task_id + '">' +
+              '<i class="fas fa-edit fa-lg"></i></a></td>';
+
+    // Update the specific row
+    $('#task-' + response.task_id).html(updatedRowHtml);
+
+        },
+        error: function(xhr, status, error) {
+          // Handle error
+        }
+      });
+    });
+    
+
+  });
+  
+
+  function formatDate(dateString) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear().toString().substr(-2); // Get last two digits of the year
+
+    return `${day}-${months[monthIndex]}-${year}`;
+}
+</script>
+
+{% endblock %}

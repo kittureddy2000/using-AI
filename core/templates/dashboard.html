@@ -1,8 +1,58 @@
-{% extends 'base.html' %}
-{% load todo_extras %}
-{% block title %}Add Task{% endblock %}
+{% extends 'base.html' %} {% load todo_extras %} {% block title %}Add Task{% endblock %}
 
 {% block content %}
- Hello welcome to using AI Apps
-Test1
-{% endblock %}      
+<div class="container mt-5">
+  <div class="row">
+        <div class="col-md-4 mb-4">
+        <div class="card border-success mb-3" style="max-width: 18rem">
+            <div class="card-header bg-transparent border-success">Header</div>
+            <div class="card-body text-success">
+            <h5 class="card-title mt-2">
+                <a href="{% url 'todos:add_task' %}" class="card-link"
+                >Add New Task</a
+                >
+            </h5>
+            <p class="card-text">
+                Some quick example text to build on the card title and make up the
+                bulk of the card's content.
+            </p>
+            </div>
+            <div class="card-footer bg-transparent border-success">Footer</div>
+        </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card border-success mb-3" style="max-width: 18rem">
+            <div class="card-header bg-transparent border-success">Header</div>
+            <div class="card-body text-success">
+                <h5 class="card-title">
+                <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
+                    My Tasks</a
+                >
+                </h5>
+                <p class="card-text">
+                Some quick example text to build on the card title and make up the
+                bulk of the card's content.
+                </p>
+            </div>
+            <div class="card-footer bg-transparent border-success">Footer</div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+        <div class="card border-success mb-3" style="max-width: 18rem">
+            <div class="card-header bg-transparent border-success">Header</div>
+            <div class="card-body text-success">
+            <h5 class="card-title">Success card title</h5>
+            <p class="card-text">
+                Some quick example text to build on the card title and make up the bulk
+                of the card's content.
+            </p>
+            </div>
+            <div class="card-footer bg-transparent border-success">Footer</div>
+        </div>
+        </div>  
+    </div>
+</div>
+
+  {% endblock %}

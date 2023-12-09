@@ -1,12 +1,45 @@
-<!-- templates/registration/register.html -->
-
 {% extends 'base.html' %}
+{% block title %}
+<title>User Registration</title>
+{% endblock %}
+
+{% block crispy %}
+{% load crispy_forms_tags %}
+{% endblock %}
+
 
 {% block content %}
-<h2>Register</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-4 offset-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <div class="card-title"> Register</div>
+
+                </div>
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="form-group">
+                            {{field.name}} <br>
+                            {{field}}
+                        </div>
+
+                        {% endfor %}
+                        <button class="btn-info" type="submit" > Signup</button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
 {% endblock %}

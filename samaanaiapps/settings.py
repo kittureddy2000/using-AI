@@ -108,8 +108,6 @@ if CLOUDRUN_SERVICE_URL:
 else:
     ALLOWED_HOSTS = ["*"]
 
-SITE_ID = 2
-
 # Where to go after logging in (defaults to '/accounts/profile/')
 LOGIN_REDIRECT_URL = '/'
 # Where to go after logging out (defaults to '/accounts/login/')
@@ -127,14 +125,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'todos',
     'core',
+    'crispy_forms',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # Add the providers you want to use
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.facebook',
-    # ... more providers if needed ...
 ]
 
 MIDDLEWARE = [
@@ -147,6 +142,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
+SITE_ID = 2
 
 ROOT_URLCONF = 'samaanaiapps.urls'
 
@@ -236,6 +232,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ACCOUNT_EMAIL_REQUIRED = True

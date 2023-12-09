@@ -1,0 +1,18 @@
+
+{% extends 'base.html' %}
+{% block title %}
+<title>Profile</title>
+{% endblock %}
+
+{% block crispy %}
+{% load crispy_forms_tags %}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>{{user.username}}</h1>
+<img width="100px" height="100px" src="{{user.profile.image.url}}" alt="Image Url">
+<h4> {{user.profile.image.name}}" </h4>>
+
+{% endblock %}

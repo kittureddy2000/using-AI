@@ -1,56 +1,73 @@
-<!-- header.html -->
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-  <a class="navbar-brand" href="#">My Django App</a>
-  <ul class="navbar-nav">
+<style>
+  .white-nav-link {
+    color: white !important; /* Ensures white color overrides default */
+    font-weight: bold; /* Optional: makes text bold */
+  }
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+  }
 
-    {% if user.is_authenticated %}
-    <li class="nav-item dropdown mr-3">
-      <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-        <i class="fas fa-user"></i> Welcome {{user.username}}
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{% url 'logout' %}" class="nav-link">
-        <i class="fas fa-user-times"></i> Logout
-      </a>
-    </li>
+  .card-link:hover .card {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
 
-    {% else %}
-    <li class="nav-item">
-      <a href="{% url 'account_login' %}" class="nav-link">Login</a>
-    </li>
-    {% endif %}
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #e3f2fd; /* Soft blue background */
+    border: none; /* Optional: removes the card border */
+  }
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'account_signup' %}">Sign up</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'account_reset_password' %}">Forgot Password</a>
-    </li>
+  .card-body i {
+    color: #0d6efd; /* Color for the icon */
+  }
+</style>
 
-  </ul>
-</nav>
+<div class="container-fluid">
+  <nav class="navbar navbar-expand-sm bg-primary navbar-light">
+    <a class="navbar-brand  text-white" href="#" style="padding-left: 10px;">Samaan Apps</a>
+    <ul class="navbar-nav ms-auto">
+      {% if user.is_authenticated %}
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'core:dashboard' %}">Todo App</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{% url 'core:dashboard' %}">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'todos:add_task' %}">Add Task</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'todos:task_list' %}">Task List</a>
-        </li>
-        <!-- Additional navbar items can go here -->
-      </ul>
-    </div>
-  </div>
-</nav>
+      <div class="dropdown" style="padding-right: 30px; ">
+        <a
+          href="#"
+          class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="https://github.com/mdo.png"
+            alt=""
+            width="32"
+            height="32"
+            class="rounded-circle me-2"
+          />
+          <strong>{{user.username}}</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="#">Profile</a></li>  
+          <li><hr class="dropdown-divider" /></li>
+          <li class="nav-item">
+            <a href="{% url 'account_logout' %}" class="nav-link white-nav-link">
+              <i class="fas fa-user-times"></i> Logout
+            </a>    
+          </li>
+           <li> <a href="{% url 'todos:create_task_list' %}"  class="nav-link white-nav-link" > <i class="fas fa-tasks"></i>  Add List</a> </li>
+        </ul>
+      </div>
+
+      {% else %}
+      <li class="nav-item">
+        <a href="{% url 'account_login' %}" class="nav-link white-nav-link"
+          >Login</a
+        >
+      </li>
+      {% endif %}
+
+
+    </ul>
+  </nav>
+</div>

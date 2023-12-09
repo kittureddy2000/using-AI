@@ -1,0 +1,39 @@
+{% load todo_extras %}
+{% block title %}Edit Task{% endblock %}
+
+{% block content %}
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        <!-- Display non-field errors -->
+        {{ edit_task_form.non_field_errors }}
+    
+        <div class="mb-3">
+            {{ edit_task_form.task_name.label_tag }}
+            {{ edit_task_form.task_name|add_class:"form-control" }}
+            <!-- Display field-specific errors -->
+            {{ edit_task_form.task_name.errors }}
+        </div>
+        <div class="mb-3">
+            {{ edit_task_form.task_description.label_tag }}
+            {{ edit_task_form.task_description|add_class:"form-control" }}
+            {{ edit_task_form.task_description.errors }}
+        </div>
+        <div class="mb-3 form-date">
+            {{ edit_task_form.due_date|add_class:"form-check-input" }}
+            {{ edit_task_form.due_date.label_tag }}
+            {{ edit_task_form.due_date.errors }}
+        </div>
+    <!-- Dropdown for list_name -->
+        <div class="mb-3">
+            {{ edit_task_form.list_name.label_tag }}
+            {{ edit_task_form.list_name|add_class:"form-select" }}
+            {{ edit_task_form.list_name.errors }}
+        </div>        
+        <!--<button type="submit" class="btn btn-primary">Save</button>-->
+    </form>
+     
+   <!-- <a href="{% url 'todos:get_lists' %}" class="btn btn-secondary">Back to List</a>-->
+
+
+
+    {% endblock %}
