@@ -2,7 +2,7 @@
 {% block title %}Add Task{% endblock %}
 
 {% block content %}
-    <form method="post" class="mb-3">
+    <form method="post" class="mb-3"  enctype="multipart/form-data">
         {% csrf_token %}
         <!-- Display non-field errors -->
         {{ add_task_form.non_field_errors }}
@@ -28,7 +28,11 @@
             {{ add_task_form.list_name.label_tag }}
             {{ add_task_form.list_name|add_class:"form-select" }}
             {{ add_task_form.list_name.errors }}
-        </div>        
+        </div>
+        
+        <label for="images">Upload Images:</label>
+        <input type="file" name="images" id="images" multiple><br><br>
+        
         <!--<button type="submit" class="btn btn-primary">Save</button>-->
     </form>
      

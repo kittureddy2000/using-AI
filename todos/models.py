@@ -31,3 +31,4 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['-creation_date']
+        
