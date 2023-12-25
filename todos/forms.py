@@ -27,14 +27,13 @@ class TaskListForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task_name', 'task_description', 'list_name', 'due_date', 'task_image', 'reminder_time', 'recurrence', 'task_completed', 'important', 'assigned_to']
+        fields = ['task_name', 'task_description', 'list_name', 'due_date',  'reminder_time', 'recurrence', 'task_completed', 'important', 'assigned_to']
         widgets = {
             'task_name': forms.TextInput(attrs={'class': 'form-control'}),
             'task_description': forms.Textarea(attrs={'class': 'form-control'}),
             'list_name': forms.Select(attrs={'class': 'form-control'}),
             'due_date': DatePickerInput(attrs={'class': 'form-control'}),
             'reminder_time': DatePickerInput(attrs={'class': 'form-control'}),
-            'recurrence': forms.Select(choices=RECURRENCE_CHOICES, attrs={'class': 'form-control'}),
             # Add other widgets as needed
         }
 

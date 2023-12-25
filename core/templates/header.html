@@ -1,32 +1,6 @@
-<style>
-  .white-nav-link {
-    color: white !important; /* Ensures white color overrides default */
-    font-weight: bold; /* Optional: makes text bold */
-  }
-  .card-link {
-    text-decoration: none;
-    color: inherit;
-  }
 
-  .card-link:hover .card {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #e3f2fd; /* Soft blue background */
-    border: none; /* Optional: removes the card border */
-  }
-
-  .card-body i {
-    color: #0d6efd; /* Color for the icon */
-  }
-</style>
-
-<div class="container-fluid">
-  <nav class="navbar navbar-expand-sm bg-primary navbar-light">
-    <a class="navbar-brand  text-white" href="#" style="padding-left: 10px;">Samaan Apps</a>
+    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+          <a class="navbar-brand  text-white" href="#" style="padding-left: 10px;">Samaan Apps</a>
     <ul class="navbar-nav ms-auto">
       {% if user.is_authenticated %}
 
@@ -70,4 +44,3 @@
 
     </ul>
   </nav>
-</div>

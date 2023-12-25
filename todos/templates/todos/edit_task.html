@@ -1,9 +1,7 @@
 {% load todo_extras %}
-{% block title %}Edit Task{% endblock %}
 
-{% block content %}
-    <form method="post" class="mb-3">
-        {% csrf_token %}
+<form method="post" class="mb-3" id="edit-task-form" data-task-id="{{ task_id }}" enctype="multipart/form-data">
+    {% csrf_token %}
         <!-- Display non-field errors -->
         {{ edit_task_form.non_field_errors }}
     
@@ -23,17 +21,41 @@
             {{ edit_task_form.due_date.label_tag }}
             {{ edit_task_form.due_date.errors }}
         </div>
-    <!-- Dropdown for list_name -->
+        <div class="mb-3 form-date">
+            {{ edit_task_form.reminder_time|add_class:"form-check-input" }}
+            {{ edit_task_form.reminder_time.label_tag }}
+            {{ edit_task_form.reminder_time.errors }}
+        </div>
+        <div class="mb-3">
+            {{ edit_task_form.recurrence.label_tag }}
+            {{ edit_task_form.recurrence|add_class:"form-select" }}
+            {{ edit_task_form.recurrence.errors }}
+        </div>        
+
         <div class="mb-3">
             {{ edit_task_form.list_name.label_tag }}
             {{ edit_task_form.list_name|add_class:"form-select" }}
             {{ edit_task_form.list_name.errors }}
         </div>        
-        <!--<button type="submit" class="btn btn-primary">Save</button>-->
+   
+        <!--Handle Images -->
+
+        <ul class="list-group">
+            {% for image in images %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ image.image_url }}" target="_blank">
+                        <i class="fas fa-file-image"></i> {{image.image_name}}
+                    </a>
+                    <!-- Optionally, add a delete button for each image -->
+                </li>
+            {% endfor %}
+        </ul>
+    
+
+        <label for="images">Upload Images XXX:</label>
+        <input type="file" name="images" id="images" multiple><hr>
+
+        <button type="submit" class="btn btn-success" >Save</button>
+
     </form>
      
-   <!-- <a href="{% url 'todos:get_lists' %}" class="btn btn-secondary">Back to List</a>-->
-
-
-
-    {% endblock %}

@@ -23,6 +23,16 @@
             {{ add_task_form.due_date.label_tag }}
             {{ add_task_form.due_date.errors }}
         </div>
+        <div class="mb-3 form-date">
+            {{ add_task_form.reminder_time|add_class:"form-check-input" }}
+            {{ add_task_form.reminder_time.label_tag }}
+            {{ add_task_form.reminder_time.errors }}
+        </div>
+        <div class="mb-3">
+            {{ add_task_form.recurrence.label_tag }}
+            {{ add_task_form.recurrence|add_class:"form-select" }}
+            {{ add_task_form.recurrence.errors }}
+        </div>  
     <!-- Dropdown for list_name -->
         <div class="mb-3">
             {{ add_task_form.list_name.label_tag }}
@@ -37,11 +47,6 @@
     </form>
      
    <!-- <a href="{% url 'todos:get_lists' %}" class="btn btn-secondary">Back to List</a>-->
-
-
-   <script src="https://code.jquery.com/jquery-3.x.x.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.x.x/js/bootstrap.bundle.min.js"></script>
-
 
     {% endblock %}
 
