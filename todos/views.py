@@ -20,12 +20,16 @@ from django.contrib import messages
 from django.http import JsonResponse,  HttpResponse
 from django.core import serializers
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
+import logging
+
+logger = logging.getLogger(__name__)
 
 #Get all Taks``
 def get_all_tasks(request):
     page = request.GET.get('page', 1)
     tasks = Task.objects.all().order_by('due_date')
     paginator = Paginator(tasks, 50)  # Show 10 tasks per page 
+    logger.info("This is an info log message from get_all_tasks.")
 
     try:
         tasks_page = paginator.page(page)
@@ -191,6 +195,8 @@ def create_task_list(request):
 
 def complete_task(request):
     task_id = request.POST.get('id')
+    print("In Complete Task Function Task ID : " + task_id)
+    
     task = Task.objects.get(id=task_id)
     task.task_completed = True
     task.last_update_date = timezone.now()    

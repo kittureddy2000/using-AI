@@ -11,156 +11,49 @@
 <input type="hidden" id="current-list" />
 <div id="success-message" style="display: none"></div>
 <hr class="hr" />
+<hr class="hr hr-blurry" />
 
-<div class="container-fluid">
-  <div class="row">
+  <div class="container-fluid">
+    <table id="task-table" class="table table-hover w-100">
+      <thead class="thead-dark">
+        <tr>
+          <th class="sortable" data-sort="important">
+            <i class="fas fa-sort" style="margin-right: 5px"></i
+            >Important
+          </th>
+          <th>Task Name</th>
+          <th>Description</th>
+          <th class="sortable" data-sort="due_date">
+            <i class="fas fa-sort" style="margin-right: 5px"></i>Due
+            Date
+          </th>
+          <th>Completed</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
 
-    <!-- Boot strap side bar Start -->
-    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-      <div class="sidebar-sticky">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <i class="fa-solid fa-plane-arrival"></i>
-            <h3 class="inline-heading">Lists</h3>
+        {% for tasklist in task_lists %}
+        <li class="nav-item">
+          <a
+            href="#"
+            class="nav-link task-list-item"
+            data-id="{{ tasklist.id }}">
+            
+            {% if tasklist.special_list %}
+            <i class="fa fa-camera-retro"></i>  <!-- This icon shows otherwise -->
+            {% else %}
+                <i class="fas fa-tasks"></i>  <!-- This icon shows if it's a special list -->
+            {% endif %}
+        
+            
+            {{ tasklist.list_name }}
+          </a>
         </li>
-        
-        
-          <hr class="hr hr-blurry" />
+        {% endfor %}      </tbody>
+    </table>
+  </div>
 
-          {% for tasklist in task_lists %}
-          <li class="nav-item">
-            <a
-              href="#"
-              class="nav-link task-list-item"
-              data-id="{{ tasklist.id }}">
-              
-              {% if tasklist.special_list %}
-              <i class="fa fa-camera-retro"></i>  <!-- This icon shows otherwise -->
-              {% else %}
-                  <i class="fas fa-tasks"></i>  <!-- This icon shows if it's a special list -->
-              {% endif %}
-          
-              
-              {{ tasklist.list_name }}
-            </a>
-          </li>
-          <hr class="hr hr-blurry" />
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    <!-- Boot strap side bar End -->
-    <div class="col-md-6">
-      <!-- Search and Add Task Section -->
-      <div class="sticky-top">
-        <div class="input-group">
-          <div class="row justify-content-end mb-3">
-            <div class="col-auto">
-              <input
-                class="form-control w-100"
-                id="search-task"
-                type="text"
-                placeholder="Search tasks..."
-              />
-            </div>
-            <div class="col-auto">
-              <!-- <a href="{% url 'todos:add_task' %}" class="btn btn-primary add-task-btn mb-3"><i class="fas fa-plus"></i> Add</a> -->
-              <button type="button" class="btn btn-primary add-task-btn">
-                <i class="fas fa-plus"></i> Add Task
-              </button>
-            </div>
-          </div>    
-        </div>
-      </div>
-
-          <!-- Tasks Table -->
-      <div id="task-container" class="w-100">
-        <!-- Tasks will be loaded here using AJAX -->
-        <table id="task-table" class="table table-hover w-100">
-          <thead class="thead-dark">
-            <tr>
-              <th class="sortable" data-sort="important">
-                <i class="fas fa-sort" style="margin-right: 5px"></i
-                >Important
-              </th>
-              <th>Task Name</th>
-              <th>Description</th>
-              <th class="sortable" data-sort="due_date">
-                <i class="fas fa-sort" style="margin-right: 5px"></i>Due
-                Date
-              </th>
-              <th>Completed</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Tasks will be inserted here by AJAX -->
-          </tbody>
-        </table>
-      </div>
-      <div id="pagination">
-        <button id="prev-page" class="btn btn-primary">
-          <i class="fas fa-chevron-left"></i> Previous
-        </button>
-        <span id="current-page">1</span>
-        <button id="next-page" class="btn btn-primary">
-          Next <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-        <!-- Sidebar for additional options -->
-    <div class="sticky-top">
-      <div id="task-details-panel" class="col-md-3 bg-light border-left">
-      {% include 'todos/edit_task.html' %}
-      </div>
-    </div>
-</div>
-
-    <!-- Task Modal -->
-    <div
-      class="modal fade"
-      id="taskModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="taskModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="taskModalLabel">Add or Edit Task</h5>
-            <button
-              type="button"
-              class="close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <!-- Form content will be loaded here -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              id="saveTask"
-            >
-              Save Task
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     {% endblock %} 
     {% block script_block %}

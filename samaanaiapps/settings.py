@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 import google.auth
 from google.cloud import secretmanager
 from core.utils import access_secret
+import logging
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,19 +58,15 @@ if os.path.isfile(env_file):
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", None)
     print("Getting Secret manage from local")
     print("Getting Secret manager for TEST_KEY")
-    #print(access_secret (project_id,'TESTING_KEY'))
     print("Getting Secret manager for DJANGO_SETTINGS")
-    #print(access_secret (project_id,'SETTINGS_NAME'))
 elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
-
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    print("project Id : " + project_id)
+    print("project Id derived from Google Cloud Environement : " + project_id)
     payload = access_secret (project_id,'DJANGO_SETTINGS')
     GOOGLE_APPLICATION_CREDENTIALS = access_secret (project_id,'GOOGLE_APPLICATION_CREDENTIALS')
-    print(GOOGLE_APPLICATION_CREDENTIALS)
-    print("Gogole App Credentials")
+    print("Gogole App Credentials " + GOOGLE_APPLICATION_CREDENTIALS)
     env.read_env(io.StringIO(payload))
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
@@ -214,6 +211,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
 MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
 
@@ -226,6 +226,29 @@ STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Logging Framework
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'todos': {  # Use your app label here, typically the app directory name in lowercase
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
 
 
 AUTHENTICATION_BACKENDS = (
