@@ -8,6 +8,7 @@ class TaskList(models.Model):
     special_list = models.BooleanField(default=False)
     color = models.CharField(max_length=100)
     creation_date = models.DateTimeField(auto_now_add=True , blank=True)
+    last_update_date = models.DateTimeField(auto_now=True , blank=True)
 
 
     def __str__(self):
@@ -40,6 +41,7 @@ class Task(models.Model):
     assigned_to = models.CharField(max_length=100, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update_date = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
         return self.task_name
