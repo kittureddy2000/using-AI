@@ -27,25 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-env = environ.Env()  # Initialize environ
-environ.Env.read_env()  # Read .env file
+#env = environ.Env()  # Initialize environ
+#environ.Env.read_env()  # Read .env file
 
+env = environ.Env(DEBUG=(bool, True))
 env_file = os.path.join(BASE_DIR, ".env")
-
-if os.path.isfile(env_file):
-    # Use a local secret file, if provided
-    env.read_env(env_file)
-    print("Local file env exists")
-else:
-    print("Local file env doesnt exists")
-
-# SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-+&^un(msi47ggou(0=u%39k9wpz*^e3tkoiy61#co4qetrmme('
-
-
-#ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
-ALLOWED_HOSTS = ['*']
-
 
 try:
     _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
@@ -54,38 +40,29 @@ except google.auth.exceptions.DefaultCredentialsError:
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
+    print("Getting Secret manage from local")
     env.read_env(env_file)
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", None)
-    print("Getting Secret manage from local")
-    print("Getting Secret manager for TEST_KEY")
-    print("Getting Secret manager for DJANGO_SETTINGS")
+
 elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    print("project Id derived from Google Cloud Environement : " + project_id)
-    payload = access_secret (project_id,'DJANGO_SETTINGS')
-    GOOGLE_APPLICATION_CREDENTIALS = access_secret (project_id,'GOOGLE_APPLICATION_CREDENTIALS')
-    print("Gogole App Credentials " + GOOGLE_APPLICATION_CREDENTIALS)
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+
     env.read_env(io.StringIO(payload))
+    
+    
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
 # [END cloudrun_django_secret_config]
 
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DJANGO_DEBUG")
-DB_NAME= env("DB_NAME")
-DB_USER= env("DB_USER")
-DB_PASSWORD = env("DB_PASSWORD")
-DB_HOST= env("DB_HOST")
-DB_PORT= env("DB_PORT")
-
-print( "DB_NAME  " + DB_NAME )
-print( "DB_USER " + DB_USER )
-#print( "DB_PASSWORD  " + DB_PASSWORD )
-print( "DB_HOST  " + DB_HOST )
-print( "DB_PORT  " + DB_PORT )
-#print( "SECRET_KEY  " + SECRET_KEY )
 
 
 # [START cloudrun_django_csrf]
@@ -166,16 +143,12 @@ WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD, #DATABASE_PASSWORD,
-        'HOST': DB_HOST, #'34.82.137.151' Use Cloud SQL Proxy address for local development
-        'PORT': DB_PORT, # Default port for PostgreSQL
-        }
-}
+DATABASES = {"default": env.db()}
+# If the flag as been set, configure to use proxy
+if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+    print("Use Cloud Proxy is True")
+    DATABASES["default"]["HOST"] = "127.0.0.1"
+    DATABASES["default"]["PORT"] = 5432
 
 
 # Password validation
@@ -210,16 +183,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
+#STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
-MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
 
-GS_BUCKET_NAME = 'using-ai-samaan'
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+#MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
+
+#GS_BUCKET_NAME = 'using-ai-samaan'
+#DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+#STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 
 # Default primary key field type

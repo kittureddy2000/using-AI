@@ -1,7 +1,32 @@
-__pycache__/
 *.pyc
-.env
+*.pyo
+*.db
+*.sqlite3
+__pycache__/
 db.sqlite3
-/media
-/static
+/staticfiles/
+
+# If you're using a virtual environment
+.env
+venv/
+ENV/
+
+# Media files
+/media/
+
+# Django security key file, if you have one
+*.key
+
+# Jupyter notebook files
+*.ipynb
+*.ipynb_checkpoints
+
+# Mac OS folder attributes
+.DS_Store
+
+# Node.js modules
+node_modules/
+
+# VS Code settings
+.vscode/
 using-ai-405105-5e2a1c2c69d8.json

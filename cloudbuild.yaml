@@ -2,56 +2,58 @@ options:
   logging: 'CLOUD_LOGGING_ONLY'
   defaultLogsBucketBehavior: 'REGIONAL_USER_OWNED_BUCKET'
 
+# [START cloudrun_django_cloudmigrate]
 steps:
-  # Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA', '.']
- 
-  - name: 'python'
-    script: |
-      #!/usr/bin/env python
-      print('hello from python')
-  - name: 'bash'
-    script: |
-      #!/usr/bin/env bash
-      echo "Hello World"
+  - id: "build image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "."]
 
-  - name: 'ubuntu'
-    script: echo hello
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
 
-  - name: 'python:3.10-slim'
-    entrypoint: 'sh'
-    args: ['-c', 'echo "This is a print statement for debugging"']
+  - id: "apply migrations"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
+        "--",
+        "python",
+        "manage.py",
+        "migrate",
+      ]
 
-  # Another example with a different message
-  - name: 'python:3.10-slim'
-    entrypoint: 'sh'
-    args: ['-c', 'echo "Another print statement for logging"']
+  - id: "collect static"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
+        "--",
+        "python",
+        "manage.py",
+        "collectstatic",
+        "--verbosity",
+        "2",
+        "--no-input",
+      ]
 
- 
-  # Step 2: Database Migration
-  - name: 'gcr.io/google-appengine/exec-wrapper'
-    entrypoint: 'bash'
-    args: ['-c', 'python3 manage.py migrate']
-    secretEnv: ['DATABASE_URL']
-
-  # Step 3: Collect Static Files
-  - name: 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
-    entrypoint: 'bash'
-    args: ['-c', 'python3 manage.py collectstatic --noinput']
-
-  # Push the image to Google Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA']
-
-  # Deploy the image to Cloud Run
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run', 'deploy', 'using-ai', '--image', 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA', '--region', 'us-west1', '--platform', 'managed', '--allow-unauthenticated']
+substitutions:
+  _INSTANCE_NAME: mypostgres
+  _REGION: us-west1
+  _SERVICE_NAME: todos_service
+  _SECRET_SETTINGS_NAME: DJANGO_SETTINGS
 
 images:
-  - 'gcr.io/$PROJECT_ID/using-ai:$SHORT_SHA'
-
-
-availableSecrets:
-  - secretEnv:
-      DATABASE_URL: 'projects/using-ai-405105/secrets/DATABASE_URL/versions/latest'
+  - "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
+  
+# [END cloudrun_django_cloudmigrate]
