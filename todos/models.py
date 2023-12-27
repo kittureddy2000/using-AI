@@ -7,6 +7,8 @@ class TaskList(models.Model):
     list_code = models.CharField(max_length=100, null=True)
     special_list = models.BooleanField(default=False)
     color = models.CharField(max_length=100)
+    creation_date = models.DateTimeField(auto_now_add=True , blank=True)
+
 
     def __str__(self):
         return self.list_name
