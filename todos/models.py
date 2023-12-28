@@ -7,7 +7,6 @@ class TaskList(models.Model):
     list_code = models.CharField(max_length=100, null=True)
     special_list = models.BooleanField(default=False)
     color = models.CharField(max_length=100)
-    test_field = models.CharField(max_length=100, null=True)
 
 
     def __str__(self):

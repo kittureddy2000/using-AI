@@ -189,11 +189,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
 
-#MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
-
 #GS_BUCKET_NAME = 'using-ai-samaan'
 #DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 #STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+#MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/media/'
 
 
 # Default primary key field type

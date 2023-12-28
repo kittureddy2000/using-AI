@@ -90,7 +90,7 @@ def search_tasks(request):
 def get_lists(request):
     lists = TaskList.objects.all().order_by('-special_list')
     print("List Count : " + str(lists.count()))
-    task = get_object_or_404(Task, id=6)  
+    task = get_object_or_404(Task, id=57)  
     print("Task Name : " + task.task_name)
     form = TaskForm(instance = task)
     images = task.images.all()
