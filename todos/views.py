@@ -104,8 +104,14 @@ def get_lists(request):
     return render(request, 'todos/task_dashboard.html', args)
 
 # Function to Add the Task
-def add_task(request):
+def add_task(request, list_id):
     print("Add Task Function request method : " + request.method)
+    
+    try:
+        task_list = TaskList.objects.get(id=list_id)
+        list_name = task_list.list_name
+    except TaskList.DoesNotExist:
+        list_name = None  # Or handle the case where the list doesn't exist
 
     if request.method == "POST":
         add_task_form = TaskForm(request.POST)
@@ -120,8 +126,6 @@ def add_task(request):
                 task.due_date = add_task_form.cleaned_data['due_date']
 
                 print(" Task Name : " + task.task_name)
-                print(" task_description : " + task.task_description)
-                print(" due_date : " + task.due_date.strftime("%m:%d:%Y"))
                 
                 list_name = add_task_form.cleaned_data['list_name']
                 task.list_name = list_name
@@ -130,7 +134,7 @@ def add_task(request):
                 print(request.user.username)
                 print(request.user.id)
 
-                task.reminder_Time = timezone.now()
+                task.reminder_time = task.due_date
                 task.task_completed = False
                 task.assigned_to = request.user.username
                 task.creation_date = timezone.now()
@@ -173,7 +177,7 @@ def add_task(request):
 
     else:
         print("This is GET Request in Add Task :")
-        form = TaskForm()
+        form = TaskForm(initial={'list_name': list_id})
     context = {'add_task_form': form}
 
     return render(request, "todos/add_task.html", context)
@@ -378,3 +382,21 @@ def register(request):
 
     return render(request, 'registration/register.html', {'form': form})
 
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Task
+
+def completed_tasks(request):
+    print("In Completed Tasks : ")
+    # Get all completed tasks and render them in the "completed_tasks.html"
+    completed_tasks = Task.objects.filter(task_completed=True)
+    return render(request, 'todos/completed_tasks.html', {'completed_tasks': completed_tasks})
+
+def undelete_task(request, task_id):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, id=task_id, task_completed=True)
+        task.task_completed = False
+        task.save()
+        return JsonResponse({'status': 'success', 'message': 'Task reactivated successfully.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)

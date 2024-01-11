@@ -15,133 +15,96 @@
 
 <div class="container-fluid">
   <div class="row">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <!-- Hamburger Icon for smaller screens -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu"
+       aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span>
+      </button>
+        
+    </nav>
 
     <!-- Boot strap side bar Start -->
-    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-      <div class="sidebar-sticky">
-        <ul class="nav flex-column">
-
-        <li class="nav-item d-flex align-items-center">
-          <i class="fa-solid fa-plane-arrival me-2"></i>
-          <h3 class="mb-0 inline-heading">Lists</h3>
-        </li>
-        
-          <hr class="hr hr-blurry" />
-
-          {% for tasklist in task_lists %}
-          <li class="nav-item">
-            <a href="#" class="nav-link task-list-item" data-id="{{ tasklist.id }}">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <!-- Sidebar content -->
+        <div class="sidebar-sticky pt-3">
+          <ul class="nav flex-column">
               
-              {% if tasklist.special_list %}
-                <i class="fa-solid fa-clipboard-list me-2"></i>  <!-- This icon shows if it's a special list -->
-              {% else %}
-                <i class="fas fa-tasks me-2"></i>  <!-- This icon shows otherwise -->
-              {% endif %}
-              
-              {{ tasklist.list_name }}
-            </a>
+          <li class="nav-item d-flex align-items-center">
+            <i class="fa-solid fa-plane-arrival me-2"></i>
+            <h4 class="mb-0 inline-heading">Lists</h4>
           </li>
-          <hr class="my-2 hr-blurry" /> <!-- Adjusted margin for the horizontal line -->
-          {% endfor %}
-          
-          
-        </ul>
-      </div>
-    </div>
+            <!-- List items here -->
+            {% for tasklist in task_lists %}
+            <li class="nav-item">
+              <a href="#" class="nav-link task-list-item" data-id="{{ tasklist.id }}">
+                
+                {% if tasklist.special_list %}
+                  <i class="fa-solid fa-clipboard-list me-2"></i>  <!-- This icon shows if it's a special list -->
+                {% else %}
+                  <i class="fas fa-tasks me-2"></i>  <!-- This icon shows otherwise -->
+                {% endif %}
+                
+                {{ tasklist.list_name }}
+              </a>
+            </li>
+            <hr class="my-2 hr-blurry" /> <!-- Adjusted margin for the horizontal line -->
+            {% endfor %}
+          </ul>
+        </div>
+      </nav> 
     <!-- Boot strap side bar End -->
-    <div id="task-middle-panel" class="col-md-6 bg-light">
+
+    <div id="task-middle-panel" class="col-md-6 col-lg-7 bg-light">
       <!-- Search and Add Task Section -->
       <div class="sticky-top">
         <div class="input-group">
-          <div class="row justify-content-end mb-3">
-            <div class="col-auto">
+          <div class="row justify-content-between mb-3">
+            <div class="col-12 col-sm-auto">
               <input
-                class="form-control w-100"
+                class="form-control"
                 id="search-task"
                 type="text"
                 placeholder="Search tasks..."
               />
             </div>
-            <div class="col-auto">
-              <!-- <a href="{% url 'todos:add_task' %}" class="btn btn-primary add-task-btn mb-3"><i class="fas fa-plus"></i> Add</a> -->
+            <div class="col-12 col-sm-auto">
               <button type="button" class="btn btn-primary add-task-btn">
                 <i class="fas fa-plus"></i> Add Task
               </button>
             </div>
-
-            <div class="col-auto" >
-            <!-- Example split danger button -->
-            <div class="btn-group">
-              <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="col-12 col-sm-auto">
+              <div class="btn-group">
+                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                   <span>Sort</span>
-              </button>
-              <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" data-sort="due_date">Due Date</a></li>
-                  <li><a class="dropdown-item" href="#" data-sort="important">Important</a></li>
-                  <li><a class="dropdown-item" href="#" data-sort="task_name">Task</a></li>
-              </ul>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="due_date">Due Date</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="important">Important</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="task_name">Task</a></li>
+                </ul>
+              </div>
+            </div>
           </div>
-          
-
-
-          </div>  
-
-          </div>    
         </div>
       </div>
-
-      <!-- Task Cards Section -->
-      <div id = "tasks-section">
-      </div>
-
-          <!-- Tasks Table -->
-      <div id="task-container" class="w-100">
-        <!-- Tasks will be loaded here using AJAX -->
-        <table id="task-table" class="table table-hover w-100">
-          <thead class="thead-dark">
-            <tr>
-              <th class="sortable" data-sort="important">
-                <i class="fas fa-sort" style="margin-right: 5px"></i
-                >Important
-              </th>
-              <th>Task Name</th>
-              <th>Description</th>
-              <th class="sortable" data-sort="due_date">
-                <i class="fas fa-sort" style="margin-right: 5px"></i>Due
-                Date
-              </th>
-              <th>Completed</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Tasks will be inserted here by AJAX -->
-          </tbody>
-        </table>
-      </div>
-    <!-- Pagination -->
-
-    <div id="pagination">
-      <button id="prev-page" class="btn btn-primary">
-        <i class="fas fa-chevron-left"></i> Previous
-      </button>
-      <span id="current-page">1</span>
-      <button id="next-page" class="btn btn-primary">
-        Next <i class="fas fa-chevron-right"></i>
-      </button>
+      
+        <!-- Task Cards Section -->
+        <div id = "tasks-section">
+        </div>
     </div>
 
-    </div>
-        <!-- Sidebar for additional options -->
-      <div id="task-details-panel" class="col-md-3 bg-light border-left d-none">
+    <!-- Sidebar for additional options -->
+    <!-- Back button visible only on small screens, outside the task-details-panel -->
+    <button id="back-button" class="btn btn-secondary d-none mb-3">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+
+    <div id="task-details-panel" class="col-md-3 bg-light border-left d-none d-md-block">
        {% include 'todos/edit_task.html' %}
     </div>
 </div>
 
-<!-- #********************* Start New Layout  -->
 
-
-<!-- #********************* End New Layout -->
 
     <!-- Task Modal -->
     <div
@@ -195,116 +158,48 @@
       $(document).ready(function () {
         console.log("In Document Ready Function");
  
-        // Function to update the task table
-        function updateTaskTable(tasks) {
-          var tasksHtml = "";
-          tasks.forEach(function (task) {
-            console.log(" Task id :"  + task.id);
-            console.log(" Task Completed : " + task.task_completed)
-            tasksHtml +=
-              '<tr id="task-' +
-              task.id + '" data-task-id="'+task.id +
-              '">' +
-              '<td><a href="#" class="text-primary mark-favorite" data-id="' +
-              task.id +
-              '">' +
-              '<i id="favorite-icon-' +
-              task.id +
-              '" class="' +
-              (task.important
-                ? "fa-sharp fa-solid fa-star"
-                : "fa-sharp fa-regular fa-star") +
-              '"></i></a></td>' +
-              '<td class="' +
-              (task.task_completed ? "strikethrough" : "") +
-              '">' +
-              task.task_name +
-              "</td>" +
-              "<td>" +
-              task.task_description +
-              "</td>" +
-              "<td>" +
-              formatDate(task.due_date) +
-              "</td>" +
-              '<td><a href="#" class="text-success complete-task" data-id="' +
-              task.id +
-              '">' +
-              '<i class="fas fa-check fa-lg"></i></a></td>' +
-              '<td><a href="#" class="text-primary edit-task-btn edit-task" data-id="' +
-              task.id +
-              '">' +
-              '<i class="fas fa-edit fa-lg"></i></a></td>' +
-              "</tr>";
-          });
-          $("#task-table tbody").html(tasksHtml); // Insert tasks into the table
-        }
-
         function updateTasksSection(tasks) {
           var tasksHtml = "";
           tasks.forEach(function (task) {
-            console.log(" updateTasksSection Task id :" + task.id);
-            console.log(" updateTasksSection Task Completed : " + task.task_completed);
-        
             tasksHtml += `
-                <div id="task-${task.id}" class="card mb-3 clickable-card" data-task-id="${task.id}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="flex-grow-1">
-                                <h5 class="card-title ${task.task_completed ? "strikethrough" : ""}">
-                                    ${task.task_name}
-                                </h5>
-                                <p class="card-text text-muted">${formatDate(task.due_date)}</p>
-                            </div>
-                        <div class="row">
-                          <div class="col-auto">
-                                <a href="#" class="text-primary mark-favorite mr-2" data-id="${task.id}">
-                                    <i id="favorite-icon-${task.id}" class="${task.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
-                                </a>
-                              </div>   
-                              <div class="col-auto">
-     
-                                <a href="#" class="text-success complete-task mr-2" data-id="${task.id}">
-                                    <i class="fas fa-check fa-lg"></i>
-                                </a>
-                              </div>   
-
-                                <div class="col-auto">
-
-                                <a href="#" class="text-primary edit-task-btn edit-task" data-id="${task.id}">
-                                    <i class="fas fa-edit fa-lg"></i>
-                                </a>
-                              </div>   
-
-                        </div>
+              <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                      <h6 class="card-title ${task.task_completed ? 'strikethrough' : ''}">
+                        ${task.task_name}
+                      </h6>
+                      <p class="card-text text-muted">${formatDate(task.due_date)}</p>
+                    </div>
+                    <div class="row">
+                      <div class="col-auto">
+                        <a href="#" class="text-primary mark-favorite mr-2" data-id="${task.id}">
+                          <i id="favorite-icon-${task.id}" class="${task.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
+                        </a>
+                      </div>
+                      <div class="col-auto">
+                        <a href="#" class="mr-2 complete-task ${task.task_completed ? 'text-danger' : 'text-success'}" data-id="${task.id}">
+                          <i class="fas fa-check fa-lg"></i>
+                        </a>
+                      </div>
+                      <div class="col-auto">
+                        <a href="#" class="text-primary edit-task-btn edit-task" data-id="${task.id}">
+                          <i class="fas fa-edit fa-lg"></i>
+                        </a>
                       </div>
                     </div>
-                </div>`;
-        });
-        $("#tasks-section").html(tasksHtml); // Insert tasks into the table
+                  </div>
+                </div>
+              </div>`;
+          });
+          $("#tasks-section").html(tasksHtml); // Insert tasks into the table
         }
-
-        //Start pagination
-        function updatePaginationButtons(currentPage, totalPages) {
-          // Disable 'Previous' button if on the first page
-          if (currentPage <= 1) {
-            $("#prev-page").prop("disabled", true);
-          } else {
-            $("#prev-page").prop("disabled", false);
-          }
-
-          // Disable 'Next' button if on the last page
-          if (currentPage >= totalPages) {
-            $("#next-page").prop("disabled", true);
-          } else {
-            $("#next-page").prop("disabled", false);
-          }
-        }
+        
 
         function fetchTasks(page) {
           fetch("/todos/get_all_tasks?page=" + page)
             .then((response) => response.json())
             .then((data) => {
-              updateTaskTable(data.tasks); // Function to update the table with new data
               updateTasksSection(data.tasks);
               $("#current-page").text(data.current_page); // Update current page text
               // Update the state of pagination buttons
@@ -313,18 +208,6 @@
         }
         // Initial fetch for page 1
         fetchTasks(1);
-        $("#prev-page").click(function () {
-          var currentPage = parseInt($("#current-page").text());
-          if (currentPage > 1) {
-            fetchTasks(currentPage - 1);
-          }
-        });
-
-        $("#next-page").click(function () {
-          var currentPage = parseInt($("#current-page").text());
-          fetchTasks(currentPage + 1);
-        });
-        // end Pagination
 
         //Live Search Tasks
         $("#search-task").on("keyup", function () {
@@ -336,7 +219,6 @@
             dataType: "json",
             success: function (response) {
               console.log("Received Search data:", response);
-              updateTaskTable(response.tasks);
               updateTasksSection(response.tasks);
               if (response.tasks && Array.isArray(response.tasks)) {
                 response.tasks.forEach(function (task) {
@@ -364,8 +246,19 @@
             dataType: "json",
             success: function (response) {
               console.log("Received data:", response);
-              updateTaskTable(response.tasks); // Call function to update table
               updateTasksSection(response.tasks);
+
+              // Check if the current window width is 'sm' or smaller
+              if (window.innerWidth < 768) {
+                // Collapse the sidebar menu
+                var sidebarMenu = $('#sidebarMenu');
+                var bsCollapse = new bootstrap.Collapse(sidebarMenu, {
+                  toggle: true
+                });
+                bsCollapse.hide(); // Hide the collapsible element
+              }
+
+
             },
             error: function (xhr, status, error) {
               console.error("An error occurred while fetching tasks: " + error);
@@ -379,7 +272,6 @@
           dataType: "json",
           success: function (response) {
             console.log("Received initial data:", response);
-            updateTaskTable(response.tasks);
             updateTasksSection(response.tasks);
           },
           error: function (xhr, status, error) {
@@ -463,11 +355,17 @@
         });
         //Start - Add Task
         $(document).on("click", ".add-task-btn", function () {
+
+          var listId = $("#current-list").data("list-id");
+          if (listId === undefined) {
+            listId = 1;
+          }
+          console.log("listid in Add Task Form : " + listId);
           // Load the form for adding a new task
           $("#taskModal").data("mode", "add");
           console.log(" Task Model Mode in Create ");
           console.log($("#taskModal").data("mode")); // Test if the mode is set correctly
-          $("#taskModal .modal-body").load("/todos/add/", function () {
+          $("#taskModal .modal-body").load("/todos/add/"+listId, function () {
             $("#taskModal").modal("show");
           });
         });
@@ -491,37 +389,10 @@
           );
         });
 
-        //Panel Edit Task
-        $('#task-container tbody').on('click', 'tr', function() {
-          // Get the task ID from the clicked row
+        $(document).on('click', '.clickable-card', function() {
           var taskId = $(this).data('task-id');
-          console.log("Clicked on Row with Task Id : "+ taskId);
-          url = "/todos/edit_task/" + taskId + "/";
-
-          
-          // Make an AJAX request to get the task details
-          $.ajax({
-            url: url,  
-            type: 'GET',
-            success: function(tasks) {
-              console.log("In Success message for getting edit_task_panel")  
-              var element = document.getElementById('task-details-panel');
-              element.classList.remove('d-none');
-              element.classList.add('d-block'); // Use 'd-flex' or other display classes as needed
-              $('#task-details-panel').html(tasks);
-
-            },
-            error: function(xhr, status, error) {
-              console.log('Error fetching task details:', xhr.status, xhr.statusText);
-              console.log('Response text:', xhr.responseText);
-          }
-          });
-        });
-
-      $(document).on('click', '.clickable-card', function() {
-        var taskId = $(this).data('task-id');
-        console.log("Card with Task ID " + taskId + " clicked.");
-        // callAjaxFunction(taskId); // Call your AJAX function here
+          console.log("Card with Task ID " + taskId + " clicked.");
+          // callAjaxFunction(taskId); // Call your AJAX function here
                   // Get the task ID from the clicked row
                   var taskId = $(this).data('task-id');
                   console.log("Clicked on Row with Task Id : "+ taskId);
@@ -534,18 +405,21 @@
                     type: 'GET',
                     success: function(tasks) {
                       console.log("In Success message for getting edit_task_panel")  
-                      var element = document.getElementById('task-details-panel');
-                      element.classList.remove('d-none');
-                      element.classList.add('d-block'); // Use 'd-flex' or other display classes as needed
-        
+                      $('#task-details-panel').removeClass('d-none');
                       $('#task-details-panel').html(tasks);
+
+                      if ($(window).width() < 768) { // 768px is generally considered the breakpoint for small devices
+                        $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
+                        $('#back-button').removeClass('d-none');
+                      }
+
                     },
                     error: function(xhr, status, error) {
                       console.log('Error fetching task details:', xhr.status, xhr.statusText);
                       console.log('Response text:', xhr.responseText);
                   }
                   });
-    });
+        });
 
         //Start - Save Task
         $("#saveTask").click(function () {
@@ -623,11 +497,13 @@
         //Edit Task Form from Side panel
 
         //sort task
-        $('.dropdown-menu .dropdown-item').on('click', function(e) {
+        $('.sort-option').on('click', function(e) {
+
           e.preventDefault();
           console.log("In Sort Function")
           // Get the sort criterion from the data-sort attribute
           var sortCriterion = $(this).data('sort');
+          console.log("Sorting by: " + sortCriterion);
           
           //var newOrder = currentOrder === "asc" ? "desc" : "asc";
           newOrder = "asc";
@@ -658,44 +534,7 @@
           });
       });
 
-      //old sort
-        
-        $(".sortable").click(function () {
-          var sortBy = $(this).data("sort");
-          console.log(" Sort Tasks Function :  " + sortBy);
 
-          sortTasks(sortBy);
-        });
-        //Start - Sort Task Table
-        function sortTasks(sortBy) {
-          // Get the current order and toggle it
-          console.log("Inside Cosole Log : Sort By : " + sortBy);
-
-          var currentOrder = $(`th[data-sort='${sortBy}']`).attr("data-order");
-          var newOrder = currentOrder === "asc" ? "desc" : "asc";
-          var listId = $("#current-list").data("list-id");
-
-          if (listId === undefined) {
-            listId = 1;
-          }
-          console.log("list id while sortging : " + listId);
-          // Update the data-order attribute
-          $(`th[data-sort='${sortBy}']`).attr("data-order", newOrder);
-
-          $.ajax({
-            url: `/todos/get_tasks_by_list/${listId}/`,
-            type: "GET",
-            data: { sort: sortBy, order: newOrder },
-            dataType: "json",
-            success: function (response) {
-              updateTaskTable(response.tasks);
-              // Update other necessary components
-            },
-            error: function (xhr, status, error) {
-              console.error("Error in sorting tasks:", error);
-            },
-          });
-        }
         //Edit Task from Side Panel
 
         $(document).on('submit', '#edit-task-form', function(e) {
@@ -721,6 +560,13 @@
 
       });
 
+      $('#back-button').on('click', function() {
+        $('#task-details-panel').addClass('d-none');
+        $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
+
+        
+      });
+            
       function formatDate(dateString) {
         const months = [
           "Jan",
