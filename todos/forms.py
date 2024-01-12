@@ -29,8 +29,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['task_name', 'task_description', 'list_name', 'due_date',  'reminder_time', 'recurrence', 'task_completed', 'important', 'assigned_to']
         widgets = {
-            'task_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'task_description': forms.Textarea(attrs={'class': 'form-control'}),
+            'task_name': forms.TextInput(attrs={'placeholder': 'Enter task name', 'class': 'form-control'}),
+            'task_description': forms.Textarea(attrs={'placeholder': 'Enter task description', 'class': 'form-control form-control-sm expandable'}),
             'list_name': forms.Select(attrs={'class': 'form-control'}),
             'due_date': DatePickerInput(attrs={'class': 'form-control'}),
             'reminder_time': DatePickerInput(attrs={'class': 'form-control'}),

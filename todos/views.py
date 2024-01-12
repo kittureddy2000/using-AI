@@ -312,21 +312,21 @@ def edit_task(request, task_id):
                 print("Task Saved")
                 images = request.FILES.getlist('images')
                 # Google Cloud Storage setup
-                client = storage.Client()
-                bucket = client.get_bucket(settings.GS_BUCKET_NAME)
-                print("Bucket Name : " + settings.GS_BUCKET_NAME)
+                #client = storage.Client()
+                #bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+                #print("Bucket Name : " + settings.GS_BUCKET_NAME)
                 
-                for image in images:
+                #for image in images:
                     # Create a unique filename for each image
-                    blob = bucket.blob(str(uuid.uuid4()))
-                    print("Local image Name :  " + image.name)
+                #    blob = bucket.blob(str(uuid.uuid4()))
+                #    print("Local image Name :  " + image.name)
 
                     # Upload the image to Google Cloud Storage
-                    blob.upload_from_file(image, content_type=image.content_type)
+                #    blob.upload_from_file(image, content_type=image.content_type)
 
-                    print("Image Url : " + blob.public_url)
+                #    print("Image Url : " + blob.public_url)
                     # Save the image URL in the database
-                    Image.objects.create(task=task, image_url=blob.public_url,image_name=image.name)
+                #    Image.objects.create(task=task, image_url=blob.public_url,image_name=image.name)
                     
                 return JsonResponse({    'task_id': task.id,
                     'task_name': task.task_name,

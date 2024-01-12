@@ -19,3 +19,12 @@
   transform: scale(1.05);
   transition: all 0.3s ease-in-out;
 }
+
+.expandable {
+  height: 3rem; /* Set a smaller initial height */
+  transition: height 0.5s; /* Smooth transition for height change */
+}
+
+.expandable:focus {
+  height: 10rem; /* Increase height when the text area is focused */
+}

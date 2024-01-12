@@ -6,14 +6,12 @@
         {{ add_task_form.non_field_errors }}
     
         <div class="mb-3">
-            {{ add_task_form.task_name.label_tag }}
             {{ add_task_form.task_name|add_class:"form-control" }}
             <!-- Display field-specific errors -->
             {{ add_task_form.task_name.errors }}
         </div>
         <div class="mb-3">
-            {{ add_task_form.task_description.label_tag }}
-            {{ add_task_form.task_description|add_class:"form-control" }}
+            {{ add_task_form.task_description|add_class:"form-control form-control-sm expandable" }}
             {{ add_task_form.task_description.errors }}
         </div>
         <div class="mb-3 form-date">
@@ -23,7 +21,6 @@
         </div>
     <!-- Dropdown for list_name -->
         <div class="mb-3">
-            {{ add_task_form.list_name.label_tag }}
             {{ add_task_form.list_name|add_class:"form-select" }}
             {{ add_task_form.list_name.errors }}
         </div>

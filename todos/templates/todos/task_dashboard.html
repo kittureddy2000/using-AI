@@ -59,7 +59,7 @@
       <div class="sticky-top">
         <div class="input-group">
           <div class="row justify-content-between mb-3">
-            <div class="col-12 col-sm-auto">
+            <div class="col col-auto">
               <input
                 class="form-control"
                 id="search-task"
@@ -67,22 +67,19 @@
                 placeholder="Search tasks..."
               />
             </div>
-            <div class="col-12 col-sm-auto">
-              <button type="button" class="btn btn-primary add-task-btn">
-                <i class="fas fa-plus"></i> Add Task
-              </button>
+            <!-- Plus icon -->
+            <div class="col col-auto">
+              <i class="fa fa-plus-circle fa-2x text-primary add-task-btn" aria-hidden="true" style="cursor: pointer;"></i>
             </div>
-            <div class="col-12 col-sm-auto">
-              <div class="btn-group">
-                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span>Sort</span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item sort-option" href="#" data-sort="due_date">Due Date</a></li>
-                  <li><a class="dropdown-item sort-option" href="#" data-sort="important">Important</a></li>
-                  <li><a class="dropdown-item sort-option" href="#" data-sort="task_name">Task</a></li>
-                </ul>
-              </div>
+            <!-- Sort icon -->
+            <div class="col col-auto">
+             <i class="fas fa-sort fa-2x text-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"></i>
+                  <!-- Dropdown menu links go here -->
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="due_date">Due Date</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="important">Important</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="task_name">Task</a></li>
+                  </ul>
             </div>
           </div>
         </div>
@@ -118,7 +115,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="taskModalLabel">Add or Edit Task</h5>
+            <h5 class="modal-title" id="taskModalLabel">Add Task</h5>
             <button
               type="button"
               class="close"
@@ -145,7 +142,7 @@
               data-bs-dismiss="modal"
               id="saveTask"
             >
-              Save Task
+              Save
             </button>
           </div>
         </div>
@@ -183,7 +180,7 @@
                         </a>
                       </div>
                       <div class="col-auto">
-                        <a href="#" class="text-primary edit-task-btn edit-task" data-id="${task.id}">
+                        <a href="#" class="text-primary d-none edit-task-btn edit-task" data-id="${task.id}">
                           <i class="fas fa-edit fa-lg"></i>
                         </a>
                       </div>
@@ -449,36 +446,36 @@
               // Handle success (e.g., close the modal, update the task list on the page)
               console.log("Success from Save Task : " + response.task_name);
               // Reload or update tasks on the page
-              var updatedRowHtml =
-                '<td><a href="#" class="text-primary mark-favorite" data-id="' +
-                response.task_id +
-                '">' +
-                '<i id="favorite-icon-' +
-                response.task_id +
-                '" class="' +
-                (response.important
-                  ? "fa-sharp fa-solid fa-star"
-                  : "fa-sharp fa-regular fa-star") +
-                '"></i></a></td>' +
-                '<td class="' +
-                (response.task_completed ? "strikethrough" : "") +
-                '">' +
-                response.task_name +
-                "</td>" +
-                "<td>" +
-                response.task_description +
-                "</td>" +
-                "<td>" +
-                formatDate(response.due_date) +
-                "</td>" +
-                '<td><a href="#" class="text-success complete-task" data-id="' +
-                response.task_id +
-                '">' +
-                '<i class="fas fa-check fa-lg"></i></a></td>' +
-                '<td><a href="#" class="text-primary edit-task-btn edit-task" data-id="' +
-                response.task_id +
-                '">' +
-                '<i class="fas fa-edit fa-lg"></i></a></td>';
+              tasksHtml += `
+              <div id="task-${response.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                      <h6 class="card-title ${response.task_completed ? 'strikethrough' : ''}">
+                        ${response.task_name}
+                      </h6>
+                      <p class="card-text text-muted">${formatDate(response.due_date)}</p>
+                    </div>
+                    <div class="row">
+                      <div class="col-auto">
+                        <a href="#" class="text-primary mark-favorite mr-2" data-id="${response.id}">
+                          <i id="favorite-icon-${response.id}" class="${response.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
+                        </a>
+                      </div>
+                      <div class="col-auto">
+                        <a href="#" class="mr-2 complete-task ${response.task_completed ? 'text-danger' : 'text-success'}" data-id="${response.id}">
+                          <i class="fas fa-check fa-lg"></i>
+                        </a>
+                      </div>
+                      <div class="col-auto">
+                        <a href="#" class="text-primary d-none edit-task-btn edit-task" data-id="${response.id}">
+                          <i class="fas fa-edit fa-lg"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
 
               // Update the specific row
               $("#task-" + response.task_id).html(updatedRowHtml);
@@ -537,13 +534,14 @@
 
         //Edit Task from Side Panel
 
-        $(document).on('submit', '#edit-task-form', function(e) {
+      $(document).on('submit', '#edit-task-form', function(e) {
           console.log("Edit Task Save function called from Side Panel")
           e.preventDefault(); // Prevent default form submission
           var taskId = $(this).data('task-id'); // Retrieve the task ID
           url = "/todos/edit_task/" + taskId + "/";
   
           var formData = new FormData(this);
+          var taskHtml ="";
           $.ajax({
               url: url, // or explicitly set URL
               type: 'POST',
@@ -552,11 +550,47 @@
               contentType: false,
               success: function(response) {
                   // Handle success - update UI, show a message, etc.
+                  console.log("Success from Save Task : " + response.task_name);
+                  // Reload or update tasks on the page
+                  taskHtml = `
+                  <div id="task-${response.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${response.id}">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1">
+                          <h6 class="card-title ${response.task_completed ? 'strikethrough' : ''}">
+                            ${response.task_name}
+                          </h6>
+                          <p class="card-text text-muted">${formatDate(response.due_date)}</p>
+                        </div>
+                        <div class="row">
+                          <div class="col-auto">
+                            <a href="#" class="text-primary mark-favorite mr-2" data-id="${response.id}">
+                              <i id="favorite-icon-${response.id}" class="${response.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
+                            </a>
+                          </div>
+                          <div class="col-auto">
+                            <a href="#" class="mr-2 complete-task ${response.task_completed ? 'text-danger' : 'text-success'}" data-id="${response.id}">
+                              <i class="fas fa-check fa-lg"></i>
+                            </a>
+                          </div>
+                          <div class="col-auto">
+                            <a href="#" class="text-primary d-none edit-task-btn edit-task" data-id="${response.id}">
+                              <i class="fas fa-edit fa-lg"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>`;
+                   // Update the specific row
+                  $("#task-" + response.task_id).html(taskHtml);
+                  console.log("Updated Task Html");
               },
               error: function(xhr, status, error) {
                   // Handle error - show error message, etc.
               }
-          });      });
+          });      
+        });
 
       });
 
@@ -568,28 +602,23 @@
       });
             
       function formatDate(dateString) {
-        const months = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const date = new Date(dateString);
         const day = date.getDate();
         const monthIndex = date.getMonth();
         const year = date.getFullYear().toString().substr(-2); // Get last two digits of the year
-
-        return `${day}-${months[monthIndex]}-${year}`;
+        const formattedDate = `${day}-${months[monthIndex]}-${year}`;
+    
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (date < today) {
+            // If the date is in the past, wrap it in a span with text-danger class
+            return `<span class="text-danger">${formattedDate}</span>`;
+        } else {
+            return formattedDate;
+        }
       }
-
+   
     </script>
 
     {% endblock %}
