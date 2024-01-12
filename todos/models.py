@@ -32,7 +32,7 @@ class Task(models.Model):
     list_name = models.ForeignKey(TaskList, on_delete=models.SET_DEFAULT, default=1, blank=True)
     task_description = models.CharField(max_length=2000, null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    reminder_time = models.DateTimeField(default=timezone.now , blank = True)
+    reminder_time = models.DateTimeField(default=timezone.now , blank = True, null=True)
     recurrence = models.CharField(max_length=100, choices=RECURRENCE_CHOICES, blank=True)
     task_completed = models.BooleanField(default=False)
     important = models.BooleanField(default=False)

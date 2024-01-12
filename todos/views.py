@@ -156,6 +156,9 @@ def add_task(request, list_id):
 
                     # Upload the image to Google Cloud Storage
                     blob.upload_from_file(image, content_type=image.content_type)
+                    
+                        # Make the blob publicly accessible
+                    blob.make_public()
 
                     print("Image Url : " + blob.public_url)
                     # Save the image URL in the database
@@ -391,6 +394,21 @@ def completed_tasks(request):
     # Get all completed tasks and render them in the "completed_tasks.html"
     completed_tasks = Task.objects.filter(task_completed=True)
     return render(request, 'todos/completed_tasks.html', {'completed_tasks': completed_tasks})
+
+#delete tasks
+def delete_tasks(request):
+    tasks = Task.objects.all()
+
+    if request.method == 'POST':
+        print("In Delete Tasks Function")
+        task_ids = request.POST.getlist('selected_tasks')
+        Task.objects.filter(id__in=task_ids).delete()
+        messages.success(request, 'Selected tasks have been deleted.')
+
+        return redirect('todos:delete_tasks')
+
+    return render(request, 'todos/delete_tasks.html', {'tasks': tasks})
+
 
 def undelete_task(request, task_id):
     if request.method == 'POST':

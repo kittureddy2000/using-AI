@@ -156,7 +156,7 @@
         function updateTasksSection(tasks) {
           var tasksHtml = "";
           tasks.forEach(function (task) {
-            console.log("Task Id in updateTasksSection : " + task.id )
+            //console.log("Task Id in updateTasksSection : " + task.id )
             tasksHtml += `
             <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
               <div class="card-body">
@@ -351,8 +351,7 @@
           console.log("listid in Add Task Form : " + listId);
           // Load the form for adding a new task
           $("#taskModal").data("mode", "add");
-          console.log(" Task Model Mode in Create ");
-          console.log($("#taskModal").data("mode")); // Test if the mode is set correctly
+          console.log(" Task Model Mode in Creat mode " , );
           $("#taskModal .modal-body").load("/todos/add/"+listId, function () {
             $("#taskModal").modal("show");
           });
@@ -421,8 +420,8 @@
             var taskId = $("#taskModal").data("taskId");
             url = "/todos/edit_task/" + taskId + "/";
           } else {
-            // 'add' mode
-            url = "/todos/add/";
+            // 'add' task mode
+            url = "/todos/add/1/";
           }
           console.log(" Save URL :  " + url);
           var formData = new FormData($("#taskModal form")[0]);
