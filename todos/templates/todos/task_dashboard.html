@@ -158,36 +158,32 @@
         function updateTasksSection(tasks) {
           var tasksHtml = "";
           tasks.forEach(function (task) {
+            console.log("Task Id in updateTasksSection : " + task.id )
             tasksHtml += `
-              <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="flex-grow-1">
-                      <h6 class="card-title ${task.task_completed ? 'strikethrough' : ''}">
-                        ${task.task_name}
-                      </h6>
-                      <p class="card-text text-muted">${formatDate(task.due_date)}</p>
+            <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <!-- Mark Complete -->
+                    <div class="flex-shrink-0 complete-task ${task.task_completed ? 'text-danger' : 'text-success'}" data-id="${task.id}">
+                      <i id="completeicon-${task.id}" class="fas fa-check fa-lg" style="cursor: pointer;"></i>
                     </div>
-                    <div class="row">
-                      <div class="col-auto">
-                        <a href="#" class="text-primary mark-favorite mr-2" data-id="${task.id}">
-                          <i id="favorite-icon-${task.id}" class="${task.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
-                        </a>
-                      </div>
-                      <div class="col-auto">
-                        <a href="#" class="mr-2 complete-task ${task.task_completed ? 'text-danger' : 'text-success'}" data-id="${task.id}">
-                          <i class="fas fa-check fa-lg"></i>
-                        </a>
-                      </div>
-                      <div class="col-auto">
-                        <a href="#" class="text-primary d-none edit-task-btn edit-task" data-id="${task.id}">
-                          <i class="fas fa-edit fa-lg"></i>
-                        </a>
-                      </div>
-                    </div>
+                    
+                  <!-- Task Info -->
+                  <div class="flex-fill task-info-clickable ms-3" data-id="${task.id}">
+                    <h6 class="card-title ${task.task_completed ? 'strikethrough' : ''}">
+                      ${task.task_name}
+                    </h6>
+                    <p class="card-text text-muted">${formatDate(task.due_date)}</p>
+                  </div>
+                  <!-- Important -->
+                  <div class="flex-shrink-0 mark-favorite" data-id="${task.id}">
+                    <i id="favorite-icon-${task.id}" class="${task.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
                   </div>
                 </div>
-              </div>`;
+              </div>
+            </div>
+            
+            `;
           });
           $("#tasks-section").html(tasksHtml); // Insert tasks into the table
         }
@@ -198,9 +194,6 @@
             .then((response) => response.json())
             .then((data) => {
               updateTasksSection(data.tasks);
-              $("#current-page").text(data.current_page); // Update current page text
-              // Update the state of pagination buttons
-              updatePaginationButtons(data.current_page, data.total_pages);
             });
         }
         // Initial fetch for page 1
@@ -386,36 +379,35 @@
           );
         });
 
-        $(document).on('click', '.clickable-card', function() {
-          var taskId = $(this).data('task-id');
-          console.log("Card with Task ID " + taskId + " clicked.");
-          // callAjaxFunction(taskId); // Call your AJAX function here
-                  // Get the task ID from the clicked row
-                  var taskId = $(this).data('task-id');
-                  console.log("Clicked on Row with Task Id : "+ taskId);
-                  url = "/todos/edit_task/" + taskId + "/";
-        
-                  
-                  // Make an AJAX request to get the task details
-                  $.ajax({
-                    url: url,  
-                    type: 'GET',
-                    success: function(tasks) {
-                      console.log("In Success message for getting edit_task_panel")  
-                      $('#task-details-panel').removeClass('d-none');
-                      $('#task-details-panel').html(tasks);
+        $(document).on('click', '.task-info-clickable', function() {
+            var taskId = $(this).data('id');
+            var taskId1 = $(this).attr('data-id');
 
-                      if ($(window).width() < 768) { // 768px is generally considered the breakpoint for small devices
-                        $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
-                        $('#back-button').removeClass('d-none');
-                      }
+            console.log("Clicked on Row with Task Id **** : "+ taskId1);
+            //console.log("Clicked on Row with Task Id : "+ taskId);
 
-                    },
-                    error: function(xhr, status, error) {
-                      console.log('Error fetching task details:', xhr.status, xhr.statusText);
-                      console.log('Response text:', xhr.responseText);
-                  }
-                  });
+            url = "/todos/edit_task/" + taskId + "/";
+            
+            // Make an AJAX request to get the task details
+            $.ajax({
+              url: url,  
+              type: 'GET',
+              success: function(tasks) {
+                console.log("In Success message for getting edit_task_panel")  
+                $('#task-details-panel').removeClass('d-none');
+                $('#task-details-panel').html(tasks);
+
+                if ($(window).width() < 768) { // 768px is generally considered the breakpoint for small devices
+                  $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
+                  $('#back-button').removeClass('d-none');
+                }
+
+              },
+              error: function(xhr, status, error) {
+                console.log('Error fetching task details:', xhr.status);
+                //console.log('Response text:', xhr.responseText);
+            }
+            });
         });
 
         //Start - Save Task
