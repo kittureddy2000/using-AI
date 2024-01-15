@@ -22,26 +22,19 @@
                 {{ edit_task_form.due_date.label_tag }}
                 {{ edit_task_form.due_date.errors }}
             </div>
-        </div>
-    </div>
-    <!-- Due Date and Reminder Time -->
-    <div class="card mb-1">
-        <div class="card-body">
+            <hr>
+
             <div class="mb-1 form-date">
                 {{ edit_task_form.reminder_time|add_class:"form-check-input" }}
                 {{ edit_task_form.reminder_time.label_tag }}
                 {{ edit_task_form.reminder_time.errors }}
             </div>
-        </div>
-    </div>
-    <!-- Recurrence and List Name -->
-    <div class="card mb-1">
-        <div class="card-body">
+            <hr>
             <div class="mb-1">
-                {{ edit_task_form.recurrence.label_tag }}
                 {{ edit_task_form.recurrence|add_class:"form-select" }}
                 {{ edit_task_form.recurrence.errors }}
             </div>
+
         </div>
     </div>
     <!-- Recurrence and List Name -->

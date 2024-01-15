@@ -26,25 +26,13 @@ logger = logging.getLogger(__name__)
 
 #Get all Taks``
 def get_all_tasks(request):
-    page = request.GET.get('page', 1)
     tasks = Task.objects.all().order_by('due_date')
-    paginator = Paginator(tasks, 50)  # Show 10 tasks per page 
-    logger.info("This is an info log message from get_all_tasks.")
 
-    try:
-        tasks_page = paginator.page(page)
-    except PageNotAnInteger:
-    # If page is not an integer, deliver first page.
-        tasks_page = paginator.page(1)
-    except EmptyPage:
-    # If page is out of range, deliver last page of results.
-        tasks_page = paginator.page(paginator.num_pages)
-
-    tasks_data = list(tasks_page.object_list.values(
+    tasks_data = list(tasks.values(
         'id', 'task_name', 'list_name', 'due_date', 'task_description', 'due_date','reminder_time','recurrence','task_completed',
         'important','assigned_to','creation_date','last_update_date'))  # Replace field names with the actual fields of your Task model
     
-    return JsonResponse({'tasks': tasks_data,'total_pages': paginator.num_pages,'current_page': page})
+    return JsonResponse({'tasks': tasks_data})
 
 #Get All tasks for the list
 def get_tasks_by_list(request, list_id):
@@ -90,7 +78,7 @@ def search_tasks(request):
 def get_lists(request):
     lists = TaskList.objects.all().order_by('-special_list')
     print("List Count : " + str(lists.count()))
-    task = get_object_or_404(Task, id=57)  
+    task = get_object_or_404(Task, id=79)  
     print("Task Name : " + task.task_name)
     form = TaskForm(instance = task)
     images = task.images.all()
@@ -162,12 +150,29 @@ def add_task(request, list_id):
 
                     print("Image Url : " + blob.public_url)
                     # Save the image URL in the database
+                    
                     Image.objects.create(task=task, image_url=blob.public_url,image_name=image.name)
 
                 
                 print("After Saving Task")
+                new_task = {
+                    'id': task.id,
+                    'task_name': task.task_name,
+                    #'list_name': task.list_name.name if task.list_name else None,  # Assuming list_name is a ForeignKey
+                    'due_date': task.due_date.strftime("%m/%d/%Y"),
+                    'task_description': task.task_description,
+                    'reminder_time': task.reminder_time.strftime("%m/%d/%Y, %H:%M") if task.reminder_time else None,
+                    'recurrence': task.recurrence,
+                    'task_completed': task.task_completed,
+                    'important': task.important,
+                    'assigned_to': task.assigned_to,
+                    'creation_date': task.creation_date.strftime("%m/%d/%Y, %H:%M"),
+                    'last_update_date': task.last_update_date.strftime("%m/%d/%Y, %H:%M"),
+                }
+                                    
+                print("Id in Save Task : "  + task.task_name)    
                 #return redirect('todos:get_lists')
-                return JsonResponse({'Saved': True, 'task_name': task.task_name})
+                return JsonResponse({'Saved': True, 'new_task': new_task})
 
             except Exception as e:
                     # Log the error message or print it to the console
@@ -315,21 +320,23 @@ def edit_task(request, task_id):
                 print("Task Saved")
                 images = request.FILES.getlist('images')
                 # Google Cloud Storage setup
-                #client = storage.Client()
-                #bucket = client.get_bucket(settings.GS_BUCKET_NAME)
-                #print("Bucket Name : " + settings.GS_BUCKET_NAME)
+                client = storage.Client()
+                bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+                print("Bucket Name : " + settings.GS_BUCKET_NAME)
                 
-                #for image in images:
+                for image in images:
                     # Create a unique filename for each image
-                #    blob = bucket.blob(str(uuid.uuid4()))
-                #    print("Local image Name :  " + image.name)
+                    blob = bucket.blob(str(uuid.uuid4()))
+                    print("Local image Name :  " + image.name)
 
                     # Upload the image to Google Cloud Storage
-                #    blob.upload_from_file(image, content_type=image.content_type)
+                    blob.upload_from_file(image, content_type=image.content_type)
 
-                #    print("Image Url : " + blob.public_url)
+                    blob.make_public()
+
+                    print("Image Url : " + blob.public_url)
                     # Save the image URL in the database
-                #    Image.objects.create(task=task, image_url=blob.public_url,image_name=image.name)
+                    Image.objects.create(task=task, image_url=blob.public_url,image_name=image.name)
                     
                 return JsonResponse({    'task_id': task.id,
                     'task_name': task.task_name,

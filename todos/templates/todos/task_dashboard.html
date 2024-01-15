@@ -94,7 +94,7 @@
       <i class="fas fa-arrow-left"></i> Back
     </button>
 
-    <div id="task-details-panel" class="col-md-3 bg-light border-left d-none d-md-block">
+    <div id="task-details-panel" class="col-md-3 bg-light border-left d-none">
        {% include 'todos/edit_task.html' %}
     </div>
 </div>
@@ -150,6 +150,7 @@
     {% endblock %} 
     {% block script_block %}
     <script>
+
       $(document).ready(function () {
         console.log("In Document Ready Function");
  
@@ -158,20 +159,20 @@
           tasks.forEach(function (task) {
             //console.log("Task Id in updateTasksSection : " + task.id )
             tasksHtml += `
-            <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
-              <div class="card-body">
+            <div id="task-${task.id}" class="card custom-hover-card clickable-card mb-1" style="margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" data-task-id="${task.id}">
+              <div class="card-body p-2">
                 <div class="d-flex justify-content-between align-items-center">
                   <!-- Mark Complete -->
-                    <div class="flex-shrink-0 complete-task ${task.task_completed ? 'text-danger' : 'text-success'}" data-id="${task.id}">
+                    <div class="flex-shrink-0 me-3 complete-task ${task.task_completed ? 'text-danger' : 'text-success'}" data-id="${task.id}">
                       <i id="completeicon-${task.id}" class="fas fa-check fa-lg" style="cursor: pointer;"></i>
                     </div>
                     
                   <!-- Task Info -->
-                  <div class="flex-fill task-info-clickable ms-3" data-id="${task.id}">
-                    <h6 class="card-title ${task.task_completed ? 'strikethrough' : ''}">
+                  <div class="flex-fill task-info-clickable mb-0 ms-3" data-id="${task.id}">
+                    <h6 class="card-text ${task.task_completed ? 'strikethrough' : ''}" style="font-size: 0.9rem;">
                       ${task.task_name}
                     </h6>
-                    <p class="card-text text-muted">${formatDate(task.due_date)}</p>
+                    <p class="card-text text-muted mb-0" style="font-size: 0.8rem;">${formatDate(task.due_date)}</p>
                   </div>
                   <!-- Important -->
                   <div class="flex-shrink-0 mark-favorite" data-id="${task.id}">
@@ -179,23 +180,22 @@
                   </div>
                 </div>
               </div>
-            </div>
-            
-            `;
+            </div>`;
           });
           $("#tasks-section").html(tasksHtml); // Insert tasks into the table
         }
         
 
-        function fetchTasks(page) {
-          fetch("/todos/get_all_tasks?page=" + page)
+        function fetchTasks() {
+          console.log("In Fetch Tasks function")
+          fetch("/todos/get_all_tasks/" )
             .then((response) => response.json())
             .then((data) => {
               updateTasksSection(data.tasks);
             });
         }
         // Initial fetch for page 1
-        fetchTasks(1);
+        fetchTasks();
 
         //Live Search Tasks
         $("#search-task").on("keyup", function () {
@@ -235,6 +235,8 @@
             success: function (response) {
               console.log("Received data:", response);
               updateTasksSection(response.tasks);
+              $('#task-details-panel').addClass('d-none');
+
 
               // Check if the current window width is 'sm' or smaller
               if (window.innerWidth < 768) {
@@ -412,6 +414,8 @@
           console.log("Saving Task function called");
           var mode = $("#taskModal").data("mode");
           var taskId = $("#taskModal").data("taskId");
+          var tasksHtml = "";
+
 
           var url = "";
           console.log("Save Model Mode : " + mode);
@@ -432,50 +436,21 @@
             processData: false,
             contentType: false,
             success: function (response) {
-              // Handle success (e.g., close the modal, update the task list on the page)
-              console.log("Success from Save Task : " + response.task_name);
-              // Reload or update tasks on the page
-              tasksHtml += `
-              <div id="task-${response.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${task.id}">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="flex-grow-1">
-                      <h6 class="card-title ${response.task_completed ? 'strikethrough' : ''}">
-                        ${response.task_name}
-                      </h6>
-                      <p class="card-text text-muted">${formatDate(response.due_date)}</p>
-                    </div>
-                    <div class="row">
-                      <div class="col-auto">
-                        <a href="#" class="text-primary mark-favorite mr-2" data-id="${response.id}">
-                          <i id="favorite-icon-${response.id}" class="${response.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
-                        </a>
-                      </div>
-                      <div class="col-auto">
-                        <a href="#" class="mr-2 complete-task ${response.task_completed ? 'text-danger' : 'text-success'}" data-id="${response.id}">
-                          <i class="fas fa-check fa-lg"></i>
-                        </a>
-                      </div>
-                      <div class="col-auto">
-                        <a href="#" class="text-primary d-none edit-task-btn edit-task" data-id="${response.id}">
-                          <i class="fas fa-edit fa-lg"></i>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>`;
+              console.log("Success in Ajax Save Task : ");
 
-              // Update the specific row
-              $("#task-" + response.task_id).html(updatedRowHtml);
-              console.log("Updated TashHtml");
+              var newTask = response.new_task; // Modify according to your actual response structure
+              console.log("Success from Save Task : " + newTask.task_name);
+
+              addNewTasktoDisplay(newTask)
+
               setTimeout(function () {
                 $("#taskModal").modal("hide");
               }, 500); // Adjust the delay time as needed
               console.log("After Hiding Save Task Model");
+  
             },
             error: function (xhr, status, error) {
-              console.log("Ajax Function call back error : " + error);
+              console.log("Ajax Function call back error in Save Task Function: " + error);
             },
           });
         });
@@ -589,27 +564,36 @@
 
         
       });
-            
-      function formatDate(dateString) {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const monthIndex = date.getMonth();
-        const year = date.getFullYear().toString().substr(-2); // Get last two digits of the year
-        const formattedDate = `${day}-${months[monthIndex]}-${year}`;
-    
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (date < today) {
-            // If the date is in the past, wrap it in a span with text-danger class
-            return `<span class="text-danger">${formattedDate}</span>`;
-        } else {
-            return formattedDate;
-        }
+      // Add new task to existing UI
+      function addNewTasktoDisplay(newTask) {
+        newtaskHtml = `
+        <div id="task-${newTask.id}" class="card custom-hover-card clickable-card mb-3" style="margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" data-task-id="${newTask.id}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <!-- Mark Complete -->
+                <div class="flex-shrink-0 complete-task ${newTask.task_completed ? 'text-danger' : 'text-success'}" data-id="${newTask.id}">
+                  <i id="completeicon-${newTask.id}" class="fas fa-check fa-lg" style="cursor: pointer;"></i>
+                </div>
+                
+              <!-- Task Info -->
+              <div class="flex-fill task-info-clickable ms-3" data-id="${newTask.id}">
+                <h6 class="card-title ${newTask.task_completed ? 'strikethrough' : ''}">
+                  ${newTask.task_name}
+                </h6>
+                <p class="card-text text-muted">${formatDate(newTask.due_date)}</p>
+              </div>
+              <!-- Important -->
+              <div class="flex-shrink-0 mark-favorite" data-id="${newTask.id}">
+                <i id="favorite-icon-${newTask.id}" class="${newTask.important ? "fa-sharp fa-solid fa-star" : "fa-sharp fa-regular fa-star"}"></i>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        $("#tasks-section").append(newtaskHtml); // Insert tasks into the table
       }
-   
-    </script>
 
+    </script>
+    <script src="{% static 'todos/scripts/todos-script.js' %}"></script>
     {% endblock %}
   </div>
 </div>
