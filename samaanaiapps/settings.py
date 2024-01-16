@@ -185,13 +185,13 @@ USE_TZ = True
 
 #STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
 
 GS_BUCKET_NAME = 'using-ai-samaan'
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage' #Storage System for uploading media files
 STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'  #Storage system for uploading static files
-MEDIA_URL = 'https://storage.googleapis.com/testzcvzxcvzxc/'
+#MEDIA_URL = 'https://storage.googleapis.com/using-ai-samaan/'
 
 
 # Default primary key field type
