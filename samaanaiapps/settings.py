@@ -44,10 +44,10 @@ if os.path.isfile(env_file):
     env.read_env(env_file)
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", None)
 
-elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    project_id = os.environ.get("PROJECT_ID")
 
     client = secretmanager.SecretManagerServiceClient()
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
