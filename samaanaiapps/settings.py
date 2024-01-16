@@ -50,7 +50,23 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     project_id = os.environ.get("PROJECT_ID")
 
     client = secretmanager.SecretManagerServiceClient()
+    
+    secret_name_google = "GOOGLE_APPLICATION_CREDENTIALS"  # TODO: update to your secret name
+    google_cred_name = f"projects/{project_id}/secrets/{secret_name_google}/versions/latest"
+
+    # Access the secret version.
+    payload_google_cred = client.access_secret_version(name=google_cred_name).payload.data.decode("UTF-8")
+    print("payload_google_cred")
+    print(payload_google_cred)
+    env.read_env(io.StringIO(payload_google_cred))
+    temp_googl_secret_key = env("GOOGLE_APPLICATION_CREDENTIALS")
+    print("temp_googl_secret_key")
+    print(temp_googl_secret_key)
+    
+    
+    #Geting Django Settings from Secret Manager
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
+
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
     print("Payload")
