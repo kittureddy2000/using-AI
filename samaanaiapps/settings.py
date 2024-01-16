@@ -185,7 +185,7 @@ USE_TZ = True
 
 #STATIC_URL = 'https://storage.googleapis.com/using-ai-samaan/static/'
 STATIC_URL = '/static/'
-#STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core/static')]
 
 GS_BUCKET_NAME = 'using-ai-samaan'
