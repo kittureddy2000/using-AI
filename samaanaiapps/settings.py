@@ -14,11 +14,20 @@ from pathlib import Path
 import os
 import io
 import environ
+import json
 from urllib.parse import urlparse
 import google.auth
 from google.cloud import secretmanager
 from core.utils import access_secret
 import logging
+
+# Function to get secret from Google Secret Manager
+def get_secret(secret_name):
+    project_id = os.environ.get('PROJECT_ID')
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode('UTF-8')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,18 +60,25 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
 
     client = secretmanager.SecretManagerServiceClient()
     
-    secret_name_google = "GOOGLE_APPLICATION_CREDENTIALS"  # TODO: update to your secret name
-    google_cred_name = f"projects/{project_id}/secrets/{secret_name_google}/versions/latest"
+    # Name of the secret where the JSON content is stored
+    secret_name = 'GOOGLE_APPLICATION_CREDENTIALS'
+    json_credentials = get_secret(secret_name)
 
-    # Access the secret version.
-    payload_google_cred = client.access_secret_version(name=google_cred_name).payload.data.decode("UTF-8")
-    print("payload_google_cred")
-    print(payload_google_cred)
-    env.read_env(io.StringIO(payload_google_cred))
+    # Parse the JSON string to a dictionary
+    parsed_credentials = json.loads(json_credentials)
+
+    # Save the credentials to a temporary file
+    with open('temp_credentials.json', 'w') as temp:
+        json.dump(parsed_credentials, temp)
+
+    # Set the environment variable to the temporary file path
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
+
     temp_googl_secret_key = env("GOOGLE_APPLICATION_CREDENTIALS")
-    print("temp_googl_secret_key")
+    print("Before temp_googl_secret_key")
     print(temp_googl_secret_key)
-    
+    print("After temp_googl_secret_key")
+
     
     #Geting Django Settings from Secret Manager
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
