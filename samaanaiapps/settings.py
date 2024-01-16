@@ -53,6 +53,8 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+    print("Payload")
+    print(payload)
 
     env.read_env(io.StringIO(payload))
     

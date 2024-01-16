@@ -172,7 +172,7 @@
                     <h6 class="card-text ${task.task_completed ? 'strikethrough' : ''}" style="font-size: 0.9rem;">
                       ${task.task_name}
                     </h6>
-                    <p class="card-text text-muted mb-0" style="font-size: 0.8rem;">${formatDate1(task.due_date)}</p>
+                    <p class="card-text text-muted mb-0" style="font-size: 0.8rem;">${formatDate(task.due_date)}</p>
                   </div>
                   <!-- Important -->
                   <div class="flex-shrink-0 mark-favorite" data-id="${task.id}">
@@ -524,7 +524,7 @@
                           <h6 class="card-title ${response.task_completed ? 'strikethrough' : ''}">
                             ${response.task_name}
                           </h6>
-                          <p class="card-text text-muted">${formatDate1(response.due_date)}</p>
+                          <p class="card-text text-muted">${formatDate(response.due_date)}</p>
                         </div>
                         <div class="row">
                           <div class="col-auto">
@@ -580,7 +580,7 @@
                 <h6 class="card-title ${newTask.task_completed ? 'strikethrough' : ''}">
                   ${newTask.task_name}
                 </h6>
-                <p class="card-text text-muted">${formatDate1(newTask.due_date)}</p>
+                <p class="card-text text-muted">${formatDate(newTask.due_date)}</p>
               </div>
               <!-- Important -->
               <div class="flex-shrink-0 mark-favorite" data-id="${newTask.id}">
@@ -591,23 +591,7 @@
         </div>`;
         $("#tasks-section").append(newtaskHtml); // Insert tasks into the table
       }
-      function formatDate1(dateString) {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const monthIndex = date.getMonth();
-        const year = date.getFullYear().toString().substr(-2); // Get last two digits of the year
-        const formattedDate = `${day}-${months[monthIndex]}-${year}`;
-    
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (date < today) {
-            // If the date is in the past, wrap it in a span with text-danger class
-            return `<span class="text-danger">${formattedDate}</span>`;
-        } else {
-            return formattedDate;
-        }
-      }
+
     </script>
     <script src="{% static 'todos/scripts/todos-script.js' %}"></script>
     {% endblock %}
