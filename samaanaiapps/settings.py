@@ -64,6 +64,14 @@ else:
 # [END cloudrun_django_secret_config]
 
 SECRET_KEY = env("SECRET_KEY")
+
+google_creds = env("GOOGLE_APPLICATION_CREDENTIALS")
+print("Google Credentials")
+print(google_creds)
+print("After Google Credentials")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = env("DJANGO_DEBUG")
 
 
