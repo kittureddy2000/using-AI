@@ -28,3 +28,13 @@
 .expandable:focus {
   height: 10rem; /* Increase height when the text area is focused */
 }
+
+.panel-shadow {
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15); /* Adjust the values to get the desired depth */
+}
+
+.highlighted {
+  background-color: #007bff; /* Bootstrap primary blue for example */
+  color: white; /* Ensure text is readable on the highlight background */
+}
+

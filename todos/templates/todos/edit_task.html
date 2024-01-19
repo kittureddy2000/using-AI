@@ -8,11 +8,11 @@
 
     <!-- Task Name -->
 
-            <div class="mt-5">
+            <div class="mt-1 mb-1">
                 {{ edit_task_form.task_name|add_class:"form-control" }}
                 {{ edit_task_form.task_name.errors }}
             </div>
-            <br>
+
 
     <!-- Due Date and Reminder Time -->
     <div class="card mb-1">
@@ -41,13 +41,20 @@
     <div class="card mb-1">
         <div class="card-body">
             <div class="mb-1">
-                {{ edit_task_form.list_name.label_tag }}
                 {{ edit_task_form.list_name|add_class:"form-select" }}
                 {{ edit_task_form.list_name.errors }}
             </div>
         </div>
     </div>
-
+    <!-- Task Description -->
+    <div class="card mb-1">
+        <div class="card-body">
+            <div class="mb-1">
+                {{ edit_task_form.task_description|add_class:"form-control form-control-sm expandable" }}
+                {{ edit_task_form.task_description.errors }}
+            </div>
+        </div>
+    </div>
     <!-- Images Handling -->
     <div class="card mb-1">
         <div class="card-body">
@@ -67,15 +74,7 @@
         </div>
     </div>
 
-    <!-- Task Description -->
-    <div class="card mb-1">
-        <div class="card-body">
-            <div class="mb-1">
-                {{ edit_task_form.task_description|add_class:"form-control" }}
-                {{ edit_task_form.task_description.errors }}
-            </div>
-        </div>
-    </div>
+
 
         <!-- Important and Assigned To -->
     <div class="card mb-1">

@@ -5,13 +5,12 @@
 
 {% block additional_head %}
 <meta name="csrf-token" content="{{ csrf_token }}" />
-<link href="{% static 'todos/css/style.css' %}" rel="stylesheet">
+<link href="{% static 'todos/css/todo-style.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <input type="hidden" id="current-list" />
 <div id="success-message" style="display: none"></div>
-<hr class="hr" />
 
 <div class="container-fluid">
   <div class="row">
@@ -24,39 +23,37 @@
     </nav>
 
     <!-- Boot strap side bar Start -->
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse panel-shadow">
         <!-- Sidebar content -->
-        <div class="sidebar-sticky pt-3">
+        <div class="sidebar-sticky pt-1">
           <ul class="nav flex-column">
-              
-          <li class="nav-item d-flex align-items-center">
-            <i class="fa-solid fa-plane-arrival me-2"></i>
-            <h4 class="mb-0 inline-heading">Lists</h4>
-          </li>
-            <!-- List items here -->
-            {% for tasklist in task_lists %}
-            <li class="nav-item">
-              <a href="#" class="nav-link task-list-item" data-id="{{ tasklist.id }}">
-                
-                {% if tasklist.special_list %}
-                  <i class="fa-solid fa-clipboard-list me-2"></i>  <!-- This icon shows if it's a special list -->
-                {% else %}
-                  <i class="fas fa-tasks me-2"></i>  <!-- This icon shows otherwise -->
-                {% endif %}
-                
-                {{ tasklist.list_name }}
-              </a>
-            </li>
-            <hr class="my-2 hr-blurry" /> <!-- Adjusted margin for the horizontal line -->
-            {% endfor %}
+              {% for tasklist in task_lists %}
+              <li class="nav-item">
+                  <a href="#" class="nav-link task-list-item d-flex align-items-center text-dark" data-id="{{ tasklist.id }}">
+                      <!-- Use span to wrap icons for better control -->
+                      <span class="icon-container me-2">
+                          {% if tasklist.special_list %}
+                              <i class="fa-solid fa-clipboard-list"></i>  <!-- Special list icon -->
+                          {% else %}
+                              <i class="fas fa-tasks"></i>  <!-- Default list icon -->
+                          {% endif %}
+                      </span>
+                      <!-- Use span for text to avoid unexpected margins from heading tags -->
+                      <span class="text-truncate"> {{ tasklist.list_name }} </span>
+                  </a>
+                  <!-- Use Bootstrap's border class for horizontal line -->
+                  <div class="border-bottom my-2"></div>
+              </li>
+              {% endfor %}
           </ul>
-        </div>
+      </div>
+      
       </nav> 
     <!-- Boot strap side bar End -->
 
-    <div id="task-middle-panel" class="col-md-6 col-lg-7 bg-light">
+    <div id="task-middle-panel" class="col-md-6 col-lg-9">
       <!-- Search and Add Task Section -->
-      <div class="sticky-top">
+      <div id="searchbar_row" class="sticky-top mt-1">
           <div class="row justify-content-between mb-3">
             <div class="col">
               <input
@@ -72,14 +69,17 @@
             </div>
             <!-- Sort icon -->
             <div class="col col-auto">
-             <i class="fas fa-sort fa-2x text-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"></i>
+             <button class="btn btn-primary dropdown-toggle" type="button" id="sortMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-sort me-2"></i>Sort
+            </button>
+          
                   <!-- Dropdown menu links go here -->
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item sort-option" href="#" data-sort="due_date">Due Date</a></li>
                     <li><a class="dropdown-item sort-option" href="#" data-sort="important">Important</a></li>
                     <li><a class="dropdown-item sort-option" href="#" data-sort="task_name">Task</a></li>
                   </ul>
-            </div>
+            </div> 
         </div>
       </div>
       
@@ -88,13 +88,12 @@
         </div>
     </div>
 
-    <!-- Sidebar for additional options -->
     <!-- Back button visible only on small screens, outside the task-details-panel -->
     <button id="back-button" class="btn btn-secondary d-none mb-3">
       <i class="fas fa-arrow-left"></i> Back
     </button>
 
-    <div id="task-details-panel" class="col-md-3 bg-light border-left d-none">
+    <div id="task-details-panel" class="col-md-4 bg-light border-left d-none panel-shadow">
        {% include 'todos/edit_task.html' %}
     </div>
 </div>
@@ -227,6 +226,8 @@
           var listId = $(this).data("id");
           console.log("list Id : " + listId);
           $("#current-list").data("list-id", listId); // Store the current list ID
+          $(".task-list-item").removeClass('highlighted');
+          this.classList.add('highlighted');
 
           $.ajax({
             url: `/todos/get_tasks_by_list/${listId}`,
@@ -290,15 +291,21 @@
             success: function (response) {
               if (response.completed) {
                 //taskRow.css("text-decoration", "line-through");
-                console.log("Clicked Complete")
-                $('#task-${taskId} .card-body').toggleClass('strikethrough');
+                console.log("Clicked Complete : " + response.task_name)
+                console.log("Task Id : " + response.task_id)
+
+                if (response.task_completed) {
+                    $(`#task-${response.id}.card-title`).addClass('strikethrough');
+                } else {
+                    $(`#task-${response.id}.card-title`).removeClass('strikethrough');
+                }
 
                 $("#success-message")
-                  .text("Deleted task: " + taskName)
+                  .text("Marked task Complete: " + response.task_name)
                   .show();
                 setTimeout(function () {
                   $("#success-message").hide();
-                }, 5000);
+                }, 1000);
               }
             },
             error: function (xhr, status, error) {
@@ -395,10 +402,14 @@
                 console.log("In Success message for getting edit_task_panel")  
                 $('#task-details-panel').removeClass('d-none');
                 $('#task-details-panel').html(tasks);
+                document.getElementById('task-middle-panel').classList.remove('col-lg-9');
+                document.getElementById('task-middle-panel').classList.add('col-lg-6');
 
                 if ($(window).width() < 768) { // 768px is generally considered the breakpoint for small devices
                   $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
                   $('#back-button').removeClass('d-none');
+                  $('#searchbar_row').addClass('d-none');
+                 
                 }
 
               },
@@ -561,8 +572,9 @@
       $('#back-button').on('click', function() {
         $('#task-details-panel').addClass('d-none');
         $('#tasks-section').toggleClass('d-none'); // Toggle the panel visibility
+        $('#back-button').addClass('d-none');
+        $('#searchbar_row').removeClass('d-none');
 
-        
       });
       // Add new task to existing UI
       function addNewTasktoDisplay(newTask) {

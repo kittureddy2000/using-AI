@@ -232,7 +232,7 @@ def complete_task(request):
 
 
     task.save()
-
+    print("Task description : " + task.task_description )    
 
     if(task.task_completed ) :
         task_history = TaskHistory(
@@ -252,7 +252,7 @@ def complete_task(request):
         task_history.save()
 
     
-    return JsonResponse({'completed': True, 'task_name': task_name})
+    return JsonResponse({'completed': True,'task_completed': task.task_completed, 'task_id': task_id, 'task_name': task_name})
 
 def mark_favorite(request):
     task_id = request.POST.get('id')

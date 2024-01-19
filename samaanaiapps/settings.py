@@ -52,6 +52,28 @@ if os.path.isfile(env_file):
     print("Getting Secret manage from local")
     env.read_env(env_file)
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", None)
+    client = secretmanager.SecretManagerServiceClient()
+    
+    # Name of the secret where the JSON content is stored
+    secret_name = 'GOOGLE_APPLICATION_CREDENTIALS'
+    json_credentials = get_secret(secret_name)
+
+    # Parse the JSON string to a dictionary
+    parsed_credentials = json.loads(json_credentials)
+
+    # Save the credentials to a temporary file
+    with open('temp_credentials.json', 'w') as temp:
+        json.dump(parsed_credentials, temp)
+
+    # Set the environment variable to the temporary file path
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
+
+    temp_googl_secret_key = env("GOOGLE_APPLICATION_CREDENTIALS")
+    print("Before temp_googl_secret_key")
+    print(temp_googl_secret_key)
+    print("After temp_googl_secret_key")
+
+
 
 elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     # Pull secrets from Secret Manager
@@ -96,14 +118,6 @@ else:
 # [END cloudrun_django_secret_config]
 
 SECRET_KEY = env("SECRET_KEY")
-
-google_creds = env("GOOGLE_APPLICATION_CREDENTIALS")
-print("Google Credentials")
-print(google_creds)
-print("After Google Credentials")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-
 DEBUG = env("DJANGO_DEBUG")
 
 

@@ -5,13 +5,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-RECURRENCE_CHOICES = [
-    ('NO_RECURRENCE', 'No Recurrence'),
-    ('DAILY', 'Daily'),
-    ('WEEKLY', 'Weekly'),
-    ('MONTHLY', 'Monthly'),
-    ('YEARLY', 'Yearly'),
-]
 
 class TaskListForm(forms.ModelForm):
     class Meta:

@@ -54,12 +54,12 @@ class Image(models.Model):
 
 
 class TaskHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,default=3)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=3)
     task_name = models.CharField(max_length=200)
     list_name = models.ForeignKey(TaskList, on_delete=models.SET_DEFAULT, default=1, blank=True)
-    task_description = models.CharField(max_length=2000 , null=True, blank=True), 
+    task_description = models.CharField(max_length=2000, null=True, blank=True)  # Remove the comma here
     due_date = models.DateTimeField(null=True, blank=True)
-    reminder_time = models.DateTimeField(default=timezone.now , null=True, blank = True)
+    reminder_time = models.DateTimeField(default=timezone.now, null=True, blank=True)
     recurrence = models.CharField(max_length=100, blank=True)
     task_completed = models.BooleanField(default=False)
     important = models.BooleanField(default=False)
