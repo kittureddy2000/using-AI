@@ -1,0 +1,91 @@
+{% extends 'spreturn_base.html' %}
+
+{% block title %}
+<title>Add Task</title>
+{% endblock %}
+
+{% block header %}
+<h4>S&P Return Insights</h4>
+{% endblock %}
+
+{% block crispy %}
+{% load crispy_forms_tags %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <div class="table-responsive">
+                <table class="table table-striped">
+
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Years of Investment</th>
+                        <th scope="col">Minimum Return</th>
+                        <th scope="col">Average Return</th>
+                        <th scope="col">Maximum Return</th>
+                    </tr>
+                    </thead>
+
+                    {% for key,value in SPReturnSummary.items %}
+                    <tr>
+                        <th scope="row">{{key}}</th>
+                        <td>{{value.0}}</td>
+                        <td>{{value.1}}</td>
+                        <td>{{value.2}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="container  p-3 my-3">
+                <div class="row">
+                    <h5 class="text-center">S&P Return Insights</h5> <br>
+                    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+
+            _series_min = {{series_min|safe}};
+            _series_avg = {{series_avg|safe}};
+            _series_max = {{series_max|safe}};
+            _years_invest = {{years_invest|safe}}
+
+            new Chart("myChart", {
+              type: "line",
+              data: {
+                labels: _years_invest,
+                datasets: [{
+                  label: 'Minimum Return',
+                  data: _series_min,
+                  borderColor: "red",
+                  fill: false
+                },{
+                  label: 'Avg Return',
+                  data: _series_avg,
+                  borderColor: "blue",
+                  fill: false
+                },{
+                  label: 'Max Return',
+                  data: _series_max,
+                  borderColor: "green",
+                  fill: false
+                }]
+              },
+              options: {
+                legend: {display: true}
+              }
+            });
+
+</script>
+
+{% endblock %}

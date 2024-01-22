@@ -4,6 +4,7 @@
 *.sqlite3
 __pycache__/
 db.sqlite3
+temp_credentials.json
 /staticfiles/
 
 # If you're using a virtual environment

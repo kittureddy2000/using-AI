@@ -24,6 +24,8 @@ urlpatterns = [
     
     path('', include(('core.urls', 'core'), namespace='core')),  # Added namespace for 'core'
     path('todos/', include('todos.urls')),  # Include your app's URLs here
+    path('spreturn/', include('spreturn.urls')),
+
     path('accounts/', include('allauth.urls')),
 ]
 

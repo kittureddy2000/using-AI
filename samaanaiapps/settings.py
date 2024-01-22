@@ -68,13 +68,6 @@ if os.path.isfile(env_file):
     # Set the environment variable to the temporary file path
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
 
-    temp_googl_secret_key = env("GOOGLE_APPLICATION_CREDENTIALS")
-    print("Before temp_googl_secret_key")
-    print(temp_googl_secret_key)
-    print("After temp_googl_secret_key")
-
-
-
 elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
@@ -96,12 +89,6 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     # Set the environment variable to the temporary file path
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
 
-    temp_googl_secret_key = env("GOOGLE_APPLICATION_CREDENTIALS")
-    print("Before temp_googl_secret_key")
-    print(temp_googl_secret_key)
-    print("After temp_googl_secret_key")
-
-    
     #Geting Django Settings from Secret Manager
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
 
@@ -126,12 +113,15 @@ DEBUG = env("DJANGO_DEBUG")
 # running in production. The URL will be known once you first deploy
 # to Cloud Run. This code takes the URL and converts it to both these settings formats.
 CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
-print("Cloud Service URL")
-print(CLOUDRUN_SERVICE_URL)
+
 if CLOUDRUN_SERVICE_URL:
     print("Cloud Service URL")
     print(CLOUDRUN_SERVICE_URL)
-    ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
+    #ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
+    ALLOWED_HOSTS = env("www.samaanai.com", default=CLOUDRUN_SERVICE_URL)
+    print("Allowed Hosts")
+    print(ALLOWED_HOSTS)
+    # If running locally this is the right value")
     CSRF_TRUSTED_ORIGINS = [CLOUDRUN_SERVICE_URL]
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -154,6 +144,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'todos',
+    'spreturn',
     'core',
     'crispy_forms',
     'django.contrib.sites',

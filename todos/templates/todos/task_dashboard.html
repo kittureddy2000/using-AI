@@ -454,6 +454,13 @@
 
               addNewTasktoDisplay(newTask)
 
+              if ($(window).width() < 768) { // 768px is generally considered the breakpoint for small devices
+                console.log("Save Task in Small Screen")
+                $('#task-details-panel').addClass('d-none');
+             }
+        
+             console.log("Before Hiding Save Task Model");
+
               setTimeout(function () {
                 $("#taskModal").modal("hide");
               }, 500); // Adjust the delay time as needed
