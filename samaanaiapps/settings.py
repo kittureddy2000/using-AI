@@ -118,7 +118,7 @@ if CLOUDRUN_SERVICE_URL:
     print("Cloud Service URL")
     print(CLOUDRUN_SERVICE_URL)
     #ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
-    ALLOWED_HOSTS = env("www.samaanai.com", default=CLOUDRUN_SERVICE_URL)
+    ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", default=CLOUDRUN_SERVICE_URL)
     print("Allowed Hosts")
     print(ALLOWED_HOSTS)
     # If running locally this is the right value")
