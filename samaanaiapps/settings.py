@@ -117,8 +117,9 @@ CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
 if CLOUDRUN_SERVICE_URL:
     print("Cloud Service URL")
     print(CLOUDRUN_SERVICE_URL)
-    #ALLOWED_HOSTS = [urlparse(CLOUDRUN_SERVICE_URL).netloc]
-    ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", default=CLOUDRUN_SERVICE_URL)
+    allowed_hosts_str = env("DJANGO_ALLOWED_HOSTS", default=CLOUDRUN_SERVICE_URL)
+    ALLOWED_HOSTS = allowed_hosts_str.split(',')  
+    
     print("Allowed Hosts")
     print(ALLOWED_HOSTS)
     # If running locally this is the right value")
