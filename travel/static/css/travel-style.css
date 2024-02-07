@@ -1,0 +1,20 @@
+.bordered-fields-container {
+    border: 1px solid #ccc; /* Example border color */
+    display: inline-flex; /* Use flex to keep fields in a row */
+    padding: 0.5rem; /* Adjust padding as needed */
+    box-sizing: border-box; /* Makes sure padding and border are included in the element's total width and height */
+}
+.custom-image {
+    width: 50px; /* Adjust as needed */
+    height: 40px; /* Adjust as needed */
+    object-fit: contain; /* This property defines how the image should be resized to fit its container */
+}
+
+.img-hover {
+    transition: border 0.5s ease; /* Smooth transition for the border */
+    border: 4px solid transparent; /* Default state border */
+}
+
+.img-hover:hover {
+    border: 4px solid #ff0000; /* Red border on hover */
+}

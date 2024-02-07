@@ -42,11 +42,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, True))
 env_file = os.path.join(BASE_DIR, ".env")
 
-try:
-    _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
-except google.auth.exceptions.DefaultCredentialsError:
-    pass
-
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
     print("Getting Secret manage from local")
@@ -88,6 +83,10 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
 
     # Set the environment variable to the temporary file path
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
+    try:
+        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+    except google.auth.exceptions.DefaultCredentialsError:
+        pass
 
     #Geting Django Settings from Secret Manager
     settings_name = os.environ.get("SETTINGS_NAME", "DJANGO_SETTINGS")
@@ -146,7 +145,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'todos',
     'spreturn',
+    'stocks',
     'core',
+    'travel',
     'crispy_forms',
     'django.contrib.sites',
     'allauth',
@@ -245,6 +246,13 @@ STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'  #Storage sy
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+CACHE_TIMEOUT =  300 # 5 minutes
 
 #Logging Framework
 LOGGING = {

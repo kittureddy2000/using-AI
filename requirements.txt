@@ -27,7 +27,7 @@ idna==3.4
 numpy==1.26.3
 oauthlib==3.2.2
 packaging==23.2
-pandas==2.1.4
+pandas==2.2.0
 pipreqs==0.4.13
 proto-plus==1.22.3
 protobuf==4.25.1

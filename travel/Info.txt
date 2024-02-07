@@ -1,0 +1,70 @@
+           for itinerary in itinerary_data:
+                itin_dict = {
+                    'itin_id': itinerary.get('id', 'Itinerary ID not available'),
+                    'itin_no': itin_no,
+                    'itin_total_price': itinerary.get('price', {}).get('formatted', 'Price not available'),
+                    'itin_score': itinerary.get('score', 'Score not available'),
+                    'legs': []
+                }
+        
+                leg_no = 1
+
+                for leg in itinerary.get('legs', []):
+                    leg_duration = leg.get('durationInMinutes', 'Leg Duration not available')
+                    leg_hours, leg_minutes = divmod(leg_duration, 60)
+                    leg_departure = leg.get('departure', 'Leg Departure not available'),
+                    leg_arrival = leg.get('arrival', 'Leg Arrival not available')
+                    leg_departure_formatted = datetime.strptime(leg_departure[0], '%Y-%m-%dT%H:%M:%S').strftime('%I:%M %p')
+                    leg_arrival_formatted = datetime.strptime(leg_arrival, '%Y-%m-%dT%H:%M:%S').strftime('%I:%M %p')
+
+
+                    leg_dict = {
+                        'leg_id': leg.get('id', 'Leg ID not available'),
+                        'leg_no' : leg_no,
+                        'leg_departure': leg_departure_formatted,
+                        'leg_arrival': leg_arrival_formatted,
+                        'leg_hours': leg_hours,
+                        'leg_minutes': leg_minutes,
+                        'leg_durationInMinutes': leg.get('durationInMinutes', 'Leg Duration not available'),
+                        'leg_stopcount': leg.get('stopCount', 'Legs Stopcount not available'),
+                        'leg_carriers_url': leg.get("carriers", {}).get("marketing", [])[0].get("logoUrl", "Carrier url not available"),
+                        'leg_carriers': leg.get("carriers", {}).get("marketing", [])[0].get("name", "Carrier name not available"),
+                        'leg_origin': leg.get("origin", {}).get("displayCode", "Origina name not available"),
+                        'leg_destination': leg.get("destination", {}).get("displayCode", "Destination name not available"),
+                        'segments': []
+                    }
+                    seg_no = 1
+                    for segment in leg.get('segments', []):
+                        seg_departure = segment.get('departure', 'Segment Departure not available'),
+                        seg_arrival = segment.get('arrival', 'Segment Arrival not available'),
+                        seg_durationInMinutes = segment.get('durationInMinutes', 'Segment Duration not available'),
+                        seg_hours, seg_minutes = divmod(seg_durationInMinutes[0], 60)
+                        seg_departure_formatted = datetime.strptime(seg_departure[0], '%Y-%m-%dT%H:%M:%S').strftime('%I:%M %p')
+                        seg_arrival_formatted = datetime.strptime(seg_arrival[0], '%Y-%m-%dT%H:%M:%S').strftime('%I:%M %p')
+
+itin_id,itin_no,itin_total_price,itin_score,leg_hours,leg_minutes,leg_departure_formatted,leg_arrival_formatted,seg_id,seg_no,seg_origin
+seg_destination,seg_durationInMinutes,seg_hours,seg_minutes,seg_departure,seg_arrival,seg_flightNumber,seg_carrier
+
+                        segment_dict = {
+                            'seg_id': segment.get('id', 'Segment ID not available'),
+                            'seg_no': seg_no,
+                            'seg_origin': segment.get('origin', {}).get('displayCode', 'Segment Origin not available'),
+                            'seg_destination': segment.get('destination', {}).get('displayCode', 'Segment Destination not available'),
+                            'seg_durationInMinutes': segment.get('durationInMinutes', 'Segment Duration not available'),
+                            'seg_hours': seg_hours,
+                            'seg_minutes': seg_minutes,
+                            'seg_departure': seg_departure_formatted,
+                            'seg_arrival': seg_arrival_formatted,
+                            'seg_flightNumber': segment.get('flightNumber', 'Segment Flight Number not available'),
+                            'seg_carrier': segment.get('marketingCarrier', {}).get('name', 'Segment Carrier not available'),
+                        }
+                        leg_dict['segments'].append(segment_dict)
+                        seg_no += 1
+                        
+                    itin_dict['legs'].append(leg_dict)
+                    leg_no += 1
+
+                    
+                nested_itineraries.append(itin_dict)
+                itin_no += 1
+ 

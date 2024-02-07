@@ -1,38 +1,72 @@
 {% extends 'base.html' %} {% load todo_extras %} {% block title %}Using AI Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
+<div class="container bg-light mt-5">
 
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-primary text-center">
+
+    <div class="row mt-5">
+        <div class="col-4">
+            <div class="card">
                 <div class="card-body">
-                <h5 class="card-title">
-                <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
-                    My Tasks</a
-                >
-                </h5>
-                <p class="card-text">
-               Task Management</p>
-            </div>
+                    <h5 class="card-title"> 
+
+                    <a href="{% url 'travel:travel' %}" class="card-title mt-2">
+                        Travel</a
+                    ></h5>
+                    <p class="card-text text-muted">
+                        Tavel Application
+                    </p>
+                </div>
             </div>
         </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"> 
 
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-primary text-center">
-
-            <div class="card-body">
-            <h5 class="card-title"> 
-                <a href="{% url 'spreturn' %}" class="card-title mt-2">
-                S&P Return</a
-            ></h5>
-            <p class="card-text">
-                S&P Return Analysis
-            </p>
+                    <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
+                        My Tasks</a
+                    >
+                    </h5>
+                    <p class="card-text text-muted">
+                   Task Management Application</p>
+                </div>
             </div>
         </div>
-        </div>  
     </div>
-</div>
+ 
+    <div class="row mt-5">
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"> 
+                        <a href="{% url 'spreturn' %}" class="card-title mt-2">
+                        S&P Return</a
+                    ></h5>
+                    <p class="card-text text-muted">
+                        S&P Return Analysis
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                    <a href="{% url 'stocks:stocks' %}" class="card-title mt-2">
+                        Stocks</a
+                    ></h5>
+                    <p class="card-text text-muted">
+                        My Stocks Applciation 
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+ </div>   
 
   {% endblock %}

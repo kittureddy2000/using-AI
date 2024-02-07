@@ -9,6 +9,7 @@
     "editor.formatOnSave": false,
     "editor.formatOnType": true,
     "editor.fontLigatures": false,
-    "editor.defaultFormatter": "ms-python.python"
+    "editor.defaultFormatter": "ms-python.python",
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": false
   }
 }

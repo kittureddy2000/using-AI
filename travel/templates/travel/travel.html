@@ -1,0 +1,300 @@
+{% extends 'travel/travel_base.html' %} {% load static %} {% block title%}Travel
+Search{% endblock %} {% block header %}
+<h4>Travel Deals</h4>
+
+{% endblock %} {% load crispy_forms_tags %}
+
+{%block content %}
+
+  <div class="container bg-light mt-4">
+  
+      <div class="row">
+        <div class="col-7">
+          <div class="card">
+            <div class="card-body">
+              <div class="row p-2 ms-1 me-1"  id="flight-search-panel">
+                {% include 'travel/flight_search_form.html' %}
+              </div>
+          
+              <div class="row p-2 ms-1 me-1" id="flight-filter-panel">
+                  {% include 'travel/search_filter_form.html' %}
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-5">
+          <div class="card">
+            <div class="card-body">
+              <div class="card mb-3" style="max-width: 540px;" >
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    <i class="fas fa-analytics"></i>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">Key Insights</h5>
+                      <p class="card-text">
+                            Minimum price:{{min_price }} </p>
+                       <p>       Maximum Price : {{ max_price }} 
+                      </p>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      
+
+
+    </div>
+
+
+
+
+  </div>  
+  <div class="container bg-light mt-2">
+      <div class="row mt-4 p-2">
+        <div id="flights-container">
+          <!-- Flight cards will be inserted here -->
+          {% for itinerary in data_for_template %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="mt-3 row">
+              <div class="col-10">    
+              {% for leg in itinerary.legs %}
+                <div class="col-10">
+                  <div class="row">
+                    <div class="col-3">
+                      {% comment %} Leg No: {{ leg.leg_no }} {% endcomment %}
+                      <p><img src="{{leg.leg_carriers_url}}" alt="Carries" 
+                        class="custom-image img-hover" 
+                        data-bs-toggle="collapse"
+                        data-bs-target="#segments-{{ itinerary.itin_no }}-{{ leg.leg_no }}"
+                        aria-expanded="false"
+                        aria-controls="segments-{{ itinerary.itin_no }}-{{ leg.leg_no }}"
+                      >
+                      {{leg.leg_carriers}} </p>
+                    </div>
+                  
+                    <div class="col-3">
+                      {{ leg.leg_origin }}
+
+                      <p> {{ leg.leg_departure_formatted }}</p>
+
+                    </div>
+
+                    <div class="col-3">
+                      {{ leg.leg_stopcount }} stop
+
+                      <p>{{leg.leg_hours}}h {{leg.leg_minutes}}m</p>
+                    </div>
+
+                    <div class="col-3">
+                      {{ leg.leg_destination }}
+                      <p> {{ leg.leg_arrival_formatted }}</p>
+
+                    </div>
+
+                    </div>
+                </div>
+              <!-- Collapsible segment rows for each leg -->
+                <div class="collapse mt-3 row" id="segments-{{ itinerary.itin_no }}-{{ leg.leg_no }}">
+                  {% for segment in leg.segments %}
+                  <div class="col-4 ms-2" style="border: 1px solid black;">
+                    <div class="row">
+                      <div class="col">
+                        {{ segment.seg_origin }} 
+                        <p>{{ segment.seg_departure_formatted }}</p>
+                      
+                      </div>
+                      <div class="col">
+                        <i class="fa-solid fa-plane"></i>
+                        <p>{{ segment.seg_hours }}h {{ segment.seg_minutes }}m</p>
+                      </div>
+                      <div class="col">
+                        {{ segment.seg_destination}}
+                        <p> {{ segment.seg_arrival_formatted }}</p>
+                      </div>
+
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+              </div>
+              <div class="col-2 d-flex align-items-center">
+                <div>
+                    <p><strong>{{ itinerary.itin_total_price }}</strong></p>
+                    <p><button id="viewDeal" class="btn btn-primary">View</button></p>
+                </div>
+            </div>
+            
+            </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>   
+  </div>  
+{% endblock %}
+
+
+{% block script_block %}
+
+<script>
+  $(document).ready(function() {
+
+
+  
+    console.log("In Document Ready Function");
+    $('#filterForm').on('change', function() {
+        const formData = new FormData(this);
+        const searchParams = new URLSearchParams(formData).toString();
+        console.log("Search params:", searchParams);
+    
+        $.ajax({
+            url: "{% url 'travel:filter_sort' %}",
+            method: 'GET',
+            data: searchParams,
+            success: function(response) {
+              console.log("Success in Ajax Filter : ");
+
+              var htmlContent = '';
+              console.log("Response data:", response.data_for_template);
+          
+              response.data_for_template.forEach(function(itinerary) {
+                  htmlContent += `
+                      <div class="card mb-3">
+                          <div class="card-body">
+                              <div class="mt-3 row">
+                                  <div class="col-10">`;
+          
+                  itinerary.legs.forEach(function(leg) {
+                      htmlContent += `
+                                      <div class="col-10">
+                                          <div class="row">
+                                              <div class="col-3">
+                                                  <p><img src="${leg.leg_carriers_url}" alt="Carries" class="custom-image img-hover" data-bs-toggle="collapse" data-bs-target="#segments-${itinerary.itin_no}-${leg.leg_no}" aria-expanded="false" aria-controls="segments-${itinerary.itin_no}-${leg.leg_no}">
+                                                  ${leg.leg_carriers}</p>
+                                              </div>
+                                              <div class="col-3">
+                                                  ${leg.leg_origin}
+                                                  <p>${leg.leg_departure_formatted}</p>
+                                              </div>
+                                              <div class="col-3">
+                                                  ${leg.leg_stopcount} stop
+                                                  <p>${leg.leg_hours}h ${leg.leg_minutes}m</p>
+                                              </div>
+                                              <div class="col-3">
+                                                  ${leg.leg_destination}
+                                                  <p>${leg.leg_arrival_formatted}</p>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="collapse mt-3 row" id="segments-${itinerary.itin_no}-${leg.leg_no}">`;
+          
+                      leg.segments.forEach(function(segment) {
+                          htmlContent += `
+                                          <div class="col-4 ms-2" style="border: 1px solid black;">
+                                              <div class="row">
+                                                  <div class="col">
+                                                      ${segment.seg_origin}
+                                                      <p>${segment.seg_departure_formatted}</p>
+                                                  </div>
+                                                  <div class="col">
+                                                      <i class="fa-solid fa-plane"></i>
+                                                      <p>${segment.seg_hours}h ${segment.seg_minutes}m</p>
+                                                  </div>
+                                                  <div class="col">
+                                                      ${segment.seg_destination}
+                                                      <p>${segment.seg_arrival_formatted}</p>
+                                                  </div>
+                                              </div>
+                                          </div>`;
+                      });
+          
+                      htmlContent += `</div>`; // Close segment collapsible div
+                  });
+          
+                  htmlContent += `
+                                  </div>
+                                  <div class="col-2 d-flex align-items-center">
+                                      <div>
+                                          <p><strong>${itinerary.itin_total_price}</strong></p>
+                                          <p><button id="viewDeal" class="btn btn-primary">View</button></p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>`;
+              });
+          
+              $('#flights-container').html(htmlContent); // Insert the HTML into the flights container
+            },
+            error: function(xhr, status, error) {
+                // Handle errors
+            }
+        });
+    });
+
+
+  });
+
+  $('#id_departure_location').on('blur', function() {
+    var code = $(this).val().toUpperCase();
+    console.log("Inside Blur Event Listener:", code);
+
+    $.ajax({
+        url: 'validate-airport-code/',
+        data: {
+            'code': code
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (!data.isValid) {
+                // If the code is invalid, add is-invalid class to input
+                $('#id_departure_location').addClass('is-invalid');
+                console.log("Invalid airport code.");
+            } else {
+                // If the code is valid, remove any is-invalid class from input
+                $('#id_departure_location').removeClass('is-invalid');
+            }
+        },
+        error: function(xhr, status, error) {
+            // Handle any AJAX errors here
+            console.error("AJAX Error:", xhr.status, xhr.responseText);        }
+    });
+  });
+  $('#id_arrival_location').on('blur', function() {
+    var code = $(this).val().toUpperCase();
+    console.log("Inside Blur Event Listener:", code);
+
+    $.ajax({
+        url: 'validate-airport-code/',
+        data: {
+            'code': code
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (!data.isValid) {
+                // If the code is invalid, add is-invalid class to input
+                $('#id_arrival_location').addClass('is-invalid');
+                console.log("Invalid airport code.");
+            } else {
+                // If the code is valid, remove any is-invalid class from input
+                $('#id_arrival_location').removeClass('is-invalid');
+            }
+        },
+        error: function(xhr, status, error) {
+            // Handle any AJAX errors here
+            console.error("AJAX Error:", xhr.status, xhr.responseText);        }
+    });
+  });
+</script>
+{% endblock %}
+
