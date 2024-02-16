@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.get_lists, name='get_lists'),
     path('add/<int:list_id>/', views.add_task, name='add_task'),
     path('get_all_tasks/', views.get_all_tasks, name='get_all_tasks'),
-    path('get_lists/', views.get_lists, name='get_lists'),
+    path('  /', views.get_lists, name='get_lists'),
     path('complete_task/', views.complete_task, name='complete_task'),
     path('mark_favorite/', views.mark_favorite, name='mark_favorite'),   
     path('get_task_details/<int:task_id>/', views.get_task_details, name='get_task_details'),   
@@ -20,4 +20,5 @@ urlpatterns = [
     path('get_tasks_by_list/<int:list_id>/', views.get_tasks_by_list, name='get_tasks_by_list'),
     path('register/', register, name='register'),
     path('delete_tasks/', views.delete_tasks, name='delete_tasks'),
+    path('send_email/', views.trigger_email_send, name='send_email'),
 ]

@@ -21,8 +21,34 @@ from django.http import JsonResponse,  HttpResponse
 from django.core import serializers
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 import logging
+from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
 
 logger = logging.getLogger(__name__)
+
+
+
+def send_recurrent_email():
+    send_mail(
+        'Subject here',
+        'Here is the message.',
+        'samaanaiapps@gmail.com',  # From email
+        ['kittureddy2000@gmail.com'],  # To email list
+        fail_silently=False,
+    )
+
+@require_POST  # Or @require_GET, depending on your setup
+def trigger_email_send(request):
+    # Get the secret token from environment variables
+    secret_token = os.environ.get('EMAIL_TRIGGER_SECRET_TOKEN')
+
+    # Check the provided token against the environment variable
+    request_token = request.headers.get('Authorization')
+    if request_token != secret_token:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    send_recurrent_email()
+    return JsonResponse({'success': 'Email sent'})
 
 #Get all Taks``
 def get_all_tasks(request):

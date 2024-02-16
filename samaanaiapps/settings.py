@@ -64,6 +64,10 @@ if os.path.isfile(env_file):
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath('temp_credentials.json')
 
 elif os.environ.get("GOOGLE_CLOUD_RUN", None):
+    
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
     project_id = os.environ.get("PROJECT_ID")
@@ -143,6 +147,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'todos',
     'spreturn',
     'stocks',
@@ -292,5 +297,12 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 SOCIALACCOUNT_LOGIN_ON_GET = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+
 
 

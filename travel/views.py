@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.http import JsonResponse
 import numpy as np
 import os
+import time
 from django.core.serializers.json import DjangoJSONEncoder
 from .models import Airport
 import requests
@@ -197,11 +198,10 @@ def travel(request):
             arrival_location = flight_form.cleaned_data['arrival_location']
             departure_date = flight_form.cleaned_data['departure_date']
             return_date = flight_form.cleaned_data['return_date']
-            # departure_entity_id = get_airport_code(departure_location)
-            # arrival_entity_id = get_airport_code(arrival_location)
+
             
-            departure_entity_id = "128668073"
-            arrival_entity_id = "95673577"
+            departure_entity_id = "95673577"
+            arrival_entity_id =  "128668073"
             print("Inside Travel departure : " + departure_location)
             print("Inside Travel arrival : " + arrival_location)
             
@@ -220,6 +220,9 @@ def travel(request):
             cache_key = 'travel_data'
             json_data = cache.get(cache_key)
             if not json_data:
+                #departure_entity_id = get_airport_code(departure_location)
+                #time.sleep(3)  # Pause for 1 second
+                #arrival_entity_id = get_airport_code(arrival_location)
                 
                 url = "https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchFlights"
 
