@@ -55,6 +55,14 @@ if os.path.isfile(env_file):
 
     # Parse the JSON string to a dictionary
     parsed_credentials = json.loads(json_credentials)
+    
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    print("EMAIL_HOST_PASSWORD : ", EMAIL_HOST_PASSWORD)
+    print("EMAIL_HOST_USER : ", EMAIL_HOST_USER)
+    
+    # Pull secrets from Secret Manager
+    print("Inside Google Cloud Project Environment")
 
     # Save the credentials to a temporary file
     with open('temp_credentials.json', 'w') as temp:
@@ -67,6 +75,8 @@ elif os.environ.get("GOOGLE_CLOUD_RUN", None):
     
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    print("EMAIL_HOST_PASSWORD", EMAIL_HOST_PASSWORD)
+    print("EMAIL_HOST_USER", EMAIL_HOST_USER)
     
     # Pull secrets from Secret Manager
     print("Inside Google Cloud Project Environment")
@@ -177,7 +187,7 @@ ROOT_URLCONF = 'samaanaiapps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],  # Add this line
+        'DIRS': [os.path.join(BASE_DIR, 'core/templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
@@ -282,22 +292,7 @@ LOGGING = {
 }
 
 
-
-AUTHENTICATION_BACKENDS = (
-    'allauth.account.auth_backends.AuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
-
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
-
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
-SOCIALACCOUNT_LOGIN_ON_GET = True
-
+AUTH_USER_MODEL = 'core.CustomUser'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True

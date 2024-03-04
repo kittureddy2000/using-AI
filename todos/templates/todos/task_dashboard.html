@@ -5,7 +5,8 @@
 
 {% block additional_head %}
 <meta name="csrf-token" content="{{ csrf_token }}" />
-<link href="{% static 'todos/css/todo-style.css' %}" rel="stylesheet">
+<link href="{% static 'todos/css/todo_style.css' %}" rel="stylesheet">
+
 {% endblock %}
 
 {% block content %}
@@ -14,10 +15,9 @@
 
 <div class="container-fluid">
 
-  <img src="example.jpg" data-bs-toggle="collapse" data-bs-target="#demoCollapse">
-  <div class="collapse" id="demoCollapse">
-    Simple collapsible content.
-  </div>
+  <i class="fas fa-bars" data-bs-toggle="collapse" data-bs-target="#demoCollapse"></i>
+  <div class="collapse" id="demoCollapse"></div>
+  
 
 
   <div class="row">
@@ -101,7 +101,7 @@
     </button>
 
     <div id="task-details-panel" class="col-md-4 bg-light border-left d-none panel-shadow">
-       {% include 'todos/edit_task.html' %}
+       {% comment %} {% include 'todos/edit_task.html' %} {% endcomment %}
     </div>
 </div>
 
@@ -200,7 +200,7 @@
               updateTasksSection(data.tasks);
             });
         }
-        // Initial fetch for page 1
+        // Initial fetch for all tasks.
         fetchTasks();
 
         //Live Search Tasks
@@ -357,6 +357,7 @@
             },
           });
         });
+
         //Start - Add Task
         $(document).on("click", ".add-task-btn", function () {
 
@@ -392,11 +393,13 @@
           );
         });
 
+        //When Take Action is Clicked
+
         $(document).on('click', '.task-info-clickable', function() {
             var taskId = $(this).data('id');
             var taskId1 = $(this).attr('data-id');
 
-            console.log("Clicked on Row with Task Id **** : "+ taskId1);
+            console.log("Clicked on task with Task Id **** : "+ taskId1);
             //console.log("Clicked on Row with Task Id : "+ taskId);
 
             url = "/todos/edit_task/" + taskId + "/";

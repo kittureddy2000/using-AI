@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-5">
+  <h2>Update Profile</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ form.profile_picture.label_tag }} {{ form.profile_picture }} {% for
+      error in form.profile_picture.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="mb-3">
+      {{ form.date_of_birth.label_tag }} {{ form.date_of_birth }} {% for error
+      in form.date_of_birth.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+</div>
+{% endblock %}

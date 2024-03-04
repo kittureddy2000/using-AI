@@ -1,13 +1,13 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class TaskList(models.Model):
     list_name = models.CharField(max_length=2000)
     list_code = models.CharField(max_length=100, null=True)
     special_list = models.BooleanField(default=False)
     color = models.CharField(max_length=100)
-
 
     def __str__(self):
         return self.list_name
@@ -27,7 +27,7 @@ class Task(models.Model):
         (YEARLY, 'Yearly'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE,default=3)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     task_name = models.CharField(max_length=200)
     list_name = models.ForeignKey(TaskList, on_delete=models.SET_DEFAULT, default=1, blank=True)
     task_description = models.CharField(max_length=2000, null=True, blank=True)
@@ -54,7 +54,7 @@ class Image(models.Model):
 
 
 class TaskHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=3)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     task_name = models.CharField(max_length=200)
     list_name = models.ForeignKey(TaskList, on_delete=models.SET_DEFAULT, default=1, blank=True)
     task_description = models.CharField(max_length=2000, null=True, blank=True)  # Remove the comma here

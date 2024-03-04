@@ -6,6 +6,8 @@ from django.shortcuts import render
 from core.utils import get_secrets
 from django.core.paginator import Paginator
 import google.auth
+from .models import Task
+from django.contrib.auth.decorators import login_required
 import os
 from dateutil.relativedelta import relativedelta
 from datetime import timedelta
@@ -104,20 +106,13 @@ def search_tasks(request):
 def get_lists(request):
     lists = TaskList.objects.all().order_by('-special_list')
     print("List Count : " + str(lists.count()))
-    task = get_object_or_404(Task, id=79)  
-    print("Task Name : " + task.task_name)
-    form = TaskForm(instance = task)
-    images = task.images.all()
-    image_data = []
-    for image in images:
-        image_data.append({'url': image.image_url,'image_name': image.image_name, 'id': image.id})
-            
-    args = {'task_lists': lists,'edit_task_form': form,'images': images}
-    print("After Args")
+    args = {'task_lists': lists}
     
     return render(request, 'todos/task_dashboard.html', args)
 
 # Function to Add the Task
+
+@login_required
 def add_task(request, list_id):
     print("Add Task Function request method : " + request.method)
     
@@ -138,16 +133,13 @@ def add_task(request, list_id):
                 task.task_name = add_task_form.cleaned_data['task_name']
                 task.task_description = add_task_form.cleaned_data['task_description']
                 task.due_date = add_task_form.cleaned_data['due_date']
-
                 print(" Task Name : " + task.task_name)
-                
                 list_name = add_task_form.cleaned_data['list_name']
                 task.list_name = list_name
                 #print("List Name : " + task.list_name)
 
-                print(request.user.username)
-                print(request.user.id)
-
+                print("username : " + request.user.username + "  id : " + str(request.user.id))
+                task.user = request.user    
                 task.reminder_time = task.due_date
                 task.task_completed = False
                 task.assigned_to = request.user.username
@@ -284,7 +276,7 @@ def mark_favorite(request):
     task_id = request.POST.get('id')
     task = Task.objects.get(id=task_id)
     task_name = task.task_name
-    print("Mark Favorite : " + task_name)
+    print("Marking Task as Favorite : " + task_name)
     
     if task.important :
         task.important = False
@@ -299,9 +291,6 @@ def mark_favorite(request):
         print("Task important : False ")
     
     return JsonResponse({'Important': task.important , 'task_name': task_name, 'task_id' : task_id})
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Task
 
 def get_task_details(request, task_id):
     print("Function: Get Tasks Details " + str(task_id))

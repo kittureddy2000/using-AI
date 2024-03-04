@@ -1,34 +1,83 @@
+<nav class="navbar navbar-expand-sm navbar-light bg-primary">
+  
+  <a
+    class="navbar-brand text-white ms-3"
+    href="{% url 'core:dashboard' %}"
+    style="padding-left: 10px"
+    >Samaan Apps</a
+  >
+  <ul class="navbar-nav ms-auto">
+    {% if user.is_authenticated %}
 
-    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
-          <a class="navbar-brand  text-white" href="#" style="padding-left: 10px;">Samaan Apps</a>
-    <ul class="navbar-nav ms-auto">
-      {% if user.is_authenticated %}
+    <div class="dropdown" style="padding-right: 30px">
+      <a
+        href="#"
+        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <strong>{{user.username}}</strong>
+      </a>
+      <ul
+        class="dropdown-menu dropdown-menu-end"
+        aria-labelledby="navbarDropdownMenuLink"
+      >
+        <li>
+          <a class="nav-item" href="#">
+            <i class="fa-solid fa-gear me-2"></i>Settings</a
+          >
+        </li>
+        <li>  
+          <a href="{% url 'core:update_profile' %}" class="nav-link">Update Profile</a>
+        </li>
+        <li>
+          <a
+            class="nav-item"
+            href="{% url 'core:logout' %}"
+            class="nav-link white-nav-link"
+          >
+            <i class="fas fa-user-times me-2"></i> Logout
+          </a>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <a
+            class="nav-item"
+            href="{% url 'todos:create_task_list' %}"
+            class="nav-link white-nav-link"
+          >
+            <i class="fas fa-tasks me-2"></i> Add List</a
+          >
+        </li>
+        <li>
+          <a
+            class="nav-item"
+            href="{% url 'todos:completed_tasks' %}"
+            class="nav-link white-nav-link"
+          >
+            <i class="fas fa-tasks me-2"></i> Completed Tasks</a
+          >
+        </li>
+        <li>
+          <a
+            class="nav-item"
+            href="{% url 'todos:delete_tasks' %}"
+            class="nav-link white-nav-link"
+          >
+            <i class="fas fa-tasks me-2"></i> Delete Tasks</a
+          >
+        </li>
+      </ul>
+    </div>
 
-      <div class="dropdown" style="padding-right: 30px; ">
-        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <strong>{{user.username}}</strong>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-          <li><a class="nav-item" href="#"> <i class="fa-solid fa-gear me-2"></i>Settings</a></li>
-          <li><a class="nav-item" href="#"><i class="fa-solid fa-user me-2"></i>Profile</a></li>  
-          <li > 
-            <a class="nav-item" href="{% url 'account_logout' %}" class="nav-link white-nav-link"> <i class="fas fa-user-times  me-2"></i> Logout </a>    
-          </li>
-          <li><hr class="dropdown-divider" /></li>
-           <li> <a class="nav-item" href="{% url 'todos:create_task_list' %}"  class="nav-link white-nav-link" > <i class="fas fa-tasks  me-2"></i>  Add List</a> </li>
-           <li> <a class="nav-item" href="{% url 'todos:completed_tasks' %}"  class="nav-link white-nav-link" > <i class="fas fa-tasks  me-2"></i>  Completed Tasks</a> </li>
-           <li> <a class="nav-item" href="{% url 'todos:delete_tasks' %}"  class="nav-link white-nav-link" > <i class="fas fa-tasks  me-2"></i>  Delete Tasks</a> </li>
-        </ul>
-      </div>
-
-      {% else %}
-      <li class="nav-item me-3">
-        <a href="{% url 'account_login' %}" class="nav-link white-nav-link text-white"
-          >Login</a
-        >
-      </li>
-      {% endif %}
-
-
-    </ul>
-  </nav>
+    {% else %}
+    <li class="nav-item me-2">
+      <a
+        href="{% url 'core:login' %}"
+        class="nav-link white-nav-link text-white"
+        >Login</a
+      >
+    </li>
+    {% endif %}
+  </ul>
+</nav>
