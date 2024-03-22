@@ -164,6 +164,7 @@ INSTALLED_APPS = [
     'stocks',
     'core',
     'travel',
+    'my_chatgpt',
     'crispy_forms',
     'django.contrib.sites',
     'allauth',

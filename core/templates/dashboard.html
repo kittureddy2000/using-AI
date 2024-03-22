@@ -1,72 +1,73 @@
-{% extends 'base.html' %} {% load todo_extras %} {% block title %}Using AI Dashboard{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load todo_extras %} {% block title %}Using AI
+Dashboard{% endblock %} {% block content %}
 <div class="container bg-light mt-5">
-
-
-    <div class="row mt-5">
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"> 
-
-                    <a href="{% url 'travel:travel' %}" class="card-title mt-2">
-                        Travel</a
-                    ></h5>
-                    <p class="card-text text-muted">
-                        Tavel Application
-                    </p>
-                </div>
-            </div>
+  <div class="row mt-5">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'travel:travel' %}" class="card-title mt-2">
+              Travel</a
+            >
+          </h5>
+          <p class="card-text text-muted">Tavel Application</p>
         </div>
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"> 
-
-                <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
-                        My Tasks</a
-                    >
-                    </h5>
-                    <p class="card-text text-muted">
-                   Task Management Application</p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
- 
-    <div class="row mt-5">
-
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"> 
-                        <a href="{% url 'spreturn' %}" class="card-title mt-2">
-                        S&P Return</a
-                    ></h5>
-                    <p class="card-text text-muted">
-                        S&P Return Analysis
-                    </p>
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
+              My Tasks</a
+            >
+          </h5>
+          <p class="card-text text-muted">Task Management Application</p>
         </div>
-
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">
-                    <a href="{% url 'stocks:stock_list' %}" class="card-title mt-2">
-                        Stocks</a
-                    ></h5>
-                    <p class="card-text text-muted">
-                        My Stocks Applciation 
-                    </p>
-                </div>
-            </div>
-        </div>
-        
+      </div>
     </div>
-    
- </div>   
+  </div>
 
-  {% endblock %}
+  <div class="row mt-5">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'spreturn' %}" class="card-title mt-2">
+              S&P Return</a
+            >
+          </h5>
+          <p class="card-text text-muted">S&P Return Analysis</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'stocks:stock_list' %}" class="card-title mt-2">
+              Stocks</a
+            >
+          </h5>
+          <p class="card-text text-muted">My Stocks Applciation</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'my_chatgpt:chat_gpt' %}" class="card-title mt-2">
+              My ChatGPT</a
+            >
+          </h5>
+          <p class="card-text text-muted">My Chat Gpt</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

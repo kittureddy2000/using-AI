@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from .models import Profile
+from django.contrib.auth.forms import AuthenticationForm
+from django.utils.translation import gettext_lazy as _
+
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='Enter a valid email address')
@@ -32,4 +35,13 @@ class ProfileForm(forms.ModelForm):
             'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
         }
-             
+            
+            
+class CustomAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': _(
+            "Your custom error message for invalid login"
+        ),
+        'inactive': _("This account is inactive."),
+    }
+ 

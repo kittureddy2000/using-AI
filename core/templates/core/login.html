@@ -69,13 +69,13 @@
               </p>
             </div>
 
-            {% if form.errors %}
-            <div class="col-12">
-              <div class="alert alert-danger">
-                <strong>Error!</strong> {{ form.errors }}
+              {% if form.errors %}
+              <div class="col-12">
+                <div class="alert alert-danger">
+                  <strong>Error!</strong>     There was a problem with your login details. Please check your username and password and try again.
+                </div>
               </div>
-            </div>
-            {% endif %}
+              {% endif %}
           </form>
         </div>
       </div>

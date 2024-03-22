@@ -5,11 +5,12 @@ from . import views
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from .forms import CustomAuthenticationForm  
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),  # Set as root URL
     path('register/', views.register, name='register'),
-    path('login/', LoginView.as_view(template_name='core/login.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='core/login.html' , authentication_form=CustomAuthenticationForm), name='login'),
     path('logout/', LogoutView.as_view(next_page='core:logged_out'), name='logout'),
     path('logged_out/', TemplateView.as_view(template_name='core/logged_out.html'), name='logged_out'),
     path('profile_update/', views.update_profile, name='update_profile'),
