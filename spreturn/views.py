@@ -60,7 +60,7 @@ def spreturn(request):
     SP500_dividend = {data.year: data.return_divident for data in spreturn_data}
 
 
-    for start_year  in range(1928, 2022 - number_of_year):
+    for start_year  in range(1928, 2021 - number_of_year):
         print("Starting Year : " + str(start_year))
         
         # totalReturnPercent = 0)
