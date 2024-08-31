@@ -58,8 +58,10 @@ def spreturn(request):
     # Creating dictionaries from the queryset
     SP500 = {data.year: data.spreturn for data in spreturn_data}
     SP500_dividend = {data.year: data.return_divident for data in spreturn_data}
-    print("SP500 Data :" + SP500)
-    print("SP500 Dividend Data :" + SP500_dividend)
+    print("SP500 Data :" )
+    print(SP500)
+    print("SP500 Dividend Data :" )
+    print( SP500_dividend)
     
 
 
