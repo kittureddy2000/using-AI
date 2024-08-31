@@ -53,6 +53,13 @@ def spreturn(request):
     print("Recurring Deposit Amount : " + str(recurring_deposit_amount))
 
     spreturninfo90years = spinfo.objects.all()
+
+        # Checking if the data is being fetched
+    if not spreturn_data:
+        print("No data found in spinfo table.")
+    else:
+        print(f"Retrieved {len(spreturn_data)} records.")
+
     
     spreturn_data = spinfo.objects.values_list('year', 'spreturn', 'return_divident', named=True)
     # Creating dictionaries from the queryset
