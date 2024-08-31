@@ -56,6 +56,12 @@ def spreturn(request):
     spreturn_data = spinfo.objects.values_list('year', 'spreturn', 'return_divident', named=True)
 
         # Checking if the data is being fetched
+    if not spreturninfo90years:
+        print("No data found in spreturninfo90years table.")
+    else:
+        print(f"Retrieved {len(spreturninfo90years)} records.")
+
+        # Checking if the data is being fetched
     if not spreturn_data:
         print("No data found in spinfo table.")
     else:
