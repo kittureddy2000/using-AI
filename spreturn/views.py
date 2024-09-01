@@ -13,7 +13,7 @@ from decimal import Decimal
 def spreturn(request):
     
     initial_values = {
-        'numYears': 3,
+        'numYears': 30,
         'reccuringDeposit': 'No',
         'startingInvest': 1.0,
         'reccuringDepositAmount': 1.0
@@ -23,9 +23,10 @@ def spreturn(request):
     series_sp = []
     series_sp_DD = []
     form_values = {}
+    history_begin_year = 1928
 
     ReturnInfo = {}
-    SP500_divident = {}
+    SP500_dividend = {}
     SP500 = {}
 
     if (request.method == "POST"):
@@ -78,7 +79,7 @@ def spreturn(request):
     
 
 
-    for start_year  in range(1928, 2021 - number_of_year):
+    for start_year  in range(history_begin_year, 2024 - number_of_year):
         print("Starting Year : " + str(start_year))
         
         # totalReturnPercent = 0)
