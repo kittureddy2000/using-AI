@@ -135,7 +135,7 @@ DATABASES = {
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': DB_PASSWORD if ENVIRONMENT == 'production' else env('DB_PASSWORD'),
-        'HOST': 'db' ,#env('DB_HOST', default='localhost'),
+        'HOST': env('DB_HOST', default='db'),
         'PORT': env('DB_PORT', default='5432'),
     }
 }
