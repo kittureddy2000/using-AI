@@ -31,9 +31,7 @@ print(f"HOST: {env('DB_HOST', default='Not Set')}")
 print(f"DB_NAME: {env('DB_NAME', default='Not Set')}")
 print(f"DB_USER: {env('DB_USER', default='Not Set')}")
 #print(f"DB_PASSWORD: {env('DB_PASSWORD', default="Not set")}")
-print(f"HOST: {env('DB_HOST', default='Not Set')}")
 
-GOOGLE_APPLICATION_CREDENTIALS = env('GOOGLE_APPLICATION_CREDENTIALS')  # Ensure this is set
 
 try:
     credentials, project = google.auth.default()
@@ -61,6 +59,8 @@ if ENVIRONMENT == 'development':
     # In development, read from the local .env file
 
     SECRET_KEY = env('SECRET_KEY', default='your-default-secret-key')
+    GOOGLE_APPLICATION_CREDENTIALS = env('GOOGLE_APPLICATION_CREDENTIALS')  # Ensure this is set
+
     
     DB_PASSWORD = env('DB_PASSWORD')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
