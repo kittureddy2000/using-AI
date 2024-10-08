@@ -149,11 +149,14 @@ print("Database settings:", DATABASES)
 # running in production. The URL will be known once you first deploy
 # to Cloud Run. This code takes the URL and converts it to both these settings formats.
 CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
+print("CLOUDRUN_SERVICE_URL:", CLOUDRUN_SERVICE_URL)
 
 # Security settings
 if ENVIRONMENT == 'production':
     allowed_hosts_str = env("DJANGO_ALLOWED_HOSTS", default=CLOUDRUN_SERVICE_URL)
     ALLOWED_HOSTS = allowed_hosts_str.split(',')  
+
+    print("Allowed hosts : " + ALLOWED_HOSTS)
 
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
