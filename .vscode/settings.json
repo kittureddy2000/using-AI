@@ -1,5 +1,7 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "docker.languageserver.formatter.ignoreMultilineInstructions": true
+  "docker.languageserver.formatter.ignoreMultilineInstructions": true,
+  "python.pythonPath": "${workspaceFolder}/venv/bin/python3",
+  "python.envFile": "${workspaceFolder}/.env"
 }

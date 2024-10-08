@@ -1,31 +1,47 @@
+# Dockerfile
 
-# Use Python 3.10 image as the parent image
+# Use the official Python image from Docker Hub
 FROM python:3.10-slim
 
-# Define environment variable
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Set build-time variables
+ARG ENVIRONMENT=production
+ENV ENVIRONMENT=${ENVIRONMENT}
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    build-essential \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
+# Copy requirements.txt first to leverage Docker cache
+COPY requirements.txt /app/
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 8000 available to the world outside this container
+# Copy the application code
+COPY . /app/
+
+# Collect static files (if necessary)
+#RUN python manage.py collectstatic --noinput
+
+# Create a non-root user (optional but recommended)
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
+# Expose port 8080
 EXPOSE 8080
 
-# Copy Google Cloud credentials into the container
-#COPY using-ai-405105-5e2a1c2c69d8.json /app
-#ENV GOOGLE_APPLICATION_CREDENTIALS=/app/using-ai-405105-5e2a1c2c69d8.json
+# Copy the entrypoint script
+COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Start Cloud SQL Proxy
-#COPY cloud-sql-proxy /app
-#RUN chmod +x /app/cloud-sql-proxy
-#RUN ./cloud-sql-proxy -instances=using-ai-405105:us-west1:mypostgres=tcp:5432 &
-
-# Run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "samaanaiapps.wsgi:application"]
+# Set the entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]

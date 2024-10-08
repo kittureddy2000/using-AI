@@ -1,75 +1,46 @@
+# cloudbuild.yaml
+
 options:
   logging: 'CLOUD_LOGGING_ONLY'
-  defaultLogsBucketBehavior: 'REGIONAL_USER_OWNED_BUCKET'
 
-# [START cloudrun_django_cloudmigrate]
 steps:
-  - id: "build image"
-    name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "."]
-
-  - id: "push image"
-    name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
-
-  - id: "make migrations"
-    name: "gcr.io/google-appengine/exec-wrapper"
+  # Step 1: Build the Docker image
+  - id: "Build image"
+    name: 'gcr.io/cloud-builders/docker'
     args:
       [
-        "-i",
-        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
-        "-s",
-        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
-        "-e",
-        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
-        "--",
-        "python",
-        "manage.py",
-        "makemigrations",
-      ]
-  
-  - id: "apply migrations"
-    name: "gcr.io/google-appengine/exec-wrapper"
-    args:
-      [
-        "-i",
-        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
-        "-s",
-        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
-        "-e",
-        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
-        "--",
-        "python",
-        "manage.py",
-        "migrate",
+        'build',
+        '-t',
+        'gcr.io/$PROJECT_ID/$_SERVICE_NAME',
+        '--build-arg',
+        'ENVIRONMENT=production',
+        '.',
       ]
 
-  - id: "collect static"
-    name: "gcr.io/google-appengine/exec-wrapper"
-    args:
-      [
-        "-i",
-        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
-        "-s",
-        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
-        "-e",
-        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
-        "--",
-        "python",
-        "manage.py",
-        "collectstatic",
-        "--verbosity",
-        "2",
-        "--no-input",
-      ]
+  # Step 2: Push the Docker image to Container Registry
+  - id: "Push image"
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME']
 
-substitutions:
-  _INSTANCE_NAME: mypostgres
-  _REGION: us-west1
-  _SERVICE_NAME: todos_service
-  _SECRET_SETTINGS_NAME: DJANGO_SETTINGS
+  # Step 3: Deploy to Cloud Run
+  - id: "Deploy to Cloud Run"
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:latest'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy $_SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/$_SERVICE_NAME \
+          --platform managed \
+          --region $_REGION \
+          --allow-unauthenticated \
+          --add-cloudsql-instances $PROJECT_ID:$_REGION:$_INSTANCE_NAME \
+          --set-env-vars ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID
 
 images:
-  - "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
-  
-# [END cloudrun_django_cloudmigrate]
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+
+substitutions:
+  _SERVICE_NAME: 'samaanai_service'       # Replace with your Cloud Run service name
+  _REGION: 'us-west1'                     # Replace with your Cloud Run service region
+  _INSTANCE_NAME: 'mypostgres'            # Replace with your Cloud SQL instance name
