@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Exit immediately if a command exits with a non-zero status
+# Exit immediately if a command exits with a non-zero status nad 
 set -e
 
 # Check the environment and set DB host accordingly
