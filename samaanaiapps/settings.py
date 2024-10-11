@@ -68,7 +68,7 @@ if ENVIRONMENT == 'development':
     PROJECT_ID = env('PROJECT_ID')
     print(f"PROJECT_ID: {env('PROJECT_ID', default=None)}")
     
-    # In development, use local file storage
+    # In development, use local file storage for everythig.
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / 'staticfiles'
     STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']

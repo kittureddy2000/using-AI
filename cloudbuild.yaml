@@ -36,7 +36,7 @@ steps:
           --allow-unauthenticated \
           --add-cloudsql-instances $PROJECT_ID:$_REGION:$_INSTANCE_NAME \
           --update-secrets GOOGLE_APPLICATION_CREDENTIALS=GOOGLE_APPLICATION_CREDENTIALS:latest \
-          --set-env-vars ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID
+          --set-env-vars GS_BUCKET_NAME=your-correct-bucket-name, ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID
 
 images:
   - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
