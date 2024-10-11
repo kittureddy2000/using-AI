@@ -105,7 +105,7 @@ else:
     SECRET_KEY = get_secret('SECRET_KEY')
     DB_PASSWORD = get_secret('DB_PASSWORD')
     EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
-    GOOGLE_APPLICATION_CREDENTIALS = get_secret('GOOGLE_APPLICATION_CREDENTIALS')
+    #GOOGLE_APPLICATION_CREDENTIALS = get_secret('GOOGLE_APPLICATION_CREDENTIALS')
     EMAIL_TRIGGER_SECRET_TOKEN=get_secret('EMAIL_TRIGGER_SECRET_TOKEN')
 
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Set via environment variable in Cloud Run
@@ -143,11 +143,6 @@ DATABASES = {
 print("Database settings:", DATABASES)
 
 
-
-# [START cloudrun_django_csrf]
-# SECURITY WARNING: It's recommended that you use this when
-# running in production. The URL will be known once you first deploy
-# to Cloud Run. This code takes the URL and converts it to both these settings formats.
 CLOUDRUN_SERVICE_URL = env("CLOUDRUN_SERVICE_URL", default=None)
 print("CLOUDRUN_SERVICE_URL:", CLOUDRUN_SERVICE_URL)
 

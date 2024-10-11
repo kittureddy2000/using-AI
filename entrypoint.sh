@@ -3,6 +3,18 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Check the environment and set DB host accordingly
+if [ "$ENVIRONMENT" = "production" ]; then
+    echo "Running in production environment"
+    
+    # Collect static files (for Google Cloud Storage or other static file service)
+    echo "Collecting static files..."
+    python manage.py collectstatic --noinput
+else
+    echo "Running in development environment"
+fi
+
+
 DB_HOST="${DB_HOST:-db}"
 
 # Wait for PostgreSQL to be ready
