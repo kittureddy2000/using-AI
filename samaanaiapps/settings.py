@@ -55,7 +55,7 @@ DB_PASSWORD = None
 EMAIL_HOST_PASSWORD = None
 
 if ENVIRONMENT == 'development':
-    print('I am insideDevelopement Environment')
+    print('I am inside Developement Environment')
     # In development, read from the local .env file
 
     SECRET_KEY = env('SECRET_KEY', default='your-default-secret-key')
@@ -78,7 +78,7 @@ if ENVIRONMENT == 'development':
     
 
 else:
-    print('This is PRODUCTION Environment')
+    print('I am inside PRODUCTION Environment')
 
     # In production, use environment variables and fetch secrets from Secret Manager
     # Assume environment variables are set in the deployment environment (e.g., Cloud Run)
