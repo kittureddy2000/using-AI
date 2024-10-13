@@ -109,7 +109,7 @@ else:
     service_account_info = json.loads(env('GOOGLE_APPLICATION_CREDENTIALS'))
     GS_CREDENTIALS = service_account.Credentials.from_service_account_info(service_account_info)
 
-    # Fetch secrets from Google Secret Manager
+    # Fetch secrets from Google Secret Managerd
     SECRET_KEY = get_secret('SECRET_KEY')
     DB_PASSWORD = get_secret('DB_PASSWORD')
     EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
