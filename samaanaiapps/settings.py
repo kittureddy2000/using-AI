@@ -4,6 +4,9 @@ from pathlib import Path
 import os
 import environ
 import google.auth
+import json
+from google.oauth2 import service_account
+
 
 
 print("settings.py loaded")
@@ -100,6 +103,11 @@ else:
         response = client.access_secret_version(request={"name": name})
         secret_value = response.payload.data.decode('UTF-8')
         return secret_value
+
+
+    # Fetch the service account JSON from the environment variable (as injected from Secret Manager)
+    service_account_info = json.loads(env('GOOGLE_APPLICATION_CREDENTIALS'))
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(service_account_info)
 
     # Fetch secrets from Google Secret Manager
     SECRET_KEY = get_secret('SECRET_KEY')

@@ -35,7 +35,7 @@ steps:
           --region $_REGION \
           --allow-unauthenticated \
           --add-cloudsql-instances $PROJECT_ID:$_REGION:$_INSTANCE_NAME \
-          --update-secrets GOOGLE_APPLICATION_CREDENTIALS=GOOGLE_APPLICATION_CREDENTIALS:latest \
+          --set-secrets SERVICE_ACCOUNT_KEY=GOOGLE_APPLICATION_CREDENTIALS:latest \
           --set-env-vars GS_BUCKET_NAME=using-ai-samaan, ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID
 
 images:
