@@ -72,11 +72,11 @@ if ENVIRONMENT == 'development':
     
     DB_PASSWORD = env('DB_PASSWORD')
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
     PROJECT_ID = env('PROJECT_ID')
 
     print(f"DB_PASSWORD: {env('DB_PASSWORD', default=None)}")
-    print(f"EMAIL_HOST_PASSWORD: {env('EMAIL_HOST_PASSWORD', default=None)}")
+    print(f"EMAIL_HOST_PASSWORD: {env('SENDGRID_API_KEY', default=None)}")
     print(f"EMAIL_HOST_USER: {env('EMAIL_HOST_USER', default=None)}")
     print(f"PROJECT_ID: {env('PROJECT_ID', default=None)}")
     

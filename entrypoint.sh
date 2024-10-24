@@ -24,7 +24,7 @@ if [ "$ENVIRONMENT" != "production" ]; then
 fi
 
 # Run database migrations
-echo "python manage.py Before Running Migrations"
+echo "python manage.py Before Running Make Migrations"
 python manage.py makemigrations
 echo "python manage.py Before Running migrate"
 python manage.py migrate
