@@ -68,12 +68,13 @@ if ENVIRONMENT == 'development':
 
     
     DB_PASSWORD = env('DB_PASSWORD')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    PROJECT_ID = env('PROJECT_ID')
+
     print(f"DB_PASSWORD: {env('DB_PASSWORD', default=None)}")
     print(f"EMAIL_HOST_PASSWORD: {env('EMAIL_HOST_PASSWORD', default=None)}")
     print(f"EMAIL_HOST_USER: {env('EMAIL_HOST_USER', default=None)}")
-    PROJECT_ID = env('PROJECT_ID')
     print(f"PROJECT_ID: {env('PROJECT_ID', default=None)}")
     
     # In development, use local file storage for everythig.
@@ -118,11 +119,8 @@ else:
     # Fetch secrets from Google Secret Managerd
     SECRET_KEY = get_secret('SECRET_KEY')
     DB_PASSWORD = get_secret('DB_PASSWORD')
-    EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
-    #GOOGLE_APPLICATION_CREDENTIALS = get_secret('GOOGLE_APPLICATION_CREDENTIALS')
-    EMAIL_TRIGGER_SECRET_TOKEN=get_secret('EMAIL_TRIGGER_SECRET_TOKEN')
-
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Set via environment variable in Cloud Run
+    EMAIL_HOST_PASSWORD = get_secret('SENDGRID_API_KEY')
     
     # In production, use Google Cloud Storage
 
@@ -276,25 +274,24 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Or as per your requirement
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Options: 'none', 'optional', 'mandatory'
 
-
 # settings.py
 ACCOUNT_FORMS = {
     'signup': 'core.forms.CustomSignupForm',
 }
 
 
-# # Google OAuth credentials
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'APP': {
-#             'client_id': '1074693546571-9g0hd309eq0j2b2hv788g9lkn65pdl1p.apps.googleusercontent.com',
-#             'secret': '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',
-#             'key': ''
-#         }
-#     }
-# }
-
-
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '1074693546571-9g0hd309eq0j2b2hv788g9lkn65pdl1p.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        },
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
 
 
 # Default primary key field type
@@ -366,26 +363,24 @@ LOGGING = {
     },
 }
 
+# Messages Framework settings
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',  # Bootstrap uses 'danger' instead of 'error'
+}
 
 AUTH_USER_MODEL = 'core.CustomUser'  # Adjust 'core' if your app has a different name
-
-
-# Email Configuration (optional for registration)
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = EMAIL_HOST_USER  
-# EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Email Backend Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587  # Use 465 for SSL
 EMAIL_USE_TLS = True  # Use EMAIL_USE_SSL=True if using port 465
-EMAIL_HOST_USER = 'apikey'  # This is the literal string 'apikey' for SendGrid
-EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')  # Retrieved from environment variables
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='kittureddydeals@gmail.com')
 
 
@@ -405,45 +400,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '1074693546571-9g0hd309eq0j2b2hv788g9lkn65pdl1p.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        },
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'OAUTH_PKCE_ENABLED': True,
-    }
-}
 
-#Logging Framework
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',  # Change to DEBUG for detailed logs
-        },
-    },
-}
-
-# Messages Framework settings
-from django.contrib.messages import constants as messages
-
-MESSAGE_TAGS = {
-    messages.DEBUG: 'debug',
-    messages.INFO: 'info',
-    messages.SUCCESS: 'success',
-    messages.WARNING: 'warning',
-    messages.ERROR: 'danger',  # Bootstrap uses 'danger' instead of 'error'
-}
 
 print('I am the end of settings.py')
