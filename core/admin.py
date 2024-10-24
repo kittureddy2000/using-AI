@@ -9,5 +9,5 @@ admin.site.register(CustomUser, UserAdmin)
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date_of_birth', 'profile_picture')  # Customize this as per your `Profile` model fields
+    list_display = ('user', 'profile_picture')  # Customize this as per your `Profile` model fields
     search_fields = ('user__username', 'user__email')  # Allow search by username and email

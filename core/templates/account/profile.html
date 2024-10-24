@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>Your Profile</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-info w-100">Update Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

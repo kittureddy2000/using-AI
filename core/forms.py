@@ -1,47 +1,28 @@
+# core/forms.py
+
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
-from .models import Profile
-from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import CustomUser
+from allauth.account.forms import SignupForm
 
 
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True, help_text='Enter a valid email address')
-    
-    class Meta(UserCreationForm.Meta):
-        model = get_user_model()
-        fields = ("username", "email", "password1", "password2")
-        help_texts = {
-            'username': 'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
-            'password1': ('Your password can’t be too similar to your other personal information. '
-                          'Your password must contain at least 8 characters. '
-                          'Your password can’t be a commonly used password. '
-                          'Your password can’t be entirely numeric.'),
-        }
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
-        }
+class CustomSignupForm(SignupForm):
+    profile_picture = forms.ImageField(required=False, label="Profile Picture")
 
-            
-class ProfileForm(forms.ModelForm):
+    def save(self, request):
+        user = super().save(request)
+        # Access the Profile instance created by the signal
+        profile = user.profile
+        profile.profile_picture = self.cleaned_data.get('profile_picture')
+        profile.save()
+        return user
+
+class CustomUserUpdateForm(UserChangeForm):
     class Meta:
-        model = Profile
-        fields = ['profile_picture', 'date_of_birth']
-        widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
-        }
-            
-            
-class CustomAuthenticationForm(AuthenticationForm):
-    error_messages = {
-        'invalid_login': _(
-            "Your custom error message for invalid login"
-        ),
-        'inactive': _("This account is inactive."),
-    }
- 
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'profile_image']  # Add the fields you want to be editable in the profile
+
+    # Customize widgets if you want to style the fields
+    profile_image = forms.ImageField(required=False, widget=forms.ClearableFileInput)
+
+    # Additional form validation or customization can go here    

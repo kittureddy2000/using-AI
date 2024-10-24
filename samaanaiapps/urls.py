@@ -17,17 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    path('', include(('core.urls', 'core'), namespace='core')),  # Added namespace for 'core'
-    path('todos/', include('todos.urls')),  # Include your app's URLs here
-    path('spreturn/', include('spreturn.urls')),
-    path('travel/', include('travel.urls')),
-    path('stocks/', include('stocks.urls')),
+    path('', include('core.urls', namespace='core')),
+    path('todos/', include('todos.urls', namespace='todos')),
+    path('spreturn/', include('spreturn.urls', namespace='spreturn')),
+    path('travel/', include('travel.urls', namespace='travel')),
+    path('stocks/', include('stocks.urls', namespace='stocks')),
+    path('my_chatgpt/', include('my_chatgpt.urls', namespace='my_chatgpt')),
     path('accounts/', include('allauth.urls')),
-    path('my_chatgpt/', include('my_chatgpt.urls')),
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

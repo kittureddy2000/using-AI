@@ -4,15 +4,11 @@
 set -e
 
 # Check the environment and set DB host accordingly
-if [ "$ENVIRONMENT" = "production" ]; then
-    echo "Running in production environment"
-    
+# if [ "$ENVIRONMENT" = "production" ]; then echo "Running in production environment"
     # Collect static files (for Google Cloud Storage or other static file service)
-    echo "Collecting static files..."
-    python manage.py collectstatic --noinput
-else
-    echo "Running in development environment"
-fi
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
 
 
 DB_HOST="${DB_HOST:-db}"
@@ -28,8 +24,10 @@ if [ "$ENVIRONMENT" != "production" ]; then
 fi
 
 # Run database migrations
+echo "python manage.py Before Running Migrations"
+python manage.py makemigrations
+echo "python manage.py Before Running migrate"
 python manage.py migrate
-
 echo "python manage.py migrate - Complete..."
 
 # Start the Gunicorn server

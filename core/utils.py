@@ -1,5 +1,10 @@
 # core/utils.py
 from google.cloud import secretmanager
+import logging
+
+
+def get_logger(name):
+    return logging.getLogger(name)
 
 def access_secret(project_id, secret_id, version_id="latest"):
     """

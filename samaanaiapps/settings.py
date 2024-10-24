@@ -11,6 +11,8 @@ from google.oauth2 import service_account
 
 print("settings.py loaded")
 
+DEBUG = True
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -68,6 +70,9 @@ if ENVIRONMENT == 'development':
     DB_PASSWORD = env('DB_PASSWORD')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    print(f"DB_PASSWORD: {env('DB_PASSWORD', default=None)}")
+    print(f"EMAIL_HOST_PASSWORD: {env('EMAIL_HOST_PASSWORD', default=None)}")
+    print(f"EMAIL_HOST_USER: {env('EMAIL_HOST_USER', default=None)}")
     PROJECT_ID = env('PROJECT_ID')
     print(f"PROJECT_ID: {env('PROJECT_ID', default=None)}")
     
@@ -176,24 +181,25 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'core',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'widget_tweaks',
+    'core',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'todos',
     'spreturn',
     'stocks',
     'travel',
     'my_chatgpt',
+    'widget_tweaks',
     'crispy_forms',
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -205,21 +211,28 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+
 ]
-SITE_ID = 2
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+
+SITE_ID = 3
 
 ROOT_URLCONF = 'samaanaiapps.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'core/templates')], 
+        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
-            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Required by Allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -227,12 +240,13 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
 
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -248,17 +262,42 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
 #Login Management
-# Where to go after logging in (defaults to '/accounts/profile/')
-LOGIN_REDIRECT_URL = '/'
-# Where to go after logging out (defaults to '/accounts/login/')
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = 'account/login/'  # This should match the URL for your custom login view
+LOGIN_REDIRECT_URL = '/dashboard/'    # Where users go after login
+
+# Redirect to homepage after logout
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # Redirect after logout
+ACCOUNT_SIGNUP_REDIRECT_URL = '/profile/'  # Redirect after signup
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/dashboard/'  # For logged-in users
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'  # For anonymous users
+
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Or as per your requirement
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Options: 'none', 'optional', 'mandatory'
+
+
+# settings.py
+ACCOUNT_FORMS = {
+    'signup': 'core.forms.CustomSignupForm',
+}
+
+
+# # Google OAuth credentials
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'APP': {
+#             'client_id': '1074693546571-9g0hd309eq0j2b2hv788g9lkn65pdl1p.apps.googleusercontent.com',
+#             'secret': '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',
+#             'key': ''
+#         }
+#     }
+# }
+
+
+
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CACHES = {
@@ -272,27 +311,58 @@ CACHE_TIMEOUT =  300 # 5 minutes
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s %(name)s %(pathname)s:%(lineno)d - %(message)s'
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING' if ENVIRONMENT == 'production' else 'DEBUG',
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django_app.log'),
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'INFO' if ENVIRONMENT == 'production' else 'DEBUG',
-            'propagate': False,
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'core': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
         'todos': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
-            'propagate': False,
+            'propagate': True,
         },
-        # Add other app loggers if needed
+        'return': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'stocks': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'travel': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 
@@ -300,17 +370,80 @@ LOGGING = {
 AUTH_USER_MODEL = 'core.CustomUser'  # Adjust 'core' if your app has a different name
 
 
-#Email realted informmation 
+# Email Configuration (optional for registration)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = EMAIL_HOST_USER  
+# EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Email Backend Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
-EMAIL_PORT = env.int('EMAIL_PORT', default=587)
-EMAIL_HOST_USER = EMAIL_HOST_USER  # Assigned earlier
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  # Assigned earlier
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587  # Use 465 for SSL
+EMAIL_USE_TLS = True  # Use EMAIL_USE_SSL=True if using port 465
+EMAIL_HOST_USER = 'apikey'  # This is the literal string 'apikey' for SendGrid
+EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')  # Retrieved from environment variables
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='kittureddydeals@gmail.com')
+
+
+print("EMAIL_BACKEND:", EMAIL_BACKEND)
+print("EMAIL_HOST:", EMAIL_HOST)
+print("EMAIL_USE_TLS:", EMAIL_USE_TLS)
+print("EMAIL_PORT:", EMAIL_PORT)
+print("EMAIL_HOST_USER:", EMAIL_HOST_USER)
+print("EMAIL_HOST_PASSWORD:", EMAIL_HOST_PASSWORD)
+print("DEFAULT_FROM_EMAIL:", DEFAULT_FROM_EMAIL)
+
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '1074693546571-9g0hd309eq0j2b2hv788g9lkn65pdl1p.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        },
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+#Logging Framework
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Change to DEBUG for detailed logs
+        },
+    },
+}
+
+# Messages Framework settings
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',  # Bootstrap uses 'danger' instead of 'error'
+}
+
+print('I am the end of settings.py')
