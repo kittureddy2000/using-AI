@@ -85,12 +85,70 @@ if ENVIRONMENT == 'development':
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
     
+ #Logging Framework
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+            },
+            'verbose': {
+                'format': '[%(asctime)s] %(levelname)s %(name)s %(pathname)s:%(lineno)d - %(message)s'
+            },
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+            },
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'logs/django_app.log'),
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'core': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'todos': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'return': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'stocks': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'travel': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
+
+# Messages Framework settings
+    
 
 else:
     print('I am inside PRODUCTION Environment')
-
-    # In production, use environment variables and fetch secrets from Secret Manager
-    # Assume environment variables are set in the deployment environment (e.g., Cloud Run)
 
     # Function to get secret from Google Secret Manager
     def get_secret(secret_name):
@@ -132,6 +190,29 @@ else:
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
+    client = google.cloud.logging.Client()
+    client.setup_logging()
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+            },
+        },
+        'handlers': {
+            'cloud': {
+                'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
+                'client': client,
+                'formatter': 'standard',
+            },
+        },
+        'root': {
+            'handlers': ['cloud'],
+            'level': 'INFO',  # Adjust level based on your needs
+        },
+    }
 
 
 # General settings
@@ -304,66 +385,7 @@ CACHES = {
 }
 CACHE_TIMEOUT =  300 # 5 minutes
 
-#Logging Framework
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
-        },
-        'verbose': {
-            'format': '[%(asctime)s] %(levelname)s %(name)s %(pathname)s:%(lineno)d - %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/django_app.log'),
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'core': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'todos': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'return': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'stocks': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'travel': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
 
-# Messages Framework settings
 from django.contrib.messages import constants as messages
 
 MESSAGE_TAGS = {
