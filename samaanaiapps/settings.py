@@ -6,6 +6,9 @@ import environ
 import google.auth
 import json
 from google.oauth2 import service_account
+import google.cloud.logging
+from google.cloud.logging.handlers import CloudLoggingHandler
+
 
 
 
