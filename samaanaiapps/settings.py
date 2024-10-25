@@ -147,9 +147,6 @@ if ENVIRONMENT == 'development':
         },
     }
 
-# Messages Framework settings
-    
-
 else:
     print('I am inside PRODUCTION Environment')
 

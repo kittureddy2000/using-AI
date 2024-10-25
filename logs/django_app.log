@@ -297,3 +297,606 @@
 [2024-10-24 17:09:56,274] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
 [2024-10-24 17:09:56,279] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
 [2024-10-24 20:24:41,084] INFO core.views /Users/reddy/Documents/Krishna/samaanai/using-AI/core/views.py:20 - Log : CustomSignupView template_name
+[2024-10-25 15:43:18,110] INFO core.views /app/core/views.py:20 - Log : CustomSignupView template_name
+[2024-10-25 15:43:20,045] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.035) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 15:43:20,051] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 15:43:20,054] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 15:43:20,056] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 15:43:20,106] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 15:43:20,110] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 15:43:20,111] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 15:43:20,120] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',); alias=default
+[2024-10-25 15:43:20,122] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'admin' AND "django_content_type"."model" = 'logentry') LIMIT 21; args=('admin', 'logentry'); alias=default
+[2024-10-25 15:43:20,175] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.049) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (1) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(1,); alias=default
+[2024-10-25 15:43:20,182] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',); alias=default
+[2024-10-25 15:43:20,185] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',); alias=default
+[2024-10-25 15:43:20,186] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'permission') LIMIT 21; args=('auth', 'permission'); alias=default
+[2024-10-25 15:43:20,188] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'group') LIMIT 21; args=('auth', 'group'); alias=default
+[2024-10-25 15:43:20,191] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (2, 3) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(2, 3); alias=default
+[2024-10-25 15:43:20,193] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',); alias=default
+[2024-10-25 15:43:20,196] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',); alias=default
+[2024-10-25 15:43:20,198] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'contenttypes' AND "django_content_type"."model" = 'contenttype') LIMIT 21; args=('contenttypes', 'contenttype'); alias=default
+[2024-10-25 15:43:20,201] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (4) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(4,); alias=default
+[2024-10-25 15:43:20,202] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',); alias=default
+[2024-10-25 15:43:20,204] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',); alias=default
+[2024-10-25 15:43:20,206] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sessions' AND "django_content_type"."model" = 'session') LIMIT 21; args=('sessions', 'session'); alias=default
+[2024-10-25 15:43:20,209] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (5) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(5,); alias=default
+[2024-10-25 15:43:20,210] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',); alias=default
+[2024-10-25 15:43:20,211] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'core'; args=('core',); alias=default
+[2024-10-25 15:43:20,213] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'core' AND "django_content_type"."model" = 'customuser') LIMIT 21; args=('core', 'customuser'); alias=default
+[2024-10-25 15:43:20,214] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'core' AND "django_content_type"."model" = 'profile') LIMIT 21; args=('core', 'profile'); alias=default
+[2024-10-25 15:43:20,217] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (6, 7) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(6, 7); alias=default
+[2024-10-25 15:43:20,218] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'core'; args=('core',); alias=default
+[2024-10-25 15:43:20,219] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sites'; args=('sites',); alias=default
+[2024-10-25 15:43:20,222] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sites' AND "django_content_type"."model" = 'site') LIMIT 21; args=('sites', 'site'); alias=default
+[2024-10-25 15:43:20,224] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (8) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(8,); alias=default
+[2024-10-25 15:43:20,226] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sites'; args=('sites',); alias=default
+[2024-10-25 15:43:20,230] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.003) SELECT 1 AS "a" FROM "django_site" LIMIT 1; args=(1,); alias=default
+[2024-10-25 15:43:20,233] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'allauth'; args=('allauth',); alias=default
+[2024-10-25 15:43:20,235] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'allauth'; args=('allauth',); alias=default
+[2024-10-25 15:43:20,236] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'account'; args=('account',); alias=default
+[2024-10-25 15:43:20,237] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'account' AND "django_content_type"."model" = 'emailaddress') LIMIT 21; args=('account', 'emailaddress'); alias=default
+[2024-10-25 15:43:20,239] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'account' AND "django_content_type"."model" = 'emailconfirmation') LIMIT 21; args=('account', 'emailconfirmation'); alias=default
+[2024-10-25 15:43:20,242] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (9, 10) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(9, 10); alias=default
+[2024-10-25 15:43:20,243] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'account'; args=('account',); alias=default
+[2024-10-25 15:43:20,244] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'socialaccount'; args=('socialaccount',); alias=default
+[2024-10-25 15:43:20,246] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialaccount') LIMIT 21; args=('socialaccount', 'socialaccount'); alias=default
+[2024-10-25 15:43:20,248] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialapp') LIMIT 21; args=('socialaccount', 'socialapp'); alias=default
+[2024-10-25 15:43:20,250] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialtoken') LIMIT 21; args=('socialaccount', 'socialtoken'); alias=default
+[2024-10-25 15:43:20,252] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (11, 12, 13) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(11, 12, 13); alias=default
+[2024-10-25 15:43:20,254] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'socialaccount'; args=('socialaccount',); alias=default
+[2024-10-25 15:43:20,256] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'todos'; args=('todos',); alias=default
+[2024-10-25 15:43:20,258] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'tasklist') LIMIT 21; args=('todos', 'tasklist'); alias=default
+[2024-10-25 15:43:20,260] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'taskhistory') LIMIT 21; args=('todos', 'taskhistory'); alias=default
+[2024-10-25 15:43:20,261] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'task') LIMIT 21; args=('todos', 'task'); alias=default
+[2024-10-25 15:43:20,263] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'image') LIMIT 21; args=('todos', 'image'); alias=default
+[2024-10-25 15:43:20,265] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (16, 17, 14, 15) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(16, 17, 14, 15); alias=default
+[2024-10-25 15:43:20,267] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'todos'; args=('todos',); alias=default
+[2024-10-25 15:43:20,268] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'spreturn'; args=('spreturn',); alias=default
+[2024-10-25 15:43:20,270] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'spreturn' AND "django_content_type"."model" = 'spinfo') LIMIT 21; args=('spreturn', 'spinfo'); alias=default
+[2024-10-25 15:43:20,271] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (18) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(18,); alias=default
+[2024-10-25 15:43:20,273] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'spreturn'; args=('spreturn',); alias=default
+[2024-10-25 15:43:20,275] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'stocks'; args=('stocks',); alias=default
+[2024-10-25 15:43:20,276] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'stocks' AND "django_content_type"."model" = 'stock') LIMIT 21; args=('stocks', 'stock'); alias=default
+[2024-10-25 15:43:20,279] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (19) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(19,); alias=default
+[2024-10-25 15:43:20,280] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'stocks'; args=('stocks',); alias=default
+[2024-10-25 15:43:20,282] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'travel'; args=('travel',); alias=default
+[2024-10-25 15:43:20,284] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'travel' AND "django_content_type"."model" = 'airport') LIMIT 21; args=('travel', 'airport'); alias=default
+[2024-10-25 15:43:20,287] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (20) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(20,); alias=default
+[2024-10-25 15:43:20,290] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'travel'; args=('travel',); alias=default
+[2024-10-25 15:43:20,294] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) SELECT "travel_airport"."code" FROM "travel_airport"; args=(); alias=default
+[2024-10-25 15:43:20,296] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
+[2024-10-25 15:43:20,298] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
+[2024-10-25 17:45:25,945] INFO core.views /app/core/views.py:20 - Log : CustomSignupView template_name
+[2024-10-25 17:45:34,377] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.069) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 17:45:34,392] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 17:45:34,402] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.004) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 17:45:34,406] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 17:45:34,544] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.003) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 17:45:34,547] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+[2024-10-25 17:45:34,550] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+[2024-10-25 17:45:34,565] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.007) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',); alias=default
+[2024-10-25 17:45:34,568] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'admin' AND "django_content_type"."model" = 'logentry') LIMIT 21; args=('admin', 'logentry'); alias=default
+[2024-10-25 17:45:34,592] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.014) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (1) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(1,); alias=default
+[2024-10-25 17:45:34,595] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'admin'; args=('admin',); alias=default
+[2024-10-25 17:45:34,598] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',); alias=default
+[2024-10-25 17:45:34,601] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'permission') LIMIT 21; args=('auth', 'permission'); alias=default
+[2024-10-25 17:45:34,603] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'auth' AND "django_content_type"."model" = 'group') LIMIT 21; args=('auth', 'group'); alias=default
+[2024-10-25 17:45:34,615] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (2, 3) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(2, 3); alias=default
+[2024-10-25 17:45:34,618] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'auth'; args=('auth',); alias=default
+[2024-10-25 17:45:34,621] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',); alias=default
+[2024-10-25 17:45:34,626] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'contenttypes' AND "django_content_type"."model" = 'contenttype') LIMIT 21; args=('contenttypes', 'contenttype'); alias=default
+[2024-10-25 17:45:34,633] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (4) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(4,); alias=default
+[2024-10-25 17:45:34,637] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'contenttypes'; args=('contenttypes',); alias=default
+[2024-10-25 17:45:34,642] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',); alias=default
+[2024-10-25 17:45:34,646] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sessions' AND "django_content_type"."model" = 'session') LIMIT 21; args=('sessions', 'session'); alias=default
+[2024-10-25 17:45:34,653] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (5) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(5,); alias=default
+[2024-10-25 17:45:34,657] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sessions'; args=('sessions',); alias=default
+[2024-10-25 17:45:34,658] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'core'; args=('core',); alias=default
+[2024-10-25 17:45:34,661] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'core' AND "django_content_type"."model" = 'customuser') LIMIT 21; args=('core', 'customuser'); alias=default
+[2024-10-25 17:45:34,666] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'core' AND "django_content_type"."model" = 'profile') LIMIT 21; args=('core', 'profile'); alias=default
+[2024-10-25 17:45:34,673] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (6, 7) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(6, 7); alias=default
+[2024-10-25 17:45:34,677] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'core'; args=('core',); alias=default
+[2024-10-25 17:45:34,680] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sites'; args=('sites',); alias=default
+[2024-10-25 17:45:34,683] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'sites' AND "django_content_type"."model" = 'site') LIMIT 21; args=('sites', 'site'); alias=default
+[2024-10-25 17:45:34,690] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (8) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(8,); alias=default
+[2024-10-25 17:45:34,695] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'sites'; args=('sites',); alias=default
+[2024-10-25 17:45:34,702] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.003) SELECT 1 AS "a" FROM "django_site" LIMIT 1; args=(1,); alias=default
+[2024-10-25 17:45:34,705] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'allauth'; args=('allauth',); alias=default
+[2024-10-25 17:45:34,711] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'allauth'; args=('allauth',); alias=default
+[2024-10-25 17:45:34,713] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'account'; args=('account',); alias=default
+[2024-10-25 17:45:34,718] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'account' AND "django_content_type"."model" = 'emailaddress') LIMIT 21; args=('account', 'emailaddress'); alias=default
+[2024-10-25 17:45:34,723] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'account' AND "django_content_type"."model" = 'emailconfirmation') LIMIT 21; args=('account', 'emailconfirmation'); alias=default
+[2024-10-25 17:45:34,729] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (9, 10) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(9, 10); alias=default
+[2024-10-25 17:45:34,733] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'account'; args=('account',); alias=default
+[2024-10-25 17:45:34,735] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'socialaccount'; args=('socialaccount',); alias=default
+[2024-10-25 17:45:34,740] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialaccount') LIMIT 21; args=('socialaccount', 'socialaccount'); alias=default
+[2024-10-25 17:45:34,744] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialapp') LIMIT 21; args=('socialaccount', 'socialapp'); alias=default
+[2024-10-25 17:45:34,747] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'socialaccount' AND "django_content_type"."model" = 'socialtoken') LIMIT 21; args=('socialaccount', 'socialtoken'); alias=default
+[2024-10-25 17:45:34,756] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (11, 12, 13) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(11, 12, 13); alias=default
+[2024-10-25 17:45:34,760] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'socialaccount'; args=('socialaccount',); alias=default
+[2024-10-25 17:45:34,763] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'todos'; args=('todos',); alias=default
+[2024-10-25 17:45:34,767] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'tasklist') LIMIT 21; args=('todos', 'tasklist'); alias=default
+[2024-10-25 17:45:34,771] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'taskhistory') LIMIT 21; args=('todos', 'taskhistory'); alias=default
+[2024-10-25 17:45:34,777] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'task') LIMIT 21; args=('todos', 'task'); alias=default
+[2024-10-25 17:45:34,780] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'todos' AND "django_content_type"."model" = 'image') LIMIT 21; args=('todos', 'image'); alias=default
+[2024-10-25 17:45:34,785] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (16, 17, 14, 15) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(16, 17, 14, 15); alias=default
+[2024-10-25 17:45:34,788] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'todos'; args=('todos',); alias=default
+[2024-10-25 17:45:34,796] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'spreturn'; args=('spreturn',); alias=default
+[2024-10-25 17:45:34,799] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'spreturn' AND "django_content_type"."model" = 'spinfo') LIMIT 21; args=('spreturn', 'spinfo'); alias=default
+[2024-10-25 17:45:34,803] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (18) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(18,); alias=default
+[2024-10-25 17:45:34,810] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'spreturn'; args=('spreturn',); alias=default
+[2024-10-25 17:45:34,815] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'stocks'; args=('stocks',); alias=default
+[2024-10-25 17:45:34,818] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'stocks' AND "django_content_type"."model" = 'stock') LIMIT 21; args=('stocks', 'stock'); alias=default
+[2024-10-25 17:45:34,821] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (19) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(19,); alias=default
+[2024-10-25 17:45:34,824] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'stocks'; args=('stocks',); alias=default
+[2024-10-25 17:45:34,826] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'travel'; args=('travel',); alias=default
+[2024-10-25 17:45:34,828] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE ("django_content_type"."app_label" = 'travel' AND "django_content_type"."model" = 'airport') LIMIT 21; args=('travel', 'airport'); alias=default
+[2024-10-25 17:45:34,832] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "auth_permission"."content_type_id", "auth_permission"."codename" FROM "auth_permission" INNER JOIN "django_content_type" ON ("auth_permission"."content_type_id" = "django_content_type"."id") WHERE "auth_permission"."content_type_id" IN (20) ORDER BY "django_content_type"."app_label" ASC, "django_content_type"."model" ASC, "auth_permission"."codename" ASC; args=(20,); alias=default
+[2024-10-25 17:45:34,834] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'travel'; args=('travel',); alias=default
+[2024-10-25 17:45:34,843] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.008) SELECT "travel_airport"."code" FROM "travel_airport"; args=(); alias=default
+[2024-10-25 17:45:34,849] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
+[2024-10-25 17:45:34,853] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_content_type" WHERE "django_content_type"."app_label" = 'widget_tweaks'; args=('widget_tweaks',); alias=default
+[2024-10-25 17:46:19,015] INFO core.views /app/core/views.py:20 - Log : CustomSignupView template_name
+[2024-10-25 17:46:20,701] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.025) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:20.665211+00:00'::timestamptz AND "django_session"."session_key" = 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 20, 665211, tzinfo=datetime.timezone.utc), 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz'); alias=default
+[2024-10-25 17:46:20,716] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.013) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 3 LIMIT 21; args=(3,); alias=default
+[2024-10-25 17:46:20,865] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.013) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:20.809586+00:00'::timestamptz AND "django_session"."session_key" = 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 20, 809586, tzinfo=datetime.timezone.utc), 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz'); alias=default
+[2024-10-25 17:46:20,875] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.009) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 3 LIMIT 21; args=(3,); alias=default
+[2024-10-25 17:46:21,544] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <URLPattern list> (admin:admin) 'admin/'>
+[2024-10-25 17:46:21,555] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>
+[2024-10-25 17:46:21,556] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>
+[2024-10-25 17:46:21,558] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>
+[2024-10-25 17:46:21,559] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>
+[2024-10-25 17:46:21,561] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>
+[2024-10-25 17:46:21,562] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>
+[2024-10-25 17:46:21,564] DEBUG django.template /usr/local/lib/python3.10/site-packages/django/template/base.py:930 - Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/site-packages/django/core/handlers/base.py", line 313, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/site-packages/django/urls/resolvers.py", line 702, in resolve
+    raise Resolver404({"tried": tried, "path": new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'accounts/signup/' [name='account_signup']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'dashboard/' [name='dashboard']>], [<URLResolver <module 'core.urls' from '/app/core/urls.py'> (core:core) ''>, <URLPattern 'profile/' [name='profile']>], [<URLResolver <module 'todos.urls' from '/app/todos/urls.py'> (todos:todos) 'todos/'>], [<URLResolver <module 'spreturn.urls' from '/app/spreturn/urls.py'> (spreturn:spreturn) 'spreturn/'>], [<URLResolver <module 'travel.urls' from '/app/travel/urls.py'> (travel:travel) 'travel/'>], [<URLResolver <module 'stocks.urls' from '/app/stocks/urls.py'> (stocks:stocks) 'stocks/'>], [<URLResolver <module 'my_chatgpt.urls' from '/app/my_chatgpt/urls.py'> (my_chatgpt:my_chatgpt) 'my_chatgpt/'>], [<URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>], [<URLPattern '^static/(?P<path>.*)$'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 880, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/template/base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'allauth.urls' from '/usr/local/lib/python3.10/site-packages/allauth/urls.py'> (None:None) 'accounts/'>
+[2024-10-25 17:46:21,566] WARNING django.request /usr/local/lib/python3.10/site-packages/django/utils/log.py:241 - Not Found: /favicon.ico
+[2024-10-25 17:46:27,867] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:27.857788+00:00'::timestamptz AND "django_session"."session_key" = 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 27, 857788, tzinfo=datetime.timezone.utc), 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz'); alias=default
+[2024-10-25 17:46:27,870] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 3 LIMIT 21; args=(3,); alias=default
+[2024-10-25 17:46:29,388] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:29.381064+00:00'::timestamptz AND "django_session"."session_key" = 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 29, 381064, tzinfo=datetime.timezone.utc), 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz'); alias=default
+[2024-10-25 17:46:29,391] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 3 LIMIT 21; args=(3,); alias=default
+[2024-10-25 17:46:29,395] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE "django_session"."session_key" = 'csns9mf8wpkhd29q82m2wbp8jwq2b8qz' LIMIT 21; args=('csns9mf8wpkhd29q82m2wbp8jwq2b8qz',); alias=default
+[2024-10-25 17:46:29,402] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) DELETE FROM "django_session" WHERE "django_session"."session_key" IN ('csns9mf8wpkhd29q82m2wbp8jwq2b8qz'); args=('csns9mf8wpkhd29q82m2wbp8jwq2b8qz',); alias=default
+[2024-10-25 17:46:29,517] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.011) SELECT "django_site"."id", "django_site"."domain", "django_site"."name" FROM "django_site" WHERE "django_site"."id" = 3 LIMIT 21; args=(3,); alias=default
+[2024-10-25 17:46:29,577] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.038) SELECT "socialaccount_socialapp"."id", "socialaccount_socialapp"."provider", "socialaccount_socialapp"."provider_id", "socialaccount_socialapp"."name", "socialaccount_socialapp"."client_id", "socialaccount_socialapp"."secret", "socialaccount_socialapp"."key", "socialaccount_socialapp"."settings" FROM "socialaccount_socialapp" INNER JOIN "socialaccount_socialapp_sites" ON ("socialaccount_socialapp"."id" = "socialaccount_socialapp_sites"."socialapp_id") WHERE ("socialaccount_socialapp_sites"."site_id" = 3 AND ("socialaccount_socialapp"."provider" = 'google' OR "socialaccount_socialapp"."provider_id" = 'google')); args=(3, 'google', 'google'); alias=default
+[2024-10-25 17:46:44,761] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.004) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."username" = 'navyareddy' LIMIT 21; args=('navyareddy',); alias=default
+[2024-10-25 17:46:45,185] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) SELECT 1 AS "a" FROM "account_emailaddress" WHERE ("account_emailaddress"."user_id" = 6 AND "account_emailaddress"."verified") LIMIT 1; args=(1, 6); alias=default
+[2024-10-25 17:46:45,186] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT 1 AS "a" FROM "django_session" WHERE "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr' LIMIT 1; args=(1, 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:45,187] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:161 - (0.000) BEGIN; args=None; alias=default
+[2024-10-25 17:46:45,193] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.004) INSERT INTO "django_session" ("session_key", "session_data", "expire_date") VALUES ('uwiicz76dxjynfaawqa72itqw01hi5gr', '.eJwlykEKhDAMBdC7_LWIik5rryIioQ3ownRoU0XEuzswu7d4N8j7WEQXKrqy6OZJtyjLzrrGkOGmG3_D4Us5nzEFVCCFa003WmP7ZqhbY8dPYyuUzElo598WOi5KHMKFZ35e4cUkGA:1t4OOb:AwXfGZuOKRnaPKoFPZJ-cdFV7UAGtD9LOlhe4ALvUiE', '2024-11-08T17:46:45.187573+00:00'::timestamptz); args=('uwiicz76dxjynfaawqa72itqw01hi5gr', '.eJwlykEKhDAMBdC7_LWIik5rryIioQ3ownRoU0XEuzswu7d4N8j7WEQXKrqy6OZJtyjLzrrGkOGmG3_D4Us5nzEFVCCFa003WmP7ZqhbY8dPYyuUzElo598WOi5KHMKFZ35e4cUkGA:1t4OOb:AwXfGZuOKRnaPKoFPZJ-cdFV7UAGtD9LOlhe4ALvUiE', datetime.datetime(2024, 11, 8, 17, 46, 45, 187573, tzinfo=datetime.timezone.utc)); alias=default
+[2024-10-25 17:46:45,195] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:161 - (0.002) COMMIT; args=None; alias=default
+[2024-10-25 17:46:45,201] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.004) UPDATE "core_customuser" SET "last_login" = '2024-10-25T17:46:45.196671+00:00'::timestamptz WHERE "core_customuser"."id" = 6; args=(datetime.datetime(2024, 10, 25, 17, 46, 45, 196671, tzinfo=datetime.timezone.utc), 6); alias=default
+[2024-10-25 17:46:45,204] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) SELECT "core_profile"."id", "core_profile"."user_id", "core_profile"."profile_picture" FROM "core_profile" WHERE "core_profile"."user_id" = 6 LIMIT 21; args=(6,); alias=default
+[2024-10-25 17:46:45,207] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) UPDATE "core_profile" SET "user_id" = 6, "profile_picture" = '' WHERE "core_profile"."id" = 6; args=(6, '', 6); alias=default
+[2024-10-25 17:46:45,210] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:161 - (0.000) BEGIN; args=None; alias=default
+[2024-10-25 17:46:45,212] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) UPDATE "django_session" SET "session_data" = '.eJxVkD1uwzAMRu_C2TCkxPrz2L0nKAqDEunabSMFltzECHL3Wm2WbATfx0eCN8AQ0hrLgGuZOJY5YJlTHE5cpkQZ-rcb_NfQwxlzvqSFoAEs0EtzcNbYTqhWGuu0sA2smZeIJ97TEX82XJhog_t7A38bhsqHuco0PPU8hi-OFdAnxo_UhhTLMvu2RtoHze1rIv5-eWSfBBPmaZ9WwmjlhQ9-Pywo0saxH5130jsxmlEcg_TGjUTKosYDkg2dPMqRBQnV-SrNnHN9Al_P87JBL-6_tz1i6Q:1t4OOb:FoaMLJI8dnjoKU9ZwUwm1SVMze_nuJkBuVhnhxhjlfI', "expire_date" = '2024-11-08T17:46:45.210608+00:00'::timestamptz WHERE "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr'; args=('.eJxVkD1uwzAMRu_C2TCkxPrz2L0nKAqDEunabSMFltzECHL3Wm2WbATfx0eCN8AQ0hrLgGuZOJY5YJlTHE5cpkQZ-rcb_NfQwxlzvqSFoAEs0EtzcNbYTqhWGuu0sA2smZeIJ97TEX82XJhog_t7A38bhsqHuco0PPU8hi-OFdAnxo_UhhTLMvu2RtoHze1rIv5-eWSfBBPmaZ9WwmjlhQ9-Pywo0saxH5130jsxmlEcg_TGjUTKosYDkg2dPMqRBQnV-SrNnHN9Al_P87JBL-6_tz1i6Q:1t4OOb:FoaMLJI8dnjoKU9ZwUwm1SVMze_nuJkBuVhnhxhjlfI', datetime.datetime(2024, 11, 8, 17, 46, 45, 210608, tzinfo=datetime.timezone.utc), 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:45,213] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:161 - (0.001) COMMIT; args=None; alias=default
+[2024-10-25 17:46:45,239] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:45.221014+00:00'::timestamptz AND "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 45, 221014, tzinfo=datetime.timezone.utc), 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:45,241] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 6 LIMIT 21; args=(6,); alias=default
+[2024-10-25 17:46:48,080] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:48.071122+00:00'::timestamptz AND "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 48, 71122, tzinfo=datetime.timezone.utc), 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:48,082] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 6 LIMIT 21; args=(6,); alias=default
+[2024-10-25 17:46:50,568] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.005) SELECT COUNT(*) AS "__count" FROM "todos_tasklist"; args=(); alias=default
+[2024-10-25 17:46:50,584] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:50.582860+00:00'::timestamptz AND "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 50, 582860, tzinfo=datetime.timezone.utc), 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:50,587] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 6 LIMIT 21; args=(6,); alias=default
+[2024-10-25 17:46:50,593] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.003) SELECT "todos_tasklist"."id", "todos_tasklist"."list_name", "todos_tasklist"."list_code", "todos_tasklist"."special_list", "todos_tasklist"."color" FROM "todos_tasklist" ORDER BY "todos_tasklist"."special_list" DESC; args=(); alias=default
+[2024-10-25 17:46:50,700] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.007) SELECT "todos_task"."id", "todos_task"."task_name", "todos_task"."list_name_id", "todos_task"."due_date", "todos_task"."task_description", "todos_task"."due_date", "todos_task"."reminder_time", "todos_task"."recurrence", "todos_task"."task_completed", "todos_task"."important", "todos_task"."assigned_to", "todos_task"."creation_date", "todos_task"."last_update_date" FROM "todos_task" ORDER BY "todos_task"."due_date" ASC; args=(); alias=default
+[2024-10-25 17:46:50,837] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.020) SELECT "todos_task"."id", "todos_task"."task_name", "todos_task"."list_name_id", "todos_task"."due_date", "todos_task"."task_description", "todos_task"."due_date", "todos_task"."reminder_time", "todos_task"."recurrence", "todos_task"."task_completed", "todos_task"."important", "todos_task"."assigned_to", "todos_task"."creation_date", "todos_task"."last_update_date" FROM "todos_task" ORDER BY "todos_task"."due_date" ASC; args=(); alias=default
+[2024-10-25 17:46:52,858] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.003) SELECT "stocks_stock"."id", "stocks_stock"."user_id", "stocks_stock"."symbol", "stocks_stock"."name", "stocks_stock"."quantity", "stocks_stock"."date_purchased", "stocks_stock"."date_sold", "stocks_stock"."purchase_price", "stocks_stock"."sold_price", "stocks_stock"."source", "stocks_stock"."comments" FROM "stocks_stock"; args=(); alias=default
+[2024-10-25 17:46:52,879] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.002) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2024-10-25T17:46:52.877696+00:00'::timestamptz AND "django_session"."session_key" = 'uwiicz76dxjynfaawqa72itqw01hi5gr') LIMIT 21; args=(datetime.datetime(2024, 10, 25, 17, 46, 52, 877696, tzinfo=datetime.timezone.utc), 'uwiicz76dxjynfaawqa72itqw01hi5gr'); alias=default
+[2024-10-25 17:46:52,882] DEBUG django.db.backends /usr/local/lib/python3.10/site-packages/django/db/backends/utils.py:131 - (0.001) SELECT "core_customuser"."id", "core_customuser"."password", "core_customuser"."last_login", "core_customuser"."is_superuser", "core_customuser"."username", "core_customuser"."first_name", "core_customuser"."last_name", "core_customuser"."email", "core_customuser"."is_staff", "core_customuser"."is_active", "core_customuser"."date_joined" FROM "core_customuser" WHERE "core_customuser"."id" = 6 LIMIT 21; args=(6,); alias=default

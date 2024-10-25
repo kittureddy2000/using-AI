@@ -30,6 +30,23 @@ echo "python manage.py Before Running migrate"
 python manage.py migrate
 echo "python manage.py migrate - Complete..."
 
+# Create superuser if not exists
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ]; then
+    python manage.py shell -c "
+from django.contrib.auth import get_user_model;
+User = get_user_model();
+if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
+    User.objects.create_superuser(
+        username='$DJANGO_SUPERUSER_USERNAME',
+        email='$DJANGO_SUPERUSER_EMAIL',
+        password='$DJANGO_SUPERUSER_PASSWORD'
+    );
+    print('Superuser created successfully');
+else:
+    print('Superuser already exists');
+"
+fi
+
 # Start the Gunicorn server
 gunicorn --bind 0.0.0.0:8080 samaanaiapps.wsgi:application
 
