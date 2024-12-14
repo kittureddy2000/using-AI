@@ -6,7 +6,13 @@ from django.shortcuts import render, redirect
 from django.forms import modelformset_factory
 from .forms import SPInfoForm, SPReturnForm
 from django.contrib import messages
-from decimal import Decimal
+from decimal import Decimal, getcontext
+import logging
+import json
+
+# Configure logging
+logger = logging.getLogger(__name__)
+getcontext().prec = 10
 
 
 # Create your views here.
@@ -149,79 +155,136 @@ def spreturn(request):
 
     return render(request, 'spreturn/spreturn.html', context)
 
-
-
 def spreturn_insights(request):
-    starting_investment = 1
-    number_of_year = 10
-    SP500_divident = {}
-    SP500 = {}
-    ReturnInfo = {}
-    years_invest = []
-    series_min = []
-    series_avg = []
-    series_max = []
-    SPReturnSummary = {}
+    starting_investment = 1.0  # Initialize as float
 
-    # Load the SP return, SP divident return into local Dictionary
-    spreturninfo90years = spinfo.objects.all()
+    # Fetch all SP500 return information from the database, ordered by year
+    sp_info_queryset = spinfo.objects.all().order_by('year')
 
-    for each in spreturninfo90years:
-        SP500_divident[each.year] = each.return_divident
-        SP500[each.year] = each.spreturn
-    # End - Load the SP return, SP divident return into local Dictionary
+    # Convert queryset to DataFrame for efficient processing
+    sp_info_df = pd.DataFrame(list(sp_info_queryset.values('year', 'return_divident', 'spreturn')))
 
-    for number_of_year in range(1,92) :
-        ReturnInfo = {}
-        for i in range(1930, 2021 - number_of_year + 1):
-            # print("*****************************************")
-            yearly_returnDD = float(starting_investment)
-            yearly_returnSP = float(starting_investment)
-            principal = yearly_returnDD
+    if sp_info_df.empty:
+        logger.error("No S&P return data available.")
+        context = {
+            'error': "No S&P return data available."
+        }
+        return render(request, 'spreturn/sp_insights.html', context)
 
-            for abc in range(0, number_of_year):
+    # Ensure that 'year' is sorted
+    sp_info_df.sort_values('year', inplace=True)
+    sp_info_df.reset_index(drop=True, inplace=True)
 
-                spreturnDD = float(SP500_divident[abc + i])
-                spreturn = float(SP500[abc + i])
-                # print("For Year : " +  str( abc + i))
+    # Determine the available year range dynamically
+    min_year = sp_info_df['year'].min()
+    max_year = sp_info_df['year'].max()
+    total_years = max_year - min_year + 1
 
-                yearly_returnDD = round(yearly_returnDD + spreturnDD * yearly_returnDD / 100, 3)
-                yearly_returnSP = round(yearly_returnSP + spreturn * yearly_returnSP / 100, 3)
+    # Check for consecutive years; handle missing years
+    expected_years = set(range(min_year, max_year + 1))
+    actual_years = set(sp_info_df['year'])
+    missing_years = expected_years - actual_years
 
-                if (abc == number_of_year - 1):
-                    EndYear = abc + i
+    if missing_years:
+        logger.warning(f"Missing data for years: {sorted(missing_years)}")
+        # Decide how to handle missing years; for simplicity, skip incomplete periods
 
-                    # averageReturn = totalReturnPercent / number_of_year
-                    CGARDD = ((yearly_returnDD / starting_investment) ** (
-                            1 / number_of_year) - 1)
+    # Convert 'return_divident' and 'spreturn' to float to ensure consistency
+    sp_dividend_dict = sp_info_df.set_index('year')['return_divident'].apply(float).to_dict()
+    sp_return_dict = sp_info_df.set_index('year')['spreturn'].apply(float).to_dict()
 
-                    CGARSP = ((yearly_returnSP / starting_investment) ** (
-                            1 / number_of_year) - 1)
+    spreturn_summary = {}
 
-                    ReturnInfo[i] = [EndYear, round(yearly_returnSP, 2), round(yearly_returnDD, 2), round(CGARSP * 100, 2),
-                                     round(CGARDD * 100, 2)]
-        sp_df = pd.DataFrame.from_dict(ReturnInfo, orient='index',
-                                       columns=['End_Year', 'SP_Return', 'SP_Return_Dividend', 'CGAR', 'CGAR_Dividend'])
+    # Iterate over each possible investment period
+    for period in range(1, total_years + 1):
+        returns = []
 
-        years_invest.append(number_of_year)
-        series_min.append(sp_df["SP_Return_Dividend"].min())
-        series_avg.append(sp_df["SP_Return_Dividend"].mean())
-        series_max.append(sp_df["SP_Return_Dividend"].max())
+        # Iterate over possible starting years
+        for start_year in range(min_year, max_year - period + 2):
+            end_year = start_year + period - 1
 
-        print("SP Return with Dividend min ")
-        print(sp_df["SP_Return_Dividend"].min())
-        print("SP Return  with Dividend Max ")
-        print(sp_df["SP_Return_Dividend"].max())
-        print("SP Return  with Dividend Mean ")
-        print(sp_df["SP_Return_Dividend"].mean())
-        SPReturnSummary[number_of_year] = [sp_df["SP_Return_Dividend"].min(),round(sp_df["SP_Return_Dividend"].mean(),2),sp_df["SP_Return_Dividend"].max()]
+            # Check if all years in the period are present
+            period_years = range(start_year, end_year + 1)
+            if not set(period_years).issubset(actual_years):
+                logger.debug(f"Skipping period {start_year}-{end_year} due to missing data.")
+                continue  # Skip periods with missing data
+
+            # Initialize investment amounts as float
+            investment_sp = starting_investment
+            investment_sp_div = starting_investment
+
+            # Calculate compounded returns over the period
+            for year in period_years:
+                return_sp = sp_return_dict.get(year, 0.0)          # float
+                return_sp_div = sp_dividend_dict.get(year, 0.0)    # float
+
+                investment_sp *= (1 + return_sp / 100)            # float *= float
+                investment_sp_div *= (1 + return_sp_div / 100)    # float *= float
+
+            # Calculate CAGR (Compound Annual Growth Rate)
+            try:
+                cagr_sp = (investment_sp / starting_investment) ** (1 / period) - 1
+                cagr_sp_div = (investment_sp_div / starting_investment) ** (1 / period) - 1
+            except (ArithmeticError, ZeroDivisionError) as e:
+                logger.error(f"Error calculating CAGR for period {period} years: {e}")
+                continue  # Skip this period if there's an error
+
+            # Append the results
+            returns.append({
+                'End_Year': end_year,
+                'SP_Return': round(investment_sp, 2),
+                'SP_Return_Dividend': round(investment_sp_div, 2),
+                'CAGR_SP': round(cagr_sp * 100, 2),
+                'CAGR_SP_Dividend': round(cagr_sp_div * 100, 2)
+            })
+
+        if not returns:
+            logger.debug(f"No valid data for investment period: {period} years.")
+            continue  # Skip if no returns calculated for this period
+
+        # Convert to DataFrame for statistical calculations
+        returns_df = pd.DataFrame(returns)
+
+        # Calculate min, avg, max for SP_Return_Dividend
+        min_return = returns_df['SP_Return_Dividend'].min()
+        avg_return = round(returns_df['SP_Return_Dividend'].mean(), 2)
+        max_return = returns_df['SP_Return_Dividend'].max()
+
+        # Log the calculated statistics
+        logger.debug(f"Period: {period} years")
+        logger.debug(f"Min SP Dividend Return: {min_return}")
+        logger.debug(f"Max SP Dividend Return: {max_return}")
+        logger.debug(f"Avg SP Dividend Return: {avg_return}")
+
+        # Store summary statistics
+        spreturn_summary[period] = {
+            'min': min_return,
+            'avg': avg_return,
+            'max': max_return
+        }
+
+    # Prepare data for the template
+    years_invest = list(spreturn_summary.keys())
+    series_min = [v['min'] for v in spreturn_summary.values()]
+    series_avg = [v['avg'] for v in spreturn_summary.values()]
+    series_max = [v['max'] for v in spreturn_summary.values()]
+
+    # Serialize data to JSON
+    years_invest_json = json.dumps(years_invest)
+    series_min_json = json.dumps(series_min)
+    series_avg_json = json.dumps(series_avg)
+    series_max_json = json.dumps(series_max)
 
     context = {
-        'SPReturnSummary': SPReturnSummary, 'years_invest': years_invest, 'series_min': series_min, 'series_avg': series_avg,
-        'sp_df': sp_df,'series_max':series_max,'number_of_year': number_of_year}
+        'SPReturnSummary': spreturn_summary,
+        'years_invest': years_invest_json,
+        'series_min': series_min_json,
+        'series_avg': series_avg_json,
+        'series_max': series_max_json,
+        'max_investment_period': total_years,
+    }
 
-    return render(request, 'sp_insights.html', context)
-
+    return render(request, 'spreturn/sp_insights.html', context)
 
 def add_sp_info(request):
     SPInfoFormSet = modelformset_factory(spinfo, form=SPInfoForm, extra=5)
