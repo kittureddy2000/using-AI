@@ -29,7 +29,6 @@ urlpatterns = [
     path('spreturn/', include('spreturn.urls', namespace='spreturn')),
     path('travel/', include('travel.urls', namespace='travel')),
     path('stocks/', include('stocks.urls', namespace='stocks')),
-    path('my_chatgpt/', include('my_chatgpt.urls', namespace='my_chatgpt')),
     path('accounts/', include('allauth.urls')),
 
 ]

@@ -8,6 +8,7 @@ import json
 from google.oauth2 import service_account
 import google.cloud.logging
 from google.cloud.logging.handlers import CloudLoggingHandler
+from django.contrib.messages import constants as messages
 
 
 
@@ -276,7 +277,6 @@ INSTALLED_APPS = [
     'spreturn',
     'stocks',
     'travel',
-    'my_chatgpt',
     'widget_tweaks',
     'crispy_forms',
 ]
@@ -342,7 +342,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 #Login Management
-LOGIN_URL = 'account/login/'  # This should match the URL for your custom login view
+LOGIN_URL = '/accounts/login/'  # This should match the URL for your custom login view
 LOGIN_REDIRECT_URL = '/dashboard/'    # Where users go after login
 
 # Redirect to homepage after logout
@@ -385,8 +385,6 @@ CACHES = {
 }
 CACHE_TIMEOUT =  300 # 5 minutes
 
-
-from django.contrib.messages import constants as messages
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',

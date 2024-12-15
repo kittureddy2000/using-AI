@@ -1,49 +1,51 @@
-{% extends 'stocks/stocks_base.html' %} 
-{% load static %} 
+{% extends 'stocks/stocks_base.html' %}
+{% load static %}
 {% load custom_filters %}
 {% load crispy_forms_tags %}
-{% block title%}Travel Search{% endblock %}
-{% block header %} <h4>Travel Deals</h4>{% endblock %} 
 
-{%block content %}
+{% block title %}Stocks Dashboard{% endblock %}
+{% block header %}<h4>Stocks Dashboard</h4>{% endblock %}
 
-  <div class="container bg-light mt-4">
-
-    <p> Stocks Dashboard 123 </p>
+{% block content %}
+<div class="container mt-5">
     <div class="row mb-4">
         <div class="col">
-            <input type="text" class="form-control" placeholder="Search stocks...">
+            <input type="text" id="stockSearchInput" class="form-control" placeholder="Search stocks...">
+        </div>
+        <!-- Add the refresh button in a new column -->
+        <div class="col-auto">
+            <a href="{% url 'stocks:stock_list' %}" class="btn btn-light" id="refreshStocks" title="Refresh Stocks">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </a>
         </div>
         <div class="col-auto">
-            <a href="{% url 'stocks:add_stock' %}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Add Stock
+            <a href="{% url 'stocks:add_stock' %}" class="btn btn-light" title="Add a New Stock">
+                <i class="fas fa-plus"></i> Add Stock
             </a>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Symbol</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Current Price</th>
-                        <th scope="col">Purchase Price</th>
-                        <th scope="col">52 Week Low</th>
-                        <th scope="col">52 Week Highth</th>
-                        <th scope="col">marketCap</th>
-                        <th scope="col">Divident Rate</th>
-                        <th scope="col">Name</th>
-
-                    </tr>
-                </thead>
-                <tbody>
+    <div class="table-responsive">
+        <table class="table table-hover" id="stocksTable">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Symbol</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Current Price</th>
+                    <th scope="col">Purchase Price</th>
+                    <th scope="col">52 Week Low</th>
+                    <th scope="col">52 Week High</th>
+                    <th scope="col">Market Cap</th>
+                    <th scope="col">Dividend Rate</th>
+                    <th scope="col">Name</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for stock in stocks %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ stock.symbol }}</td>
+                        <td class="stock-symbol">{{ stock.symbol }}</td>
                         <td>{{ stock.quantity }}</td>
                         <td>{{ stock.currentPrice|nan_to_blank }}</td>
                         <td>{{ stock.purchase_price }}</td>
@@ -51,35 +53,45 @@
                         <td>{{ stock.fiftyTwoWeekHigh|nan_to_blank }}</td>
                         <td>{{ stock.marketCap|millions|nan_to_blank }}</td>
                         <td>{{ stock.dividendRate|nan_to_blank }}</td>
-                        <td>{{ stock.shortName }}</td>
+                        <td class="stock-name">{{ stock.shortName }}</td>
                     </tr>
-                    {% empty %}
+                {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center">No stocks found</td>
+                        <td colspan="10" class="text-center">No stocks found</td>
                     </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="row justify-content-center align-items-center g-2">
-    </div>
-    
-    </div>
-        
-  </div>  
+</div>
 {% endblock %}
-
 
 {% block script_block %}
-
 <script>
-  $(document).ready(function() {
- 
-    console.log("Stocks App : In Document Ready Function");
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('stockSearchInput');
+    const table = document.getElementById('stocksTable');
+    const tbody = table.querySelector('tbody');
 
+    searchInput.addEventListener('keyup', function() {
+      const query = searchInput.value.trim().toLowerCase();
+      const rows = tbody.querySelectorAll('tr');
+
+      rows.forEach((row) => {
+        const symbolCell = row.querySelector('.stock-symbol');
+        const nameCell = row.querySelector('.stock-name');
+        if (!symbolCell || !nameCell) return;
+
+        const symbolText = symbolCell.textContent.toLowerCase();
+        const nameText = nameCell.textContent.toLowerCase();
+
+        if (symbolText.includes(query) || nameText.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
   });
-
 </script>
 {% endblock %}
-

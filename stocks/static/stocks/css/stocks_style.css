@@ -1,0 +1,58 @@
+/* Body Styles */
+/* Updated Gradient Background */
+.container {
+    background: linear-gradient(to bottom, #1a73e8, #4285f4, #80d6ff); /* Gradient for container */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+}
+body {
+    background-color: #121212; /* Set a plain background outside the container */
+}
+/* Table Card Styling */
+.table-container {
+    background-color: rgba(255, 255, 255, 0.95); /* Slight transparency */
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* Enhanced Table Styles */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #ffffff; /* Solid white for the table */
+    border: 1px solid #ddd; /* Light gray border for the table */
+}
+
+.table thead th {
+    background-color: #6c63ff; /* Header color matching gradient theme */
+    color: #ffffff; /* White text for the header */
+    text-align: center;
+    font-weight: bold;
+    padding: 12px;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Subtle gray for alternate rows */
+}
+
+.table-hover tbody tr:hover {
+    background-color: #d6e4ff; /* Light blue hover effect */
+}
+
+/* Table Data Alignment */
+.table td, .table th {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Search Input Styling */
+input[type="text"].form-control {
+    border-radius: 15px;
+    padding: 10px 15px;
+    border: 1px solid #6c63ff; /* Match theme */
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
