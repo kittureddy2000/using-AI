@@ -14,7 +14,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Social login routes
     path('dashboard/', views.dashboard, name='dashboard'),  # Named 'dashboard'
     path('profile/', views.profile, name='profile'),
-
+    
 
 ]
 

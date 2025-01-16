@@ -9,32 +9,32 @@ from django.utils import timezone
 class TaskListForm(forms.ModelForm):
     class Meta:
         model = TaskList
-        fields = ['list_name', 'list_code', 'special_list', 'color']
+        fields = ['list_name', 'list_code', 'special_list']
         widgets = {
             'list_name': forms.TextInput(attrs={'class': 'form-control'}),
             'list_code': forms.TextInput(attrs={'class': 'form-control'}),
-            'color': forms.TextInput(attrs={'class': 'form-control', 'type': 'color'}),
-            # 'special_list' will use the default checkbox widget
         }
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task_name', 'task_description', 'list_name', 'due_date',  'reminder_time', 'recurrence', 'task_completed', 'important', 'assigned_to']
+        fields = ['task_name', 'task_description', 'list_name', 'due_date', 'reminder_time', 'recurrence', 'task_completed', 'important']
         widgets = {
-            'task_name': forms.TextInput(attrs={'placeholder': 'Enter task name', 'class': 'form-control'}),
-            'task_description': forms.Textarea(attrs={'placeholder': 'Enter task description', 'class': 'form-control form-control-sm expandable'}),
+            'task_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Task name'}),
+            'task_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Task description'}),
             'list_name': forms.Select(attrs={'class': 'form-control'}),
-            'due_date': DatePickerInput(attrs={'class': 'form-control'}),
-            'reminder_time': DatePickerInput(attrs={'class': 'form-control'}),
-            # Add other widgets as needed
+            'reminder_time': forms.DateTimeInput(attrs={'type':'datetime-local'}),
+            'due_date': forms.DateTimeInput(attrs={'type':'datetime-local'}),
+            'recurrence': forms.Select(attrs={'class': 'd-none'}) # removed the default select element and hid this.
         }
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['list_name'].queryset = TaskList.objects.all()
-
+        
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email')  # Add other fields if needed
+
+

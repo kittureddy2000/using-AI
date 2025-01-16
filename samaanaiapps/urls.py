@@ -25,11 +25,12 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls', namespace='core')),
-    path('todos/', include('todos.urls', namespace='todos')),
     path('spreturn/', include('spreturn.urls', namespace='spreturn')),
     path('travel/', include('travel.urls', namespace='travel')),
     path('stocks/', include('stocks.urls', namespace='stocks')),
     path('accounts/', include('allauth.urls')),
+    path('todos/', include('todos.urls')),
+
 
 ]
 

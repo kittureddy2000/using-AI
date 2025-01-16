@@ -12,10 +12,7 @@ from django.contrib.messages import constants as messages
 
 
 
-
 print("settings.py loaded")
-
-DEBUG = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -125,11 +122,6 @@ if ENVIRONMENT == 'development':
                 'level': 'DEBUG',
                 'propagate': True,
             },
-            'todos': {
-                'handlers': ['console', 'file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
             'return': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
@@ -138,6 +130,11 @@ if ENVIRONMENT == 'development':
             'stocks': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
+                'propagate': True,
+            },
+            'todos': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
                 'propagate': True,
             },
             'travel': {
@@ -182,12 +179,11 @@ else:
     EMAIL_HOST_PASSWORD = get_secret('SENDGRID_API_KEY')
     
     # In production, use Google Cloud Storage
-
-    GS_BUCKET_NAME = env('GS_BUCKET_NAME')
-    
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
+    GS_BUCKET_NAME = env('GS_BUCKET_NAME','using-ai-405105_using-ai-samaan')
+    
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
@@ -273,9 +269,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'todos',
     'spreturn',
     'stocks',
+    'todos',
     'travel',
     'widget_tweaks',
     'crispy_forms',
@@ -319,10 +315,7 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = 'samaanaiapps.wsgi.application'
-
 
 
 # Password validation
@@ -404,6 +397,12 @@ EMAIL_USE_TLS = True  # Use EMAIL_USE_SSL=True if using port 465
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='kittureddydeals@gmail.com')
 
 
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 print("EMAIL_BACKEND:", EMAIL_BACKEND)
 print("EMAIL_HOST:", EMAIL_HOST)
 print("EMAIL_USE_TLS:", EMAIL_USE_TLS)
@@ -411,15 +410,9 @@ print("EMAIL_PORT:", EMAIL_PORT)
 print("EMAIL_HOST_USER:", EMAIL_HOST_USER)
 print("EMAIL_HOST_PASSWORD:", EMAIL_HOST_PASSWORD)
 print("DEFAULT_FROM_EMAIL:", DEFAULT_FROM_EMAIL)
-
-
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
+# print("GS_BUCKET_NAME:", GS_BUCKET_NAME)
+print("Static URL:", STATIC_URL)
+print("Media URL:", MEDIA_URL)
 
 
 print('I am the end of settings.py')

@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 class TaskList(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='task_lists', null=True)
     list_name = models.CharField(max_length=2000)
     list_code = models.CharField(max_length=100, null=True)
     special_list = models.BooleanField(default=False)
-    color = models.CharField(max_length=100)
 
     def __str__(self):
         return self.list_name
@@ -32,7 +32,7 @@ class Task(models.Model):
     list_name = models.ForeignKey(TaskList, on_delete=models.SET_DEFAULT, default=1, blank=True)
     task_description = models.CharField(max_length=2000, null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    reminder_time = models.DateTimeField(default=timezone.now , blank = True, null=True)
+    reminder_time = models.DateTimeField(blank = True, null=True)
     recurrence = models.CharField(max_length=100, choices=RECURRENCE_CHOICES, blank=True)
     task_completed = models.BooleanField(default=False)
     important = models.BooleanField(default=False)

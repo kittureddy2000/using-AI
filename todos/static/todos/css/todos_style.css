@@ -1,0 +1,287 @@
+/* Base styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* Very light gray background */
+    color: #343a40; /* Dark gray text for contrast */
+}
+
+/* Sidebar styles */
+#sidebarMenu {
+    background-color: #fff; /* White background for the sidebar */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    border: none; /* Remove the border for a cleaner look */
+    padding: 10px; /* Add a bit of padding */
+}
+
+#sidebarMenu .nav-item {
+     margin-bottom: 3px;
+     border-radius: 5px; /* Optional: for rounded corners*/
+}
+
+.task-list-item {
+  border-radius: 5px;
+  font-size: 0.9rem; /* Adjusted for better readability */
+  color: black !important;
+}
+
+
+.task-list-item:hover {
+    background-color: #e9ecef; /* Light gray background on hover */
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.highlighted {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Icon styling */
+.icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 5px;
+}
+
+/* Task Middle Panel Styles */
+#task-middle-panel {
+    background-color: #fff; /* White background for task panel */
+    padding: 15px;
+     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Search row styles */
+#searchbar_row {
+    padding-left: 10px;
+    padding-right: 10x;
+    margin-left: 10px;
+    margin-bottom: 0px; /* removing space above the search bar */
+    display: flex; /* to add horizontal padding*/
+    align-items: center;  /* to vertically align  */
+}
+
+#searchbar_row .col {
+    padding: 0;
+}
+#searchbar_row input {
+    height: 38px;
+    line-height: 38px; /* Adding a line height for vertical centering */
+}
+
+
+
+/* Task Detail Panel Styles */
+#task-details-panel {
+    background-color: #fff; /* White background for task detail panel */
+    border-left: 1px solid #dee2e6; /* Add a border to visually separate it */
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding: 15px;
+    padding-right: 0px; /* removing right side padding from detail panel*/
+
+}
+
+/* Striking styles */
+.strikethrough {
+    text-decoration: line-through;
+}
+
+/* Expandable TextArea */
+.expandable {
+    height: 3rem;
+    transition: height 0.5s;
+}
+
+.expandable:focus {
+    height: 10rem;
+}
+
+/* Button Styles */
+.btn-light,
+.btn-success {
+    border: none;
+    padding: 6px 12px;
+    text-align: center;
+}
+.btn-light.add-task-btn {
+    display: inline-flex; /* Make button flex */
+    align-items: center;  /* vertically align content */
+    justify-content: center; /* Horizontally align content*/
+    border-radius: 50%;  /* Make the button circular */
+    width: 40px;     /* Set a fixed width */
+    height: 40px;    /* Set a fixed height */
+    padding: 0px;  /* removes button padding */
+    line-height: 1; /* to remove additional space in the button */
+}
+
+
+.btn-light:hover {
+    background-color: #e9ecef; /* Light gray background on hover */
+}
+
+.btn-success:hover {
+    background-color: #28a745;
+}
+
+/* Modal Styles */
+.modal-content{
+  border:none;
+}
+
+.modal-header, .modal-footer {
+  border:none;
+}
+
+/* Image Preview style */
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.image-preview img {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    max-width: 80px;
+    height: auto; /* Allows image to maintain aspect ratio */
+}
+/*Edit Task Style */
+.task-form-container {
+    padding: 5px;
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column; /* Arrange items in a column */
+    gap: 5px;
+}
+.file-item {
+    display: flex;
+    align-items: center; /* Align items in file list */
+}
+
+.file-item i {
+    margin-right: 5px;
+    color: #5a6268; /* Optional: color for file icon */
+}
+/* Add icon Style */
+.form-icon {
+    text-align: center;
+    margin-right: 0.5rem;
+    padding-bottom: 0.35rem; 
+}
+.save-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+.save-button i {
+    margin-right: 5px;
+}
+
+.save-button:hover {
+    background-color: #218838;
+}
+
+.card {
+    padding: 8px; /* Compact internal spacing */
+    margin: 5px; /* Compact external spacing */
+    font-size: 0.9rem; /* Reduce font size */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid #ddd; /* Minimal border */
+}
+
+.card-body {
+    display: flex;
+    align-items: center;    
+}
+
+
+.mark-favorite {
+    margin-left: auto; /* Push the star icon all the way to the right */
+    cursor: pointer; /* Add a pointer cursor for interactivity */
+    color: #000; /* Optional: Set a default color for the star */
+}
+
+/* Custom styling for the task name input box */
+.input-box {
+    width: 98%; /* Adjust width */
+    padding: 5px; /* Reduce internal spacing */
+    margin: 5px auto; /* Add spacing and center */
+    font-size: 0.9rem; /* Adjust font size */
+    border-radius: 4px; /* Slightly rounded corners */
+}
+
+/* Optional: Add focus effect for better UI */
+.input-box:focus {
+    border-color: #007bff; /* Change border color on focus */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+
+.task-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+ .task-card .d-flex {
+    justify-content: space-between; /* Ensure space between child elements */
+}
+  
+.task-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+    transition: all 0.3s ease-in-out;
+}
+
+.task-card .card-body {
+    padding: 12px;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+}
+
+.text-danger {
+    font-weight: bold;
+}
+
+.mark-favorite i {
+    color: #007bff;
+}
+
+.mark-favorite i:hover {
+    color: #0056b3;
+}
+
+.ui-datepicker {
+    background: #ffffff; /* Background color */
+    border: 1px solid #ced4da; /* Border matches Bootstrap input */
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 10px;
+    font-size: 1rem; /* Match Bootstrap font size */
+}
+
+.ui-datepicker-header {
+    background: #f8f9fa; /* Light header background */
+    border-bottom: 1px solid #dee2e6; /* Match Bootstrap borders */
+    padding: 5px 0;
+}
+
+.ui-datepicker-calendar th, .ui-datepicker-calendar td {
+    padding: 5px;
+}
+
+.ui-datepicker-calendar .ui-state-highlight {
+    background: #0d6efd; /* Bootstrap primary color */
+    color: white;
+}

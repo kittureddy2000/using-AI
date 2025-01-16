@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Task, TaskList
 
 class TaskListAdmin(admin.ModelAdmin):
-    list_display = ('list_name', 'list_code', 'special_list', 'color')  # Fields to display in admin list view
+    list_display = ('list_name', 'list_code', 'special_list')  # Fields to display in admin list view
     search_fields = ('list_name', 'list_code')  # Fields to be searchable in admin
     list_filter = ('special_list',)  # Fields to filter by in admin
 

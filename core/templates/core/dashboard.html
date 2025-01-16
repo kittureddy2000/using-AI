@@ -1,61 +1,54 @@
-{% extends 'core/base.html' %} {% load todo_extras %} {% block title %}Using AI
+{% extends 'core/base.html' %} {% block title %}Using AI
 Dashboard{% endblock %} {% block content %}
-<div class="container bg-light mt-5">
-  <div class="row mt-5">
+<div class="container">
+  <div class="row">
+
+    <!-- My Tasks Card -->
     <div class="col-md-6">
-      <div class="card">
+      <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">
-            <a href="{% url 'travel:travel' %}" class="card-title mt-2">
-              Travel</a
-            >
-          </h5>
-          <p class="card-text text-muted">Tavel Application</p>
+          <h5 class="card-title">My Tasks</h5>
+          <p class="card-text">Manage your tasks efficiently</p>
+          <!-- The "stretched-link" inside the card body makes the whole card clickable -->
+          <a href="{% url 'todos:get_lists' %}" class="stretched-link"></a>
         </div>
       </div>
     </div>
+
+    <!-- Stocks Card -->
     <div class="col-md-6">
-      <div class="card">
+      <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">
-            <a href="{% url 'todos:get_lists' %}" class="card-title mt-2">
-              My Tasks</a
-            >
-          </h5>
-          <p class="card-text text-muted">Task Management Application</p>
+          <h5 class="card-title">Stocks</h5>
+          <p class="card-text">Monitor and manage your portfolio</p>
+          <a href="{% url 'stocks:stock_list' %}" class="stretched-link"></a>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row mt-5">
+  <div class="row">
+    <!-- S&P Return Card -->
     <div class="col-md-6">
-      <div class="card">
+      <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">
-            <a href="{% url 'spreturn:spreturn' %}" class="card-title mt-2">
-              S&P Return</a
-            >
-          </h5>
-          <p class="card-text text-muted">S&P Return Analysis</p>
+          <h5 class="card-title">S&P Return</h5>
+          <p class="card-text">Analyze S&P market performance</p>
+          <a href="{% url 'spreturn:spreturn' %}" class="stretched-link"></a>
         </div>
       </div>
     </div>
 
+    <!-- Travel Card -->
     <div class="col-md-6">
-      <div class="card">
+      <div class="card text-center shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">
-            <a href="{% url 'stocks:stock_list' %}" class="card-title mt-2">
-              Stocks</a
-            >
-          </h5>
-          <p class="card-text text-muted">My Stocks Applciation1</p>
+          <h5 class="card-title">Travel</h5>
+          <p class="card-text">Explore travel deals and destinations</p>
+          <a href="{% url 'travel:travel' %}" class="stretched-link"></a>
         </div>
       </div>
     </div>
-
   </div>
 </div>
-
 {% endblock %}
