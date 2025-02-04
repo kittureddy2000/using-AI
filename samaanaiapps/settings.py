@@ -116,11 +116,16 @@ else:
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = get_secret('SENDGRID_API_KEY')
 
+    logger.info("Setting up CSS storage in Google Cloud Storage")
+    logger.info("EMAIL_HOST_USER: {EMAIL_HOST_USER}")
+    logger.info("EMAIL_HOST_PASSWORD: {EMAIL_HOST_PASSWORD}")
+
     # In production, use Google Cloud Storage
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
     GS_BUCKET_NAME = env('GS_BUCKET_NAME', 'using-ai-405105_using-ai-samaan')
+    logger.info(f"GS_BUCKET_NAME: {GS_BUCKET_NAME}")
 
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
