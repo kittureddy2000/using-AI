@@ -29,14 +29,9 @@ RUN pip install --no-cache-dir -r requirements.txt
    # Redirect the output of pip list to a file.
 RUN python3.10 -m pip list > /app/pip_list.txt
 
-# Display the content of that file to the terminal
-RUN echo "Installed packages:"
-RUN cat /app/pip_list.txt
 # Copy the application code
 COPY . /app/
 
-# Collect static files (if necessary)
-#RUN python manage.py collectstatic --noinput
 
 # Create a non-root user (optional but recommended)
 RUN adduser --disabled-password --gecos '' appuser
