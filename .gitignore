@@ -15,6 +15,7 @@ ENV/
 
 # Media files
 /media/
+/logs/
 
 # Django security key file, if you have one
 *.key
