@@ -127,7 +127,14 @@ else:
     print(f"GS_BUCKET_NAME (raw): {os.environ.get('GS_BUCKET_NAME')}")
     print(f"REDIRECT_URI (raw): {os.environ.get('REDIRECT_URI')}")
 
-    REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
+    REDIRECT_URI = env('REDIRECT_URI', default='local_default_url')
+    print(f"REDIRECT_URI (after): {REDIRECT_URI}")
+
+    REDIRECT_URI1 = env('REDIRECT_URI')
+    logger.info(f"REDIRECT_URI1: {REDIRECT_URI1}")  
+    
+
+    # REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
     logger.info(f"REDIRECT_URI: {REDIRECT_URI}")
 
     print(f"GS_BUCKET_NAME (raw): {os.environ.get('GS_BUCKET_NAME')}")
