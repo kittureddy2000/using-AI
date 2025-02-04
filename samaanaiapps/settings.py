@@ -274,7 +274,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline',
     'prompt': 'consent',  # or 'consent' or 'select_account' 
 }
-
+logger.info("setting up social-auth-app-django pipeline")   
 # social-auth-app-django pipeline
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
@@ -294,6 +294,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 
+logger.info("setting up Microsoft OAuth2 configuration")
 MICROSOFT_AUTH = {
     "CLIENT_ID": env('MS_CLIENT_ID'),
     "CLIENT_SECRET": env('MS_CLIENT_SECRET'),
