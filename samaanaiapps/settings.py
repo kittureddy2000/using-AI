@@ -124,6 +124,9 @@ else:
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
+    print(f"GS_BUCKET_NAME (raw): {os.environ.get('GS_BUCKET_NAME')}")
+    print(f"REDIRECT_URI (raw): {os.environ.get('REDIRECT_URI')}")
+
     REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
     logger.info(f"REDIRECT_URI: {REDIRECT_URI}")
 
