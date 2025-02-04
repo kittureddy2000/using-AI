@@ -42,7 +42,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for stock in stocks %}
+                {% for stock in stock_list %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td class="stock-symbol">{{ stock.symbol }}</td>

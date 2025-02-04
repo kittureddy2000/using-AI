@@ -39,7 +39,7 @@ def stock_list(request):
     else:
         stock_records = []
 
-    context = {'stocks': stock_records}
+    context = {'stock_list': stock_records}
     return render(request, 'stocks/stocks_dashboard.html', context=context)
 
 @login_required

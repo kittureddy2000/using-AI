@@ -6,6 +6,7 @@ __pycache__/
 db.sqlite3
 temp_credentials.json
 /staticfiles/
+/logs/
 
 # If you're using a virtual environment
 .env

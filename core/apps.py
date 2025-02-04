@@ -7,4 +7,5 @@ class CoreConfig(AppConfig):
     name = 'core'
 
     def ready(self):
+        print("DEBUG: CoreConfig.ready() called.")
         import core.signals

@@ -1,4 +1,8 @@
+{% load static %}
+
 <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+
+
   <div class="container-fluid">  <!-- Using container-fluid to control the navbar width -->
     <a
       class="navbar-brand text-white"
@@ -24,12 +28,9 @@
            style="margin: 0; padding:0;"
         >
           <li  style="margin:0; padding:0;">
-            <a href="{% url 'core:profile' %}" class="nav-link">Update Profile</a>
-          </li>
-          <li  style="margin:0; padding:0;">
             <a
               class="nav-item nav-link"
-              href="{% url 'account_logout' %}"
+              href="{% url 'core:logout' %}"
              >
                <i class="fas fa-user-times me-2"></i> Logout
             </a>
@@ -41,7 +42,7 @@
       {% else %}
       <li class="nav-item">
         <a
-          href="{% url 'account_login' %}"
+          href="{% url 'core:login' %}"
           class="nav-link text-white"
          style="padding: 0 15px;"
           >Login</a

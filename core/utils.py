@@ -1,26 +1,60 @@
 # core/utils.py
-from google.cloud import secretmanager
 import logging
+from django.core.mail import send_mail
+import msal
+from django.conf import settings
+from core.models import UserToken
+from django.utils import timezone
+from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 
-def get_logger(name):
-    return logging.getLogger(name)
+def send_recurrent_email():
+    send_mail(
+        'Subject here',
+        'Here is the message.',
+        'samaanaiapps@gmail.com',  # From email
+        ['samaanai2000@gmail.com'],  # To email list
+        fail_silently=False,
+    )
 
-def access_secret(project_id, secret_id, version_id="latest"):
+def refresh_microsoft_token(user_token):
     """
-    Access a single secret version in Google Secret Manager.
+    Refreshes the Microsoft access token using the refresh token.
+    Updates the UserToken model with the new access token and expiry.
+    Returns the new access token or None if refresh fails.
     """
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"  
-    print(name)
-    response = client.access_secret_version(request={"name": name})
-    return response.payload.data.decode("UTF-8")
+    msal_app = msal.ConfidentialClientApplication(
+        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
+        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
+        authority=settings.MICROSOFT_AUTH['AUTHORITY']
+    )
 
-def get_secrets(project_id, secret_ids):
+    result = msal_app.acquire_token_by_refresh_token(
+        refresh_token=user_token.refresh_token,
+        scopes=settings.MICROSOFT_AUTH["SCOPE"]
+    )
+
+    if "access_token" in result:
+        user_token.access_token = result["access_token"]
+        user_token.expires_in = result.get("expires_in")
+        user_token.token_type = result.get("token_type")
+        if "refresh_token" in result:
+            user_token.refresh_token = result["refresh_token"]
+        user_token.set_token_expiry()
+        user_token.save()
+        logger.info(f"Refreshed Microsoft token for user: {user_token.user.username}")
+        return result["access_token"]
+    else:
+        logger.error(f"Failed to refresh Microsoft token for user {user_token.user.username}: {result.get('error_description')}")
+        return None
+
+def is_token_expired(user_token):
     """
-    Retrieve multiple secrets.
+    Checks if the access token is expired.
+    Returns True if expired, False otherwise.
     """
-    secrets = {}
-    for secret_id in secret_ids:
-        secrets[secret_id] = access_secret_version(project_id, secret_id)
-    return secrets
+    if user_token.token_expires_at:
+        return timezone.now() >= user_token.token_expires_at
+    return False  # If no expiry info, assume not expired (adjust as needed)

@@ -1,28 +1,27 @@
-# core/models.py
-
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 
-class CustomUser(AbstractUser):
-    # Keep this model focused on authentication data only
-    pass
+class UserToken(models.Model):
+    PROVIDER_CHOICES = [
+        ('google', 'Google'),
+        ('microsoft', 'Microsoft'),
+    ]
 
-class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='user_images/', blank=True, null=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-
-    # Add any additional fields here
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Changed from OneToOneField
+    provider = models.CharField(max_length=20, choices=PROVIDER_CHOICES)
+    access_token = models.TextField()
+    refresh_token = models.TextField(null=True, blank=True)
+    token_type = models.CharField(max_length=50, null=True, blank=True)
+    expires_in = models.IntegerField(null=True, blank=True)  # Duration in seconds
+    token_expires_at = models.DateTimeField(null=True, blank=True)  # New Field
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} - {self.provider.capitalize()}"
 
-# Signal to create or update the user profile automatically when the user is created or saved
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-    instance.profile.save()
+    def set_token_expiry(self):
+        if self.expires_in:
+            self.token_expires_at = timezone.now() + timedelta(seconds=self.expires_in)
+        else:
+            self.token_expires_at = None

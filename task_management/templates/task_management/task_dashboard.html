@@ -1,0 +1,680 @@
+<!-- task_dashboard.html --> 
+{% extends 'task_management/task_base.html' %}
+{% load static %}
+{% block title %}Task Management{% endblock %}
+{% block additional_head %}
+<meta name="csrf-token" content="{{ csrf_token }}" />
+{% endblock %}
+{% block content %}
+
+<input type="hidden" id="current-list" />
+
+<div
+  id="success-message"
+  style="display: none"
+  class="alert alert-success"
+  role="alert"
+></div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Hamburger Icon for smaller screens Start -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="col col-auto d-block d-lg-none">
+        <button
+          class="btn btn-light"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i
+            class="fas fa-bars text-primary"
+            aria-hidden="true"
+            style="cursor: pointer"
+          ></i>
+        </button>
+      </div>
+    </nav>
+    <!-- Hamburger Icon for smaller screens End -->
+
+    <!-- Bootstrap Sidebar Start -->
+    <nav id="sidebarMenu" class="col-md-2 d-md-block bg-light collapse">
+      <ul class="nav flex-column">
+        <!-- Loop over special task lists -->
+        {% for tasklist in special_lists %}
+          <li class="nav-item">
+            <a href="#" class="nav-link task-list-item d-flex" data-id="{{ tasklist.id }}">
+              <span class="icon-container me-2">
+                {% if tasklist.list_code == "PAST_DUE" %}
+                  <i class="fas fa-exclamation-triangle text-danger"></i>
+                {% elif tasklist.list_code == "IMPORTANT" %}
+                  <i class="fas fa-star text-warning"></i>
+                {% elif tasklist.list_code == "ALL_TASKS" %}
+                  <i class="fas fa-th-list text-primary"></i>
+                {% elif tasklist.list_code == "MS_TASKS" %}
+                  <i class="fab fa-microsoft text-primary"></i>
+                {% elif tasklist.list_code == "GOOGLE_TASKS" %}
+                  <i class="fab fa-google text-info"></i>
+                {% else %}
+                  <i class="fas fa-clipboard-list text-secondary"></i>
+                {% endif %}
+              </span>
+              <span class="text-truncate">{{ tasklist.list_name }}</span>
+            </a>
+            <div class="border-bottom"></div>
+          </li>
+        {% endfor %}
+
+        <!-- Divider after special lists if there are any normal lists -->
+        {% if normal_lists %}
+        <li class="nav-item">
+          <hr class="divider-blue">
+        </li>
+       {% endif %}
+      
+
+        <!-- Loop over normal task lists -->
+        {% for tasklist in normal_lists %}
+          <li class="nav-item">
+            <a href="#" class="nav-link task-list-item d-flex" data-id="{{ tasklist.id }}">
+              <span class="icon-container me-2">
+                <i class="fas fa-tasks text-dark"></i>
+              </span>
+              <span class="text-truncate">{{ tasklist.list_name }}</span>
+            </a>
+            <div class="border-bottom"></div>
+          </li>
+        {% endfor %}
+
+        <!-- Create List Link -->
+        <li class="nav-item task-list-item text-bold">
+          <a href="{% url 'task_management:create_task_list' %}" class="nav-link text-dark me-2">
+            <i class="fas fa-plus text-primary"></i> Create List
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- Bootstrap Sidebar End -->
+
+
+    <main id="task-middle-panel" class="col-md-9">
+      <!-- Search row Section Start-->
+      <div id="searchbar_row" class="mb-3">
+        <div class="d-flex align-items-center flex-nowrap">
+          <!-- Search Box: grows to fill available space -->
+          <input
+            type="text"
+            class="form-control flex-grow-1 me-3"
+            id="search-task"
+            placeholder="Search"
+          />
+      
+          <!-- Add Task Button -->
+          <button class="btn btn-light add-task-btn rounded-circle me-3" type="button">
+            <i class="fa fa-plus-circle fa-lg text-primary" aria-hidden="true" style="cursor: pointer;"></i>
+          </button>
+      
+          <!-- Filter Dropdown -->
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2" title="Filter">
+              <i class="fas fa-filter fa-lg text-primary"></i>
+            </label>
+            <select id="filters" class="form-select form-select-sm" style="width: auto;">
+              <option value="all">All</option>
+              <option value="completed">Completed</option>
+              <option value="past_due">Past Due</option>
+            </select>
+          </div>
+      
+          <!-- Sort Dropdown -->
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2" title="Sort By">
+              <i class="fas fa-sort fa-lg text-primary"></i>
+            </label>
+            <select id="sort-by" class="form-select form-select-sm" style="width: auto;">
+              <option value="">No Sort</option>
+              <option value="due_date">Due Date</option>
+              <option value="important">Important</option>
+            </select>
+          </div>
+      
+          <!-- Sync Buttons -->
+          <div class="d-flex align-items-center">
+            <button id="sync-goog-tasks-btn" class="btn btn-primary me-2" title="Sync Google Tasks">
+              <i class="fab fa-google text-white" aria-hidden="true" style="cursor: pointer;"></i>
+            </button>
+            <button id="sync-ms-tasks-btn" class="btn btn-primary" title="Sync Microsoft Tasks">
+              <i class="fab fa-microsoft text-white" aria-hidden="true" style="cursor: pointer;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      
+      <!-- Search row Section End -->
+
+      <!-- Task Cards Section -->
+      <section id="tasks-section">
+        <!-- Task cards will be dynamically inserted here -->
+      </section>
+    </main>
+
+    <!-- Task Details Section -->
+    <div id="task-details-panel" class="col-md-4 bg-light d-none">
+      <!-- Task details will be loaded here -->
+    </div>
+    <!-- Back button visible only on small screens, outside the task-details-panel -->
+    <button id="back-button" class="btn btn-secondary d-none mb-3">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <!-- Task Modal -->
+  <div
+    class="modal fade"
+    id="taskModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="taskModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="taskModalLabel">Add Task</h5>
+          <button
+            type="button"
+            class="close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            id="saveTask"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script_block %}
+<script>
+  // Function to generate task card HTML
+
+  function createTaskCardHTML(task) {
+    const overdueSpan = task.overdue ? `<span class="text-danger">Overdue</span>` : '';
+    const taskNameClass = task.task_completed ? 'strikethrough' : '';
+    const completeIconClass = task.task_completed ? 'text-danger' : 'text-success';
+    const favoriteIconClass = task.important ? 'fa-solid text-primary' : 'fa-regular';
+
+    console.log("Creating task card for:", task);
+    return `
+      <div class="card task-card mb-1" data-task-id="${task.id}" id="task-${task.id}">
+        <div class="card-body p-2 d-flex align-items-center">
+          <i id="completeicon-${task.id}" class="fa-solid fa-circle-check fa-lg complete-task me-3 ${completeIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
+          <div class="task-info flex-grow-1">
+            <h6 class="task-name ${taskNameClass}">${task.task_name}</h6>
+            <p class="task-due-date text-muted mb-0">
+              <i class="fas fa-calendar-alt me-1"></i>
+              ${overdueSpan}
+              ${formatDate(task.due_date)}
+            </p>
+          </div>
+          <i id="favorite-icon-${task.id}" class="fa-star mark-favorite ms-auto ${favoriteIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
+        </div>
+      </div>`;
+  }
+
+  // Function to sync tasks
+  function syncGoogleTasks() {
+    var csrfToken = $('meta[name="csrf-token"]').attr("content");
+      console.log("Dashboard HTML : syncGoogleTasks function called");
+      fetch("/task_management/sync_google_tasks/", {
+        method: 'GET', // Explicitly define the GET method
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken // Include csrf token
+        }
+      })
+      .then((response) => {
+          if (!response.ok) {
+              console.log("Dashboard HTML : syncGoogleTasks: Response Status : " + response.status);
+              return response.json().then(data => {
+                console.error("Dashboard HTML : syncGoogleTasks: Error syncing tasks:", data.error);
+                 if (response.status === 400) {
+                     // Handle unauthorized response (e.g., redirect to login)
+                    console.error("Dashboard HTML : syncGoogleTasks: User not authenticated");
+                     return;
+                 }
+  
+              })
+          }
+          return response.json();
+        })
+      .then((data) => {
+            if(data){
+              console.log("SDashboard HTML :syncGoogleTasks:  sync Task Success " + data.message);
+                      // Show the success message
+            $("#success-message").text(data.message).fadeIn();
+            // Hide the message after 3 seconds
+            setTimeout(function () {
+              $("#success-message").fadeOut();
+            }, 3000);
+
+              fetchTasksFromDb(); //Refresh the task table after success.
+            }
+        })
+        .catch((error) => {
+          console.error("Dashboard HTML : syncGoogleTasks: Error syncing tasks:", error);
+        });
+    }
+
+// task_dashboard.html
+
+  function syncMSTasks() {
+    var csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    fetch("/task_management/sync_microsoft_tasks/", {
+      method: 'GET',
+      headers: {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          if (data.error === "Microsoft account not connected." || data.error === "Authentication failed. Please reconnect your Microsoft account.") {
+            // Redirect to connect Microsoft account
+            window.location.href = "/task_management/connect_microsoft/"; // Ensure this URL is correct
+          } else {
+            console.error("Error response:", data);
+            throw new Error(data.error || "Failed to sync tasks.");
+          }
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.message) {
+        console.log("MS Tasks Sync:", data.message);
+          $("#success-message").text(data.message).fadeIn();
+          // Hide the message after 3 seconds
+          setTimeout(function () {
+            $("#success-message").fadeOut();
+          }, 3000);      
+          fetchTasksFromDb();
+      } else {
+        console.error("MS Tasks Sync: No message in response");
+      }
+    })
+    .catch((error) => {
+      console.error("Error syncing MS tasks:", error);
+    });
+  }
+
+  //Function to update Task Table. Called from various functions like search, sort, etc.
+  function updateTasksSection(tasks) {
+    const tasksHtml = tasks
+      .map((task) => createTaskCardHTML(task)) // Call createTaskCardHTML here
+      .join("");
+    $("#tasks-section").html(tasksHtml);
+  }
+ 
+  // Function to fetch tasks Intial Load 
+    function fetchTasksFromDb() {
+    console.log("Task Dashboard : In Fetch Tasks function");
+    fetch("/task_management/get_all_tasks/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Task Dashboard : Fetch Tasks response received");
+        updateTasksSection(data.tasks);
+      });
+  }
+  
+  $(document).ready(function () {
+    console.log("Dashboard HTML : In Document Ready Function");
+
+    // Call fetchTasksFromDb function to fetch tasks from the database
+    fetchTasksFromDb()
+    // Call syncGoogleTasks functions to sync Google tasks to database and to UI
+    syncGoogleTasks();
+    // Call syncMSTasks functions to sync Microsoft tasks to database and to UI
+    syncMSTasks();
+
+    //This function is called when the user clicks on a task Category
+    $(".task-list-item").click(function () {
+      var listId = $(this).data("id");
+      console.log("list Id : " + listId);
+      $("#current-list").data("list-id", listId);
+      $(".task-list-item").removeClass("highlighted");
+      this.classList.add("highlighted");
+
+      $.ajax({
+        url: `/task_management/get_tasks_by_list/${listId}`,
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          console.log("Received data:", response);
+          updateTasksSection(response.tasks);
+          $("#task-details-panel").addClass("d-none");
+
+          if (window.innerWidth < 768) {
+            var sidebarMenu = $("#sidebarMenu");
+            var bsCollapse = new bootstrap.Collapse(sidebarMenu, {
+              toggle: true,
+            });
+            bsCollapse.hide();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("An error occurred while fetching tasks: " + error);
+        },
+      });
+    });
+
+    //This function is called when the user clicks on the task info
+    $(document).on("click", ".task-card", function () {
+      var taskId = $(this).data("task-id");
+      console.log("Clicked on task row with Task Id : " + taskId);
+
+      url = "{% url 'task_management:edit_task' 999 %}".replace("999", taskId);
+
+      $.ajax({
+        url: url,
+        type: "GET",
+        success: function (tasks) {
+          console.log("In Success message for getting edit_task_panel");
+          $("#task-details-panel").removeClass("d-none");
+          $("#task-details-panel").html(tasks);
+          document
+            .getElementById("task-middle-panel")
+            .classList.remove("col-md-9");
+          document
+            .getElementById("task-middle-panel")
+            .classList.add("col-md-6");
+
+          if ($(window).width() < 768) {
+            $("#tasks-section").toggleClass("d-none");
+            $("#back-button").removeClass("d-none");
+            $("#searchbar_row").addClass("d-none");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.log("Error fetching task details:", xhr.status);
+        },
+      });
+    });
+
+    //This function is called when the user clicks on the complete icon
+    $(document).on("click", ".complete-task", function (e) {
+      var taskId = $(this).data("id");
+      var taskRow = $("#task-" + taskId);
+      var csrfToken = $('meta[name="csrf-token"]').attr("content");
+      console.log("Task_id : " + taskId);
+
+      $.ajax({
+        url: "{% url 'task_management:complete_task' %}",
+        type: "POST",
+        data: {
+          id: taskId,
+          csrfmiddlewaretoken: csrfToken,
+        },
+        success: function (response) {
+          console.log("Clicked Complete : " + response.task_name);
+          console.log("Task Id : " + response.task_id);
+
+          if (response.task_completed) {
+            $(`#task-${response.task_id} .card-text:first`).addClass(
+              "strikethrough"
+            );
+          } else {
+            $(`#task-${response.task_id} .card-text:first`).removeClass(
+              "strikethrough"
+            );
+          }
+
+          $(`#task-${response.task_id} .complete-task`).toggleClass(
+            "text-danger text-success"
+          );
+
+          $("#success-message")
+            .text("Marked task Complete: " + response.task_name)
+            .show();
+          setTimeout(function () {
+            $("#success-message").hide();
+          }, 1000);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error in AJAX request:", status, error);
+        },
+      });
+    });
+
+    //This function is called when the user clicks on the important icon
+    $(document).on("click", ".mark-favorite", function (e) {
+      var taskId = $(this).data("id");
+      var csrfToken = $('meta[name="csrf-token"]').attr("content");
+      console.log("Mark Favorite Task_id : " + taskId);
+
+      $.ajax({
+        url: "{% url 'task_management:mark_favorite' %}",
+        type: "POST",
+        data: {
+          id: taskId,
+          csrfmiddlewaretoken: csrfToken,
+        },
+        success: function (response) {
+          var iconClass = response.Important
+            ? "fa-sharp fa-solid fa-star"
+            : "fa-sharp fa-regular fa-star";
+
+          $("#favorite-icon-" + response.task_id).attr("class", iconClass);
+
+          $("#success-message")
+            .text("Marked task as a important: " + response.task_name)
+            .show();
+          setTimeout(function () {
+            $("#success-message").hide();
+          }, 5000);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error in AJAX request:", status, error);
+        },
+      });
+    });
+
+    //This function is called when the user clicks on the add task button
+    $(document).on("click", ".add-task-btn", function () {
+      var listId = $("#current-list").data("list-id");
+      if (listId === undefined) {
+        listId = 1;
+      }
+      console.log("listid in Add Task Form : " + listId);
+      $("#taskModal").data("mode", "add");
+      console.log(" Task Model Mode in Creat mode ");
+      $("#taskModal .modal-body").load("/task_management/add/" + listId, function () {
+        $("#taskModal").modal("show");
+      });
+    });
+
+    //This function is called when the user clicks on the save task button in Create Task Form
+    $("#saveTask").click(function () {
+      console.log("Saving Task function called");
+      var mode = $("#taskModal").data("mode");
+      var taskId = $("#taskModal").data("taskId");
+      var tasksHtml = "";
+
+      var url = "";
+      console.log("Save Model Mode : " + mode);
+
+      if (mode === "edit") {
+        var taskId = $("#taskModal").data("taskId");
+        url = "/task_management/edit_task/" + taskId + "/";
+      } else {
+        url = "/task_management/add/1/";
+      }
+      console.log(" Save URL :  " + url);
+      var formData = new FormData($("#taskModal form")[0]);
+      $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          console.log("Success in Ajax Save Task : ");
+
+          var newTask = response.new_task;
+          //console.log("Success from Save Task : " + newTask.task_name);
+
+          addNewTasktoDisplay(newTask);
+
+          if ($(window).width() < 768) {
+            console.log("Save Task in Small Screen");
+            $("#task-details-panel").addClass("d-none");
+          }
+
+          console.log("Before Hiding Save Task Model");
+
+          setTimeout(function () {
+            $("#taskModal").modal("hide");
+          }, 500);
+          console.log("After Hiding Save Task Model");
+        },
+        error: function (xhr, status, error) {
+          console.log(
+            "Ajax Function call back error in Save Task Function: " + error
+          );
+        },
+      });
+    });
+    //This function is called when the user types in the search bar
+    function doSearch() {
+      console.log("Java Script : In doSearch Function ");
+      const query = document.getElementById("search-task").value;
+      const filter = document.getElementById("filters").value;
+      const sortBy = document.getElementById("sort-by").value;
+
+      console.log("Query : " + query);
+      console.log("Filter : " + filter);
+      console.log("Sort By : " + sortBy);
+
+      // 1. Correct way to create URL object.
+      const url = new URL(
+        window.location.origin + "{% url 'task_management:search_tasks' %}"
+      );
+
+      url.searchParams.set("q", query);
+
+      //Filter data
+      if (filter) url.searchParams.set("filter", filter);
+
+      //Sort data
+      if (sortBy) url.searchParams.set("sort_by", sortBy);
+
+      console.log("URL : " + url);
+
+      $.ajax({
+        // 2. Use URL object
+        url: url,
+        dataType: "json",
+        success: function (response) {
+          console.log("Received Search data:", response);
+
+          if (response.tasks.length === 0) {
+            // Display a "No tasks found" message if there are no tasks
+            $("#tasks-section").html("<p>No tasks found.</p>");
+          } else {
+            // Update the tasks section with the search results
+            updateTasksSection(response.tasks);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Error occurred: " + error);
+        },
+      });
+    }
+
+    document.getElementById("search-task").addEventListener("input", doSearch);
+    document.getElementById("filters").addEventListener("change", doSearch);
+    document.getElementById("sort-by").addEventListener("change", doSearch);
+
+    //  This function is called when the user clicks submit buttion on edit task form
+    $(document).on("submit", "#edit-task-form", function (e) {
+      console.log("Edit Task Save function called from Side Panel");
+      e.preventDefault();
+      var taskId = $(this).data("task-id");
+      url = "/task_management/edit_task/" + taskId + "/";
+
+      var formData = new FormData(this);
+      var taskHtml = "";
+      $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          console.log("edit-task-form Ajax : Success from Save Task : " + response.task_name);
+          console.log("edit-task-form Ajax : Task ID : " + response.id);
+          const taskHtml = createTaskCardHTML(response); // Call createTaskCardHTML here
+          $("#task-" + response.id).replaceWith(taskHtml);
+          console.log("Updated Task Html");
+          $("#task-details-panel").addClass("d-none");
+          $("#task-middle-panel").removeClass("col-md-6");
+          $("#task-middle-panel").addClass("col-md-9");
+        },
+        error: function (xhr, status, error) { },
+      });
+    });
+
+    //This function is called when the user clicks on the back button
+    $("#back-button").on("click", function () {
+      $("#task-details-panel").addClass("d-none");
+      $("#tasks-section").toggleClass("d-none");
+      $("#back-button").addClass("d-none");
+      $("#searchbar_row").removeClass("d-none");
+    });
+
+    //This function is called when the user clicks on the filter option
+    function addNewTasktoDisplay(newTask) {
+      const newTaskHtml = createTaskCardHTML(newTask); // Call createTaskCardHTML here
+      $("#tasks-section").append(newTaskHtml);
+    }
+
+    //This function is called when the user clicks on the sync tasks button to fetch Google Tasks
+    $(document).on("click", "#sync-goog-tasks-btn", function (e) {
+      console.log("Sync Task button clicked");
+       syncGoogleTasks();
+    });
+
+    $(document).on("click", "#sync-ms-tasks-btn", function () {
+      syncMSTasks();
+    });      
+  });
+</script>
+<script src="{% static 'task_management/scripts/task_management-script.js' %}"></script>
+{% endblock %}

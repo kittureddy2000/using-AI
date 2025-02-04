@@ -3,6 +3,8 @@
 import os
 import sys
 
+print("Python executable:", sys.executable)
+print("Python path:", sys.path)
 
 def main():
     """Run administrative tasks."""

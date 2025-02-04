@@ -24,7 +24,7 @@
 }
 
 body {
-  background: linear-gradient(to right, #891b77, #FFFFFF);
+  background: linear-gradient(to right, #1b4c89, #FFFFFF);
   min-height: 100vh;
 }
 
@@ -68,4 +68,17 @@ body {
 h2 {
   margin-bottom: 20px;
   text-align: center;
+}
+
+.logo-container{
+  display: inline-block;
+}
+.logo{
+  height: 50px; /* Adjust as needed */
+  vertical-align: middle;
+}
+
+.divider {
+  margin: 20px 0;
+  border-top: 1px solid #e0e0e0;
 }

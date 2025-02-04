@@ -25,7 +25,13 @@ COPY requirements.txt /app/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+ # Verify Installation
+   # Redirect the output of pip list to a file.
+RUN python3.10 -m pip list > /app/pip_list.txt
 
+# Display the content of that file to the terminal
+RUN echo "Installed packages:"
+RUN cat /app/pip_list.txt
 # Copy the application code
 COPY . /app/
 
