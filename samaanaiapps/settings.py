@@ -135,6 +135,7 @@ else:
     
     allowed_hosts_str = env("DJANGO_ALLOWED_HOSTS", default=CLOUDRUN_SERVICE_URL)
     ALLOWED_HOSTS = allowed_hosts_str.split(',')
+    logger.info(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
