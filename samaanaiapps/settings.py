@@ -114,7 +114,7 @@ else:
     SECRET_KEY = get_secret('SECRET_KEY')
     DB_PASSWORD = get_secret('DB_PASSWORD')
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = get_secret('SENDGRID_API_KEY')
+    EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
 
     logger.info("Setting up CSS storage in Google Cloud Storage")
     logger.info("EMAIL_HOST_USER: {EMAIL_HOST_USER}")
@@ -134,7 +134,7 @@ else:
     # # logger.info(f"REDIRECT_URI1: {REDIRECT_URI1}")  
     
 
-    REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
+    REDIRECT_URI = env('REDIRECT_URI', default='https://www.samaanai.com/task_management/microsoft_callback/')
     logger.info(f"REDIRECT_URI: {REDIRECT_URI}")
 
 
