@@ -21,13 +21,16 @@ urlpatterns = [
     path('create_task_list/', views.create_task_list, name='create_task_list'),
     path('get_tasks_by_list/<int:list_id>/', views.get_tasks_by_list, name='get_tasks_by_list'),
     path('delete_tasks/', views.delete_tasks, name='delete_tasks'),
-    # path('send_email/', views.trigger_email_send, name='send_email'),
+    
+    #Google and Micrsoft Task Sync
     path('sync_google_tasks/', views.sync_google_tasks, name='sync_google_tasks'),
     path('connect_microsoft/', views.connect_microsoft, name='connect_microsoft'),
     path('microsoft_callback/', views.microsoft_callback, name='microsoft_callback'),
     path('sync_microsoft_tasks/', views.sync_microsoft_tasks, name='sync_microsoft_tasks'),    
     path('sync_tasks/', views.trigger_background_sync, name='trigger_background_sync'),
     path('process_sync_task/', views.process_sync_task, name='process_sync_task'),
+    path('trigger_sync/', views.trigger_user_sync, name='trigger_user_sync'),
+    path('check_sync_status/', views.check_sync_status, name='check_sync_status'),
 
 ] 
 

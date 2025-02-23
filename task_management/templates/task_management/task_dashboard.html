@@ -149,6 +149,9 @@
             <button id="sync-ms-tasks-btn" class="btn btn-primary" title="Sync Microsoft Tasks">
               <i class="fab fa-microsoft text-white" aria-hidden="true" style="cursor: pointer;"></i>
             </button>
+            <button id="manual-sync-btn" class="btn btn-primary" title="Sync All Tasks">
+              <i class="fab fa-microsoft text-white" aria-hidden="true" style="cursor: pointer;"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -289,9 +292,7 @@
         .catch((error) => {
           console.error("Dashboard HTML : syncGoogleTasks: Error syncing tasks:", error);
         });
-    }
-
-// task_dashboard.html
+  }
 
   function syncMSTasks() {
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
@@ -334,7 +335,6 @@
       console.error("Error syncing MS tasks:", error);
     });
   }
-
   //Function to update Task Table. Called from various functions like search, sort, etc.
   function updateTasksSection(tasks) {
     const tasksHtml = tasks
@@ -344,7 +344,7 @@
   }
  
   // Function to fetch tasks Intial Load 
-    function fetchTasksFromDb() {
+  function fetchTasksFromDb() {
     console.log("Task Dashboard : In Fetch Tasks function");
     fetch("/task_management/get_all_tasks/")
       .then((response) => response.json())
@@ -353,16 +353,84 @@
         updateTasksSection(data.tasks);
       });
   }
-  
+
+  //Function to trigger async sync for Google and Microsoft tasks
+  function triggerAsyncSync(provider) {
+    
+    var csrfToken = $('meta[name="csrf-token"]').attr("content");
+    console.log(`Triggering async sync for ${provider} tasks`);
+    fetch("/task_management/trigger_sync/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+      },
+      body: JSON.stringify({ provider: provider })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(`${provider} sync enqueued:`, data.message);
+      pollSyncStatus(provider);
+    })
+    .catch((error) => console.error(`Error triggering ${provider} sync:`, error));
+  }
+
+  //Function to poll the sync status 
+  function pollSyncStatus(provider) {
+    console.log(`Polling for ${provider} sync status...`);
+    let attempts = 0;
+    const maxAttempts = 10; // Poll for up to 30 seconds (3s interval * 10)
+    const interval = 3000; // Poll every 3 seconds
+    const userId = {{ user.id }};
+
+    const poll = setInterval(() => {
+      if (attempts >= maxAttempts) {
+        clearInterval(poll);
+        console.log(`Stopped polling for ${provider} sync after ${maxAttempts} attempts`);
+        return;
+      }
+
+      fetch(`/task_management/check_sync_status/?provider=${provider}&user_id=${userId}`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr("content") }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.completed) {
+          clearInterval(poll);
+          console.log(`${provider} sync completed, refreshing tasks`);
+          fetchTasksFromDb(); // Refresh tasks
+          $("#success-message").text(`${provider.capitalize()} Tasks synced successfully`).fadeIn();
+          setTimeout(() => $("#success-message").fadeOut(), 3000);
+        } else if (data.error) {
+          console.error(`Sync status error for ${provider}:`, data.error);
+          clearInterval(poll);
+        }
+      })
+      .catch((error) => {
+        console.error(`Error polling ${provider} sync status:`, error);
+        clearInterval(poll);
+      });
+      attempts++;
+    }, interval);
+  }
+
   $(document).ready(function () {
     console.log("Dashboard HTML : In Document Ready Function");
+    const userId = {{ user.id }};
 
     // Call fetchTasksFromDb function to fetch tasks from the database
     fetchTasksFromDb()
-    // Call syncGoogleTasks functions to sync Google tasks to database and to UI
-    syncGoogleTasks();
-    // Call syncMSTasks functions to sync Microsoft tasks to database and to UI
-    syncMSTasks();
+    //Call syncGoogleTasks functions to sync Google tasks to database and to UI
+    // Trigger async syncs for Google and Microsoft in the background
+    triggerAsyncSync('google');
+    triggerAsyncSync('microsoft');
+
+    // Optional: Add a manual sync button for users
+    $("#manual-sync-btn").on("click", () => {
+      triggerAsyncSync('google');
+      triggerAsyncSync('microsoft');
+    });
 
     //This function is called when the user clicks on a task Category
     $(".task-list-item").click(function () {

@@ -83,3 +83,15 @@ class TaskHistory(models.Model):
     class Meta:
         ordering = ['-creation_date']
         unique_together = ('source', 'source_id')
+
+class TaskSyncStatus(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    provider = models.CharField(max_length=20, choices=[('google', 'Google'), ('microsoft', 'Microsoft')])
+    is_complete = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'provider')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.provider} Sync Status: {self.is_complete}"

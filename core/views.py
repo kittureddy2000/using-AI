@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def dashboard(request):
     logging.info('Calling Dashboard')
-    return render(request, 'core/dashboard.html')
+    return render(request, 'core/dashboard.html', {'user': request.user})
 
 def login_view(request):
     logging.info('CoreView : Calling Login')

@@ -33,6 +33,7 @@ from django.contrib.auth.models import User
 from google.cloud import storage, tasks_v2
 from django.views.decorators.csrf import csrf_exempt
 from core.utils import send_email
+from .models import TaskSyncStatus  # You’ll need to create this model
 
 
 logger = logging.getLogger(__name__)
@@ -73,8 +74,7 @@ def ensure_predefined_lists(user):
 @login_required
 def get_all_tasks(request):
     logger.info("In Get All Tasks function")
-    # sync_google_tasks(request)
-    # sync_microsoft_tasks(request)
+
     tasks = Task.objects.filter(user=request.user, task_completed=False).order_by('due_date')
 
     tasks_data = list(tasks.values(
@@ -617,34 +617,43 @@ def sync_user_tasks(user, provider):
                 scopes=['https://www.googleapis.com/auth/tasks'],
             )
             if creds.expired and creds.refresh_token:
-                logger.info(f"Google token expired for user: {user.username}, refreshing token")
-                creds.refresh(Request())
-                google_token.access_token = creds.token
-                google_token.save()
-            logger.info("Calling fetch_google_tasks_and_save")
+                try:
+                    creds.refresh(Request())
+                    google_token.access_token = creds.token
+                    google_token.save()
+                except Exception as e:
+                    logger.error(f"Failed to refresh Google token for {user.username}: {e}")
+                    raise Exception(f"Google token refresh failed - please re-authenticate: {e}")
             fetch_google_tasks_and_save(user, creds)
             logger.info(f"Google Tasks synced for user: {user.username}")
         elif provider == 'microsoft':
             ms_token = UserToken.objects.get(user=user, provider='microsoft')
             access_token = ms_token.access_token if not is_token_expired(ms_token) else refresh_microsoft_token(ms_token)
             if not access_token:
-                logger.error(f"Microsoft token refresh failed for user: {user.username}")
-                raise Exception("Microsoft token refresh failed")
+                logger.error(f"Microsoft token refresh failed for {user.username}")
+                raise Exception("Microsoft token refresh failed - please re-authenticate")
             fetch_microsoft_tasks_and_save(user, access_token)
             logger.info(f"Microsoft Tasks synced for user: {user.username}")
         
-        send_email(
-            subject=f"Task Sync Completed for {provider.capitalize()}",
-            message=f"Your {provider.capitalize()} tasks have been synced successfully.",
-            recipient_list=[user.email],
+        # Mark sync as complete in TaskSyncStatus
+        TaskSyncStatus.objects.update_or_create(
+            user=user, provider=provider, defaults={'is_complete': True}
         )
 
-        logger.info(f"Email notification sent to user: {user.username} for {provider} sync completion")
+        # Send email only in production, skip in development
+        if settings.ENVIRONMENT != 'development':
+            send_email(
+                subject=f"Task Sync Completed for {provider.capitalize()}",
+                message=f"Your {provider.capitalize()} tasks have been synced successfully.",
+                recipient_list=[user.email],
+            )
+            logger.info(f"Email notification sent to user: {user.username} for {provider} sync completion")
+        else:
+            logger.info(f"Skipping email notification in development for user: {user.username} and provider: {provider}")
     except Exception as e:
         logger.error(f"Error syncing {provider} tasks for user {user.username}: {e}")
-        raise
-
-# UI-triggered syncs
+        raise# UI-triggered syncs
+    
 @login_required
 def sync_google_tasks(request):
     sync_user_tasks(request.user, 'google')
@@ -821,3 +830,75 @@ def is_token_expired(user_token):
     if user_token.token_expires_at:
         return timezone.now() >= user_token.token_expires_at
     return False  # If no expiry info, assume not expired (adjust as needed)
+
+@csrf_exempt
+@login_required
+def trigger_user_sync(request):
+    """Endpoint triggered from UI to enqueue sync tasks for the current user."""
+    logger.info(f"Triggering user sync for user: {request.user.username}")
+    if request.method != 'POST':
+        return HttpResponse("Method not allowed", status=405)
+
+    if settings.ENVIRONMENT == 'development':
+        from django.test import Client
+        client_http = Client()
+        for provider in ['google', 'microsoft']:
+            if UserToken.objects.filter(user=request.user, provider=provider).exists():
+                logger.info(f"Simulating sync for user {request.user.username} and provider {provider}")
+                client_http.post('/task_management/process_sync_task/',
+                                 f'{{"user_id": {request.user.id}, "provider": "{provider}"}}',
+                                 content_type='application/json')
+    else:
+        client = tasks_v2.CloudTasksClient()
+        project = os.environ.get('PROJECT_ID')
+        location = 'us-west1'
+        queue = 'task-sync-queue'
+        parent = client.queue_path(project, location, queue)
+
+        for provider in ['google', 'microsoft']:
+            if UserToken.objects.filter(user=request.user, provider=provider).exists():
+                task = {
+                    'http_request': {
+                        'http_method': tasks_v2.HttpMethod.POST,
+                        'url': f'{settings.BASE_URL}/task_management/process_sync_task/',
+                        'body': f'{{"user_id": {request.user.id}, "provider": "{provider}"}}'.encode(),
+                        'headers': {'Content-Type': 'application/json'},
+                    }
+                }
+                client.create_task(request={'parent': parent, 'task': task})
+                logger.info(f"Enqueued {provider} sync task for user {request.user.username}")
+
+    return JsonResponse({'message': 'Sync tasks enqueued for user'})
+
+# View to check sync status
+@csrf_exempt  # Optional, depending on your needs; remove if UI uses CSRF
+def check_sync_status(request):
+    """
+    Check the status of a sync operation for a user and provider.
+    Returns JSON: {'completed': bool}.
+    """
+    logger.info("Checking sync status for request")
+    if request.method != 'GET':
+        return HttpResponse("Method not allowed", status=405)
+
+    provider = request.GET.get('provider')
+    user_id = request.GET.get('user_id')
+
+    if not provider or not user_id:
+        return JsonResponse({'error': 'Provider and user_id are required'}, status=400)
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    # Check if sync is complete for this user/provider
+    sync_status, created = TaskSyncStatus.objects.get_or_create(
+        user=user, provider=provider, defaults={'is_complete': False}
+    )
+
+    # Simulate checking if sync is complete (you can modify this logic)
+    # In practice, update TaskSyncStatus in sync_user_tasks when sync completes
+    is_complete = sync_status.is_complete
+
+    return JsonResponse({'completed': is_complete})
