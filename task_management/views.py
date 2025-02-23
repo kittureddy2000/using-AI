@@ -8,6 +8,7 @@ from django.http import FileResponse, Http404
 from dateutil.relativedelta import relativedelta
 from datetime import timedelta
 import uuid
+import os
 import logging
 from google.cloud import storage
 from django.conf import settings
@@ -15,11 +16,9 @@ from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 import logging
-from django.views.decorators.http import require_POST
 from pathlib import Path
 from datetime import datetime, time as dt_time
 from googleapiclient.discovery import build
-import time
 from dateutil import parser as date_parser
 from django.shortcuts import redirect
 from google.oauth2.credentials import Credentials
@@ -29,7 +28,6 @@ from django.conf import settings
 from core.models import UserToken
 import msal
 import requests
-from django.core.mail import send_mail
 import json
 from django.contrib.auth.models import User
 from google.cloud import storage, tasks_v2
@@ -674,7 +672,7 @@ def trigger_background_sync(request):
     else:
         # Only initialize Cloud Tasks client in production
         client = tasks_v2.CloudTasksClient()
-        project = settings.PROJECT_ID  # e.g., 'my-project'
+        project = os.environ.get('PROJECT_ID')  # e.g., 'my-project'
         location = 'us-west1'  # Adjust as needed
         queue = 'task-sync-queue'
         parent = client.queue_path(project, location, queue)
