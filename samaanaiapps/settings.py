@@ -113,8 +113,9 @@ else:
     # Fetch secrets from Google Secret Manager
     SECRET_KEY = get_secret('SECRET_KEY')
     DB_PASSWORD = get_secret('DB_PASSWORD')
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
+    BASE_URL = env('BASE_URL', default='https://www.samaanai.com')
 
     logger.info("Setting up CSS storage in Google Cloud Storage")
     logger.info("EMAIL_HOST_USER: {EMAIL_HOST_USER}")
