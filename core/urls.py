@@ -13,4 +13,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),  
     path('logout/', views.logout_view, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),  # Social Auth URLs
+    
 ]

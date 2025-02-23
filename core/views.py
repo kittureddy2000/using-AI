@@ -1,13 +1,11 @@
 # core/views.py
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SignUpForm
 from django.contrib.auth import login
 import logging
-import os
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 

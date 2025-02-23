@@ -1,27 +1,40 @@
-*.pyc
-*.pyo
-*.mo
-*.db
-*.css.map
-*.egg-info
-*.sql.gz
-.cache
-.project
-.idea
-.pydevproject
-.idea/workspace.xml
+# General
 .DS_Store
+.env
+*.pyc
+*.log
+__pycache__/
+.pytest_cache/
+venv/
+
+# Git
 .git/
-.sass-cache
-.vagrant/
-__pycache__
-dist
-docs
-env
-logs
-src/{{ project_name }}/settings/local.py
-src/node_modules
-web/media
-web/static/CACHE
-stats
-Dockerfile
+.gitignore
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# Docker
+# You might *not* want to ignore the Dockerfile and docker-compose.yml
+# in all cases.  Consider carefully.  But, often, you want to ignore
+# build artifacts.
+.dockerignore
+docker-compose.override.yml  # Local overrides, often not needed in the build
+# Don't ignore docker-compose.yml!  We need that.
+
+# Data (Important!  Consider carefully)
+# If you have any data files (e.g., CSV, JSON) that are *part of your
+# application's code or are required for testing*, do NOT ignore them.
+# However, if you have large datasets that are *generated* or *downloaded*
+# during development, you SHOULD ignore them.
+# data/  # Example: Ignore a 'data' directory if it contains large, generated data
+# *.db   # Example: Ignore SQLite database files (if you were using SQLite)
+
+# Streamlit specific
+.streamlit/
+
+# Google Cloud Build specific files
+cloudbuild.yaml

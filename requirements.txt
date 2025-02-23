@@ -39,3 +39,4 @@ social-auth-app-django
 google-auth-httplib2
 google-auth-oauthlib
 msal
+google-cloud-tasks==2.16.0  # Latest stable version as of now

@@ -2,11 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Task, TaskList, Image, TaskHistory
 from .forms import TaskForm, TaskListForm
 from django.shortcuts import render
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
-from urllib.parse import quote
 from dateutil.relativedelta import relativedelta
 from datetime import timedelta
 import uuid
@@ -28,27 +26,18 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from django.conf import settings
-from core.models import UserToken  
+from core.models import UserToken
 import msal
-from core.utils import refresh_microsoft_token, is_token_expired  # Import the utility functions
 import requests
-
-
+from django.core.mail import send_mail
+import json
+from django.contrib.auth.models import User
+from google.cloud import storage, tasks_v2
+from django.views.decorators.csrf import csrf_exempt
+from core.utils import send_email
 
 
 logger = logging.getLogger(__name__)
-
-# def trigger_email_send(request):
-#     # Get the secret token from environment variables
-#     secret_token = os.environ.get('EMAIL_TRIGGER_SECRET_TOKEN')
-
-#     # Check the provided token against the environment variable
-#     request_token = request.headers.get('Authorization')
-#     if request_token != secret_token:
-#         return JsonResponse({'error': 'Unauthorized'}, status=401)
-
-#     send_recurrent_email()
-#     return JsonResponse({'success': 'Email sent'})
 
 # Ensure predefined lists exist for the user
 def ensure_predefined_lists(user):
@@ -59,8 +48,8 @@ def ensure_predefined_lists(user):
         {"name": "Google Tasks", "listcode": "GOOGLE_TASKS"},
         {"name": "MS Tasks", "listcode": "MS_TASKS"},
     ]
-    print("Inside ensure_predefined_lists")
-    print(predefined_lists)
+    logger.info("Inside ensure_predefined_lists")
+    logger.info(predefined_lists)
 
     # Get existing predefined lists for the user
     existing_names = TaskList.objects.filter(
@@ -69,19 +58,18 @@ def ensure_predefined_lists(user):
         special_list=True
     ).values_list('list_name', flat=True)
 
-    print([field.name for field in TaskList._meta.get_fields()])
+    logger.info([field.name for field in TaskList._meta.get_fields()])
 
     # Create any missing predefined lists
     for predefined in predefined_lists:
         if predefined["name"] not in existing_names:
-            print("Creating Predefined List : " + predefined["name"])
+            logger.info("Creating Predefined List : " + predefined["name"])
             TaskList.objects.create(
                 user=user,
                 list_name=predefined["name"],
                 list_code=predefined["listcode"],
                 special_list=True
             )
-
 
 # Get all Taks triggered at the start of page load
 @login_required
@@ -98,25 +86,24 @@ def get_all_tasks(request):
 
     return JsonResponse({'tasks': tasks_data})
 
-
 # Get All tasks for the given list
 @login_required
 def get_tasks_by_list(request, list_id):
-    print("Function: Get Tasks with list id : " + str(list_id))
+    logger.info("Function: Get Tasks with list id : " + str(list_id))
 
     sort_by = request.GET.get('sort', 'due_date')  # Replace 'default_field' with your default sort field
     order = request.GET.get('order', 'asc')
     if order == 'desc':
         sort_by = '-' + sort_by
 
-    print("Sort By : " + sort_by)
+    logger.info("Sort By : " + sort_by)
     if sort_by == 'important':
         sort_by = '-important'
     elif sort_by not in ['due_date']:
         sort_by = 'due_date'
 
     tasklist = TaskList.objects.get(id=list_id, user=request.user)
-    print("List Name : " + tasklist.list_name)
+    logger.info("List Name : " + tasklist.list_name)
 
     if tasklist.special_list:
         if tasklist.list_code == "IMPORTANT":
@@ -128,7 +115,7 @@ def get_tasks_by_list(request, list_id):
         elif tasklist.list_code == "GOOGLE_TASKS":
             tasks = Task.objects.filter(user=request.user, source="google", task_completed=False).order_by(sort_by)
         elif tasklist.list_code == "MS_TASKS":
-            tasks = Task.objects.filter(user=request.user, task_completed=False,source="microsoft").order_by(sort_by)    
+            tasks = Task.objects.filter(user=request.user, task_completed=False,source="microsoft").order_by(sort_by)
     else:
         tasks = Task.objects.filter(user=request.user, list_name=tasklist, task_completed=False).order_by(sort_by)
 
@@ -137,9 +124,6 @@ def get_tasks_by_list(request, list_id):
         'task_completed',
         'important', 'assigned_to', 'creation_date', 'last_update_date'))  # Replace field names with the actual fields of your Task model
     return JsonResponse({'tasks': tasks_data})
-
-
-# views.py
 
 # Live Search Tasks
 def search_tasks(request):
@@ -174,17 +158,17 @@ def search_tasks(request):
     try:
         tasks_data = list(
             tasks.values(
-                'id', 
-                'task_name', 
-                'list_name', 
-                'due_date', 
+                'id',
+                'task_name',
+                'list_name',
+                'due_date',
                 'task_description',
-                'reminder_time', 
-                'recurrence', 
+                'reminder_time',
+                'recurrence',
                 'task_completed',
-                'important', 
-                'assigned_to', 
-                'creation_date', 
+                'important',
+                'assigned_to',
+                'creation_date',
                 'last_update_date'
             )
         )
@@ -200,18 +184,16 @@ def get_lists(request):
     ensure_predefined_lists(request.user)
     # Get all task lists for the user, ordered so that special lists come first.
     task_lists = TaskList.objects.filter(user=request.user).order_by('-special_list', 'list_name')
-    
+
     # Split task lists into special and normal lists
     special_lists = task_lists.filter(special_list=True)
     normal_lists = task_lists.filter(special_list=False)
-    
+
     context = {
         'special_lists': special_lists,
         'normal_lists': normal_lists,
     }
     return render(request, 'task_management/task_dashboard.html', context)
-
-
 
 def create_task_list(request):
     if request.method == 'POST':
@@ -227,18 +209,18 @@ def create_task_list(request):
 
     return render(request, 'task_management/task_lists.html', {'form': form})
 
-
 def complete_task(request):
     task_id = request.POST.get('id')
-    print("In Complete Task Function Task ID : " + task_id)
+    logger.info("In Complete Task Function Task ID : " + task_id)
 
     task = Task.objects.get(id=task_id, user=request.user)
     task.task_completed = True
     task.last_update_date = timezone.now()
     task_name = task.task_name
     if task.recurrence == Task.DAILY:
-        print("Task is Daily")
+        logger.info("Task is Daily")
         task.due_date = task.due_date + timedelta(days=1)
+        task.reminder_time = task.reminder_time + timedelta(days=1)
         task.reminder_time = task.reminder_time + timedelta(days=1)
     elif task.recurrence == Task.WEEKLY:
         print("Task is Weekly")
@@ -270,12 +252,11 @@ def complete_task(request):
             creation_date=task.creation_date,
             last_update_date=task.last_update_date,
             source_id=task.source_id,
-            source=task.source   
+            source=task.source
         )
         task_history.save()
 
     return JsonResponse({'completed': True, 'task_completed': task.task_completed, 'task_id': task_id, 'task_name': task_name})
-
 
 def mark_favorite(request):
     task_id = request.POST.get('id')
@@ -296,7 +277,6 @@ def mark_favorite(request):
         print("Task important : False ")
 
     return JsonResponse({'Important': task.important, 'task_name': task_name, 'task_id': task_id})
-
 
 def get_task_details(request, task_id):
     print("Function: Get Tasks Details " + str(task_id))
@@ -325,16 +305,12 @@ def get_task_details(request, task_id):
 
     return JsonResponse(task_data)
 
-
-logger = logging.getLogger(__name__)
-
-
 def handle_image_upload(task, images):
     task_management_attachments_dir = Path(__file__).resolve().parent / 'attachments'
     task_management_attachments_dir.mkdir(exist_ok=True)
 
     for image in images:
-        if settings.DEBUG:
+        if settings.ENVIRONMENT == 'development':
             # Local storage for development
             file_name = f"{uuid.uuid4()}_{image.name}"
             file_path = task_management_attachments_dir / file_name
@@ -366,7 +342,6 @@ def handle_image_upload(task, images):
 
             # Save the image URL in the database
             Image.objects.create(task=task, image_url=blob.public_url, image_name=image.name)
-
 
 @login_required
 def add_task(request, list_id):
@@ -412,7 +387,7 @@ def add_task(request, list_id):
                     'task_completed': task.task_completed,
                     'images': image_data
                 })
-            
+
 
             except Exception as e:
                 print(f"Error occurred: {e}")
@@ -430,7 +405,6 @@ def add_task(request, list_id):
 
     # Fallback response to ensure all code paths return a response
     return HttpResponse("Unexpected error occurred.", status=500)
-
 
 def edit_task(request, task_id):
     logger.info("Edit task Function Task id : %s", task_id)
@@ -501,7 +475,6 @@ def edit_task(request, task_id):
                          exc_info=True)
             return HttpResponse(f"An error occurred: {e}", status=500)
 
-
 def edit_task_in_panel(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
     form = TaskForm(instance=task)
@@ -509,16 +482,12 @@ def edit_task_in_panel(request, task_id):
     # Render your form template with the form context, and return as HTML
     return render(request, 'task_management/edit_task.html', {'edit_task_form': form})
 
-
-
 def completed_tasks(request):
     print("In Completed Tasks : ")
     # Get all completed tasks and render them in the "completed_tasks.html"
     completed_tasks = Task.objects.filter(user=request.user, task_completed=True)
     return render(request, 'task_management/completed_tasks.html', {'completed_tasks': completed_tasks})
 
-
-# delete tasks
 def delete_tasks(request):
     tasks = Task.objects.filter(user=request.user)
 
@@ -532,7 +501,6 @@ def delete_tasks(request):
 
     return render(request, 'task_management/delete_tasks.html', {'tasks': tasks})
 
-
 def undelete_task(request, task_id):
     if request.method == 'POST':
         task = get_object_or_404(Task, id=task_id, user=request.user, task_completed=True)
@@ -541,7 +509,6 @@ def undelete_task(request, task_id):
         return JsonResponse({'status': 'success', 'message': 'Task reactivated successfully.'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
-
 
 def serve_attachment(request, path):
     logger.info("Request to serve attachment at path : %s", path)
@@ -558,347 +525,71 @@ def serve_attachment(request, path):
         logger.error("Error loading file : %s ; Error : %s", file_path, e, exc_info=True)
         raise Http404(f"Error loading file")
 
-
+# Fetch and save Google Tasks
 def fetch_google_tasks_and_save(user, creds):
-        # Build the Google Tasks API service
-
-        service = build('tasks', 'v1', credentials=creds)
-        logger.info("Views:fetch_google_tasks_and_save: Before Getting Tasks.")
-
-        # Get task lists
-        tasklists_results = service.tasklists().list().execute()
-        task_lists = tasklists_results.get('items', [])
-
-        # Ensure 'All Tasks' list exists in the database
-        all_tasks_list, created = TaskList.objects.get_or_create(
-            user=user,
-            list_name="Google Tasks",
-            defaults={'special_list': True, 'list_code': 'GOOGLE_TASKS'}
-        )
-
-        # Iterate through task lists and sync tasks
-        for task_list in task_lists:
-            tasks_results = service.tasks().list(tasklist=task_list['id']).execute()
-            tasks = tasks_results.get('items', [])
-
-            for task in tasks:
-                google_task_id = task.get('id')
-                task_title = task.get('title', 'No Title')
-                task_status = task.get('status') == 'completed'
-                due_date_raw = task.get('due')
-                due_date = None
-                logger.info("Views:fetch_google_tasks_and_save: New Task Title: %s", task_title)
-
-                # Parse due date
-                if due_date_raw:
-                    try:
-                        due_date = datetime.fromisoformat(due_date_raw.replace('Z', '+00:00'))
-                    except ValueError:
-                        due_date = None  # Handle invalid dates gracefully
-
-                # Check if the task exists and update or create
-                existing_task = Task.objects.filter(user=user, source_id=google_task_id,source='google').first()
-                if existing_task:
-                    # Update the task
-                    existing_task.task_name = task_title
-                    existing_task.task_completed = task_status
-                    existing_task.due_date = due_date
-                    existing_task.last_update_date = timezone.now()
-                    existing_task.source = 'google'
-                    existing_task.save()
-                    logger.info("Views:fetch_google_tasks_and_save: Existing Task: %s", task_title)
-                else:
-                    # Create a new task
-                    
-                    Task.objects.create(
-                        user=user,
-                        task_name=task_title,
-                        task_completed=task_status,
-                        due_date=due_date,
-                        list_name=all_tasks_list,
-                        source_id=google_task_id,
-                        source='google',
-                        creation_date=timezone.now(),
-                        last_update_date=timezone.now()
-                    )        
-
-@login_required
-def sync_google_tasks(request):
-    """
-    Example view that explicitly checks token expiration,
-    refreshes if needed, and then syncs Google Tasks into Task model.
-    """
-    user = request.user
-    try:
-        logger.info("Syncing Google Tasks for user: %s", request.user.username)
-        google_token = UserToken.objects.get(user=user, provider='google')
-    except UserToken.DoesNotExist:
-        # Handle missing token case
-        logger.error("No Google Token found for user: %s", user.username)
-        return redirect('core:dashboard')  # Redirect to your dashboard view after login
-
-    # 1. Build credentials from stored tokens
-
-    creds = Credentials(
-        token=google_token.access_token,
-        refresh_token=google_token.refresh_token,
-        token_uri='https://oauth2.googleapis.com/token',
-        client_id=settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY,
-        client_secret=settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET,
-        scopes=[
-            'https://www.googleapis.com/auth/tasks',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-        ],
+    service = build('tasks', 'v1', credentials=creds)
+    logger.info("fetch_google_tasks_and_save: Google Tasks Service Created")
+    tasklists_results = service.tasklists().list().execute()
+    task_lists = tasklists_results.get('items', [])
+    all_tasks_list, _ = TaskList.objects.get_or_create(
+        user=user, list_name="Google Tasks", defaults={'special_list': True, 'list_code': 'GOOGLE_TASKS'}
     )
+    for task_list in task_lists:
+        tasks_results = service.tasks().list(tasklist=task_list['id']).execute()
+        tasks = tasks_results.get('items', [])
+        for task in tasks:
+            google_task_id = task.get('id')
+            task_title = task.get('title', 'No Title')
+            task_status = task.get('status') == 'completed'
+            due_date_raw = task.get('due')
+            due_date = datetime.fromisoformat(due_date_raw.replace('Z', '+00:00')) if due_date_raw else None
+            existing_task = Task.objects.filter(user=user, source_id=google_task_id, source='google').first()
+            if existing_task:
+                existing_task.task_name = task_title
+                existing_task.task_completed = task_status
+                existing_task.due_date = due_date
+                existing_task.last_update_date = timezone.now()
+                existing_task.source = 'google'
+                existing_task.save()
+            else:
+                Task.objects.create(
+                    user=user, task_name=task_title, task_completed=task_status, due_date=due_date,
+                    list_name=all_tasks_list, source_id=google_task_id, source='google',
+                    creation_date=timezone.now(), last_update_date=timezone.now()
+                )
 
-    # 2. Explicitly check if expired and refresh if needed
-    if creds.expired and creds.refresh_token:
-        logger.info("Refreshing Google token for user: %s", user.username)
-        try:
-            creds.refresh(Request())
-        except Exception as e:
-            print("Error refreshing Google token:", e)
-            # Handle refresh failure (e.g., user revoked access)
-            return redirect('core:dashboard')  # Redirect to your dashboard view after login
-    
-    fetch_google_tasks_and_save(user, creds)
-
-    # 6. If the credentials changed (e.g., new access token), update DB
-    if creds.token != google_token.access_token:
-        google_token.access_token = creds.token
-        google_token.save()
-
-    return JsonResponse({'message': 'Google Tasks synced successfully!'})
-
-@login_required
-def connect_microsoft(request):
-    """
-    Initiates the Microsoft OAuth flow.
-    Redirects the user to the Microsoft authorization URL.
-    """
-    msal_app = msal.ConfidentialClientApplication(
-        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
-        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
-        authority=settings.MICROSOFT_AUTH['AUTHORITY']
-    )
-
-    auth_url = msal_app.get_authorization_request_url(
-        scopes=settings.MICROSOFT_AUTH['SCOPE'],
-        redirect_uri=settings.MICROSOFT_AUTH['REDIRECT_URI'],
-        state=request.get_full_path()  # To redirect back after auth
-    )
-    logger.info(f"Redirecting user {request.user.username} to Microsoft login URL.")
-    return redirect(auth_url)
-
-@login_required
-def microsoft_callback(request):
-    """
-    Handles the callback from Microsoft OAuth.
-    Exchanges the authorization code for tokens and saves them.
-    """
-    code = request.GET.get('code')
-    logger.info("Microsoft callback code: %s", code)
-    if not code:
-        error = request.GET.get('error', 'Unknown error')
-        error_description = request.GET.get('error_description', 'No description provided.')
-        logger.error(f"Microsoft callback error: {error} - {error_description}")
-        return HttpResponse(f"Authentication failed: {error_description}", status=400)
-
-    msal_app = _build_msal_app()
-    scopes = settings.MICROSOFT_AUTH["SCOPE"]
-    redirect_uri = settings.MICROSOFT_AUTH["REDIRECT_URI"]
-    logger.info("Exchanging Microsoft authorization code for tokens.")
-    logger.info("Code: %s, Scopes: %s, Redirect URI: %s", code, scopes, redirect_uri)
-
-    result = msal_app.acquire_token_by_authorization_code(
-        code=code,
-        scopes=scopes,
-        redirect_uri=redirect_uri
-    )
-    logger.info("Microsoft token exchange result: %s", result)
-
-    if "access_token" in result:
-        logger.info("Microsoft access token retrieved successfully.")
-        user = request.user
-        provider = 'microsoft'
-        access_token = result["access_token"]
-        refresh_token = result.get("refresh_token")
-        token_type = result.get("token_type")
-        expires_in = result.get("expires_in")
-        logger.info(f"Microsoft tokens: {access_token}, {refresh_token}, {token_type}, {expires_in}")
-
-
-        # Prepare defaults for update_or_create
-        defaults = {
-            'access_token': access_token,
-            'token_type': token_type,
-            'expires_in': expires_in,
-        }
-
-        if refresh_token:
-            defaults['refresh_token'] = refresh_token
-        logger.info(f"Microsoft tokens defaults: {defaults}")
-        # Update or create the UserToken
-        user_token, created = UserToken.objects.update_or_create(
-            user=user,
-            provider=provider,
-            defaults=defaults
-        )
-        logger.info(f"Microsoft tokens created: {created}")
-
-        # If no refresh_token was provided and it's not a creation, retain the existing one
-        if not refresh_token and not created:
-            # No action needed; existing refresh_token remains
-            pass  # Placeholder for any additional logic if required
-
-        # Update token expiry
-        user_token.set_token_expiry()
-        user_token.save()
-
-        logger.info(f"Stored Microsoft tokens for user: {user.username}.")
-
-        # Redirect to your dashboard or desired page
-        return redirect('/dashboard/')  # Update as per your routing
-    else:
-        error = result.get("error", "Unknown error")
-        error_description = result.get("error_description", "No description provided.")
-        logger.error(f"Could not retrieve access token: {error} - {error_description}")
-        return HttpResponse(f"Could not retrieve access token: {error_description}", status=400)
-
-def _build_msal_app(cache=None):
-    """
-    Helper function to build a ConfidentialClientApplication from MSAL
-    """
-    authority = settings.MICROSOFT_AUTH['AUTHORITY']
-    return msal.ConfidentialClientApplication(
-        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
-        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
-        authority=authority,
-        token_cache=cache,
-    )
-
-@login_required
-def sync_microsoft_tasks(request):
-    """
-    Pulls user's Microsoft To Do tasks into our Django Task model.
-    Automatically refreshes the access token if expired.
-    """
-    user = request.user
-    logger.info(f"Syncing Microsoft Tasks for user: {user.username}")
-    print("Syncing Microsoft Tasks for user: " + user.username)
-
-    # 1) Get the user's Microsoft token
-    try:
-        ms_token = UserToken.objects.get(user=user, provider='microsoft')
-    except UserToken.DoesNotExist:
-        logger.error(f"User {user.username} does not have a MicrosoftToken.")
-        return JsonResponse(
-            {"error": "Microsoft account not connected."},
-            status=400
-        )
-
-    # 2) Check if the token is expired
-    if is_token_expired(ms_token):
-        logger.info(f"Access token expired for user {user.username}, attempting to refresh.")
-        new_access_token = refresh_microsoft_token(ms_token)
-        if not new_access_token:
-            return JsonResponse(
-                {"error": "Authentication failed. Please reconnect your Microsoft account."},
-                status=401
-            )
-        access_token = new_access_token
-    else:
-        access_token = ms_token.access_token
-
-    # 3) Fetch and save tasks
-    try:
-        fetch_microsoft_tasks_and_save(user, access_token)
-    except Exception as e:
-        logger.exception(f"Error syncing Microsoft Tasks for user {user.username}: {str(e)}")
-        return JsonResponse(
-            {"error": "Failed to sync Microsoft Tasks."},
-            status=500
-        )
-
-    return JsonResponse({'message': 'Microsoft Tasks synced successfully!'})
-
-
+# Fetch and save Microsoft Tasks
 def fetch_microsoft_tasks_and_save(user, access_token):
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
-    }
-
-    start_time_total = time.time()  # Start timing the entire process
-
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
     todo_lists_url = "https://graph.microsoft.com/v1.0/me/todo/lists"
-    start_time_lists = time.time()
     response = requests.get(todo_lists_url, headers=headers)
+    logger.info("fetch_microsoft_tasks_and_save: Microsoft Tasks Service Created")
     response.raise_for_status()
-    end_time_lists = time.time()
-    elapsed_time_lists = end_time_lists - start_time_lists
-    logger.info(f"Fetched Microsoft To Do lists in {elapsed_time_lists:.2f} seconds.")
-
-
     microsoft_lists = response.json().get("value", [])
-    logger.info(f"Fetched {len(microsoft_lists)} Microsoft To Do lists for user: {user.username}")
-
     for ms_list in microsoft_lists:
         ms_list_id = ms_list["id"]
         ms_list_name = ms_list["displayName"]
-
-        ms_task_list, created = TaskList.objects.get_or_create(
-            user=user,
-            list_code=ms_list_id,
-            defaults={'list_name': ms_list_name, 'special_list': False}
+        ms_task_list, _ = TaskList.objects.get_or_create(
+            user=user, list_code=ms_list_id, defaults={'list_name': ms_list_name, 'special_list': False}
         )
-        if created:
-            logger.info(f"Created new TaskList for Microsoft list: {ms_list_name}")
-
         tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks"
         all_ms_tasks = []
         next_link = tasks_url
-
-        start_time_list_tasks = time.time() # Start timing for this specific list
-
         while next_link:
-            start_time_page = time.time() # Time each page fetch
             tasks_response = requests.get(next_link, headers=headers)
             tasks_response.raise_for_status()
-            end_time_page = time.time()
-            elapsed_time_page = end_time_page - start_time_page
-            logger.debug(f"Fetched a page of tasks for '{ms_list_name}' in {elapsed_time_page:.2f} seconds.")
-
             tasks_data = tasks_response.json()
-            current_tasks = tasks_data.get("value", [])
-            all_ms_tasks.extend(current_tasks)
+            all_ms_tasks.extend(tasks_data.get("value", []))
             next_link = tasks_data.get("@odata.nextLink")
-
-        end_time_list_tasks = time.time()
-        elapsed_time_list_tasks = end_time_list_tasks - start_time_list_tasks
-        logger.info(f"Fetched {len(all_ms_tasks)} tasks (including pagination) for Microsoft list '{ms_list_name}' in {elapsed_time_list_tasks:.2f} seconds.")
         process_ms_tasks(user, ms_task_list, all_ms_tasks, headers)
-
-    end_time_total = time.time()
-    elapsed_time_total = end_time_total - start_time_total
-    logger.info(f"Total time to fetch and process Microsoft tasks: {elapsed_time_total:.2f} seconds.")
 
 def process_ms_tasks(user, ms_task_list, ms_tasks, headers):
     for task_item in ms_tasks:
         ms_task_id = task_item["id"]
         title = task_item.get("title", "Untitled")
-        status = (task_item.get("status") == 'completed')
+        status = task_item.get("status") == 'completed'
         due_date_raw = task_item.get("dueDateTime")
-        due_date = None
-
-        if due_date_raw and "dateTime" in due_date_raw:
-            try:
-                due_date = date_parser.parse(due_date_raw["dateTime"])
-            except (ValueError, TypeError): # Handle potential type errors as well
-                due_date = None
-                logger.warning(f"Invalid or missing due date format for task '{title}': {due_date_raw}")
-
+        due_date = date_parser.parse(due_date_raw["dateTime"]) if due_date_raw and "dateTime" in due_date_raw else None
         existing_task = Task.objects.filter(user=user, source_id=ms_task_id, source='microsoft').first()
         if existing_task:
             existing_task.task_name = title
@@ -907,17 +598,228 @@ def process_ms_tasks(user, ms_task_list, ms_tasks, headers):
             existing_task.last_update_date = timezone.now()
             existing_task.list_name = ms_task_list
             existing_task.save()
-            logger.debug(f"Updated existing Microsoft task: {title}")
         else:
             Task.objects.create(
-                user=user,
-                task_name=title,
-                task_completed=status,
-                due_date=due_date,
-                list_name=ms_task_list,
-                source='microsoft',
-                source_id=ms_task_id,
-                creation_date=timezone.now(),
-                last_update_date=timezone.now()
+                user=user, task_name=title, task_completed=status, due_date=due_date,
+                list_name=ms_task_list, source='microsoft', source_id=ms_task_id,
+                creation_date=timezone.now(), last_update_date=timezone.now()
             )
-            logger.debug(f"Created new Microsoft task: {title}")
+
+# Reusable sync function for both UI and background tasks
+def sync_user_tasks(user, provider):
+    """Sync tasks for a user from a given provider (google or microsoft)."""
+    try:
+        logger.info(f"Starting sync for user: {user.username} with provider: {provider}")
+        if provider == 'google':
+            google_token = UserToken.objects.get(user=user, provider='google')
+            creds = Credentials(
+                token=google_token.access_token, refresh_token=google_token.refresh_token,
+                token_uri='https://oauth2.googleapis.com/token', client_id=settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY,
+                client_secret=settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET,
+                scopes=['https://www.googleapis.com/auth/tasks'],
+            )
+            if creds.expired and creds.refresh_token:
+                logger.info(f"Google token expired for user: {user.username}, refreshing token")
+                creds.refresh(Request())
+                google_token.access_token = creds.token
+                google_token.save()
+            logger.info("Calling fetch_google_tasks_and_save")
+            fetch_google_tasks_and_save(user, creds)
+            logger.info(f"Google Tasks synced for user: {user.username}")
+        elif provider == 'microsoft':
+            ms_token = UserToken.objects.get(user=user, provider='microsoft')
+            access_token = ms_token.access_token if not is_token_expired(ms_token) else refresh_microsoft_token(ms_token)
+            if not access_token:
+                logger.error(f"Microsoft token refresh failed for user: {user.username}")
+                raise Exception("Microsoft token refresh failed")
+            fetch_microsoft_tasks_and_save(user, access_token)
+            logger.info(f"Microsoft Tasks synced for user: {user.username}")
+        
+        send_email(
+            subject=f"Task Sync Completed for {provider.capitalize()}",
+            message=f"Your {provider.capitalize()} tasks have been synced successfully.",
+            recipient_list=[user.email],
+        )
+
+        logger.info(f"Email notification sent to user: {user.username} for {provider} sync completion")
+    except Exception as e:
+        logger.error(f"Error syncing {provider} tasks for user {user.username}: {e}")
+        raise
+
+# UI-triggered syncs
+@login_required
+def sync_google_tasks(request):
+    sync_user_tasks(request.user, 'google')
+    return JsonResponse({'message': 'Google Tasks synced successfully!'})
+
+@login_required
+def sync_microsoft_tasks(request):
+    sync_user_tasks(request.user, 'microsoft')
+    return JsonResponse({'message': 'Microsoft Tasks synced successfully!'})
+
+# Background task endpoint triggered by Cloud Scheduler
+@csrf_exempt
+def trigger_background_sync(request):
+    """Endpoint triggered by Cloud Scheduler to enqueue sync tasks."""
+    logger.info("Triggering background sync")
+    if request.method != 'POST':
+        logger.warning("Method not allowed: %s", request.method)
+        return HttpResponse("Method not allowed", status=405)
+    
+    # Local testing override
+    if settings.ENVIRONMENT == 'development':
+        from django.test import Client
+        client_http = Client()
+        logger.info("Using local test client for Cloud Tasks")
+    else:
+        # Only initialize Cloud Tasks client in production
+        client = tasks_v2.CloudTasksClient()
+        project = settings.PROJECT_ID  # e.g., 'my-project'
+        location = 'us-west1'  # Adjust as needed
+        queue = 'task-sync-queue'
+        parent = client.queue_path(project, location, queue)
+
+    users = UserToken.objects.values('user').distinct()
+    for user_dict in users:
+        user_id = user_dict['user']
+        logger.info("Processing user ID: %s", user_id)
+        for provider in ['google', 'microsoft']:
+            if UserToken.objects.filter(user_id=user_id, provider=provider).exists():
+                logger.info("User ID %s has provider %s", user_id, provider)
+                if settings.ENVIRONMENT == 'development':
+                    # Simulate Cloud Tasks locally
+                    logger.info("Simulating Cloud Tasks locally for user ID %s and provider %s", user_id, provider)
+                    client_http.post('/task_management/process_sync_task/',
+                                     f'{{"user_id": {user_id}, "provider": "{provider}"}}',
+                                     content_type='application/json')
+                else:
+                    # Enqueue task in production
+                    task = {
+                        'http_request': {
+                            'http_method': tasks_v2.HttpMethod.POST,
+                            'url': f'{settings.BASE_URL}/task_management/process_sync_task/',
+                            'body': f'{{"user_id": {user_id}, "provider": "{provider}"}}'.encode(),
+                            'headers': {'Content-Type': 'application/json'},
+                        }
+                    }
+                    client.create_task(request={'parent': parent, 'task': task})
+                    logger.info("Enqueued %s sync task for user %s", provider, user_id)
+    
+    logger.info("Sync tasks enqueued successfully")
+    return HttpResponse("Sync tasks enqueued", status=200)
+# Process individual sync task
+@csrf_exempt
+def process_sync_task(request):
+    """Endpoint to process an individual sync task."""
+    logger.info("Processing sync task")
+    if request.method != 'POST':
+        logger.warning("Method not allowed: %s", request.method)
+        return HttpResponse("Method not allowed", status=405)
+    
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        user_id = data.get('user_id')
+        provider = data.get('provider')
+        
+        logger.info("Sync task for user ID: %s, provider: %s", user_id, provider)
+        
+        user = User.objects.get(id=user_id)
+        sync_user_tasks(user, provider)
+        
+        logger.info("%s sync completed for user ID: %s", provider.capitalize(), user_id)
+        return HttpResponse(f"{provider.capitalize()} sync completed for user {user_id}", status=200)
+    except Exception as e:
+        logger.error("Error processing sync task for user ID: %s, provider: %s, Error: %s", user_id, provider, e, exc_info=True)
+        return HttpResponse(f"Error processing sync task: {e}", status=500)
+
+# Microsoft OAuth handlers (unchanged)
+@login_required
+def connect_microsoft(request):
+    msal_app = msal.ConfidentialClientApplication(
+        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
+        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
+        authority=settings.MICROSOFT_AUTH['AUTHORITY']
+    )
+    auth_url = msal_app.get_authorization_request_url(
+        scopes=settings.MICROSOFT_AUTH['SCOPE'],
+        redirect_uri=settings.MICROSOFT_AUTH['REDIRECT_URI'],
+        state=request.get_full_path()
+    )
+    return redirect(auth_url)
+
+@login_required
+def microsoft_callback(request):
+    code = request.GET.get('code')
+    if not code:
+        error = request.GET.get('error', 'Unknown error')
+        error_description = request.GET.get('error_description', 'No description provided.')
+        logger.error(f"Microsoft callback error: {error} - {error_description}")
+        return HttpResponse(f"Authentication failed: {error_description}", status=400)
+
+    msal_app = msal.ConfidentialClientApplication(
+        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
+        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
+        authority=settings.MICROSOFT_AUTH['AUTHORITY']
+    )
+    result = msal_app.acquire_token_by_authorization_code(
+        code=code, scopes=settings.MICROSOFT_AUTH["SCOPE"],
+        redirect_uri=settings.MICROSOFT_AUTH["REDIRECT_URI"]
+    )
+    if "access_token" in result:
+        user = request.user
+        defaults = {
+            'access_token': result["access_token"],
+            'token_type': result.get("token_type"),
+            'expires_in': result.get("expires_in"),
+        }
+        if "refresh_token" in result:
+            defaults['refresh_token'] = result["refresh_token"]
+        user_token, _ = UserToken.objects.update_or_create(
+            user=user, provider='microsoft', defaults=defaults
+        )
+        user_token.set_token_expiry()
+        user_token.save()
+        return redirect('/dashboard/')
+    error = result.get("error", "Unknown error")
+    error_description = result.get("error_description", "No description provided.")
+    return HttpResponse(f"Could not retrieve access token: {error_description}", status=400)
+
+def refresh_microsoft_token(user_token):
+    """
+    Refreshes the Microsoft access token using the refresh token.
+    Updates the UserToken model with the new access token and expiry.
+    Returns the new access token or None if refresh fails.
+    """
+    msal_app = msal.ConfidentialClientApplication(
+        client_id=settings.MICROSOFT_AUTH['CLIENT_ID'],
+        client_credential=settings.MICROSOFT_AUTH['CLIENT_SECRET'],
+        authority=settings.MICROSOFT_AUTH['AUTHORITY']
+    )
+
+    result = msal_app.acquire_token_by_refresh_token(
+        refresh_token=user_token.refresh_token,
+        scopes=settings.MICROSOFT_AUTH["SCOPE"]
+    )
+
+    if "access_token" in result:
+        user_token.access_token = result["access_token"]
+        user_token.expires_in = result.get("expires_in")
+        user_token.token_type = result.get("token_type")
+        if "refresh_token" in result:
+            user_token.refresh_token = result["refresh_token"]
+        user_token.set_token_expiry()
+        user_token.save()
+        logger.info(f"Refreshed Microsoft token for user: {user_token.user.username}")
+        return result["access_token"]
+    else:
+        logger.error(f"Failed to refresh Microsoft token for user {user_token.user.username}: {result.get('error_description')}")
+        return None
+
+def is_token_expired(user_token):
+    """
+    Checks if the access token is expired.
+    Returns True if expired, False otherwise.
+    """
+    if user_token.token_expires_at:
+        return timezone.now() >= user_token.token_expires_at
+    return False  # If no expiry info, assume not expired (adjust as needed)

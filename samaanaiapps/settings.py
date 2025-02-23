@@ -68,12 +68,12 @@ EMAIL_HOST_PASSWORD = None
 
 if ENVIRONMENT == 'development':
     logger.info('Entering Development Environment settings')
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
+    ALLOWED_HOSTS = ['localhost','testserver','127.0.0.1']
+    
     SECRET_KEY = env('SECRET_KEY', default='your-default-secret-key')
     DB_PASSWORD = env('DB_PASSWORD')
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
     PROJECT_ID = env('PROJECT_ID')
 
     logger.info("Setting CSS storage in local environment")
@@ -134,8 +134,8 @@ else:
     # # logger.info(f"REDIRECT_URI1: {REDIRECT_URI1}")  
     
 
-    # # REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
-    # logger.info(f"REDIRECT_URI: {REDIRECT_URI}")
+    REDIRECT_URI = env('REDIRECT_URI', 'local_default_url')  # Redirect URI for Microsoft OAuth2
+    logger.info(f"REDIRECT_URI: {REDIRECT_URI}")
 
 
     GS_BUCKET_NAME = env('GS_BUCKET_NAME', default='using-ai-samaan')
@@ -330,10 +330,11 @@ MESSAGE_TAGS = {
 
 # Email Backend Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  # Use 465 for SSL
 EMAIL_USE_TLS = True  # Use EMAIL_USE_SSL=True if using port 465
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='samaanapps@gmail.com')
+SERVER_EMAIL = env('DEFAULT_FROM_EMAIL', default='samaanapps@gmail.com')
 
 
 LANGUAGE_CODE = 'en-us'

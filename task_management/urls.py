@@ -26,7 +26,8 @@ urlpatterns = [
     path('connect_microsoft/', views.connect_microsoft, name='connect_microsoft'),
     path('microsoft_callback/', views.microsoft_callback, name='microsoft_callback'),
     path('sync_microsoft_tasks/', views.sync_microsoft_tasks, name='sync_microsoft_tasks'),    
-
+    path('sync_tasks/', views.trigger_background_sync, name='trigger_background_sync'),
+    path('process_sync_task/', views.process_sync_task, name='process_sync_task'),
 
 ] 
 
