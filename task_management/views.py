@@ -525,15 +525,24 @@ def serve_attachment(request, path):
 
 # Fetch and save Google Tasks
 def fetch_google_tasks_and_save(user, creds):
+
+    token_record = UserToken.objects.get(user=user, provider='google')
+    last_synced_at = token_record.last_synced_at
+
     service = build('tasks', 'v1', credentials=creds)
     logger.info("fetch_google_tasks_and_save: Google Tasks Service Created")
     tasklists_results = service.tasklists().list().execute()
     task_lists = tasklists_results.get('items', [])
+
+    # Get or create a general Google Tasks list
     all_tasks_list, _ = TaskList.objects.get_or_create(
         user=user, list_name="Google Tasks", defaults={'special_list': True, 'list_code': 'GOOGLE_TASKS'}
     )
+
     for task_list in task_lists:
-        tasks_results = service.tasks().list(tasklist=task_list['id']).execute()
+        updated_min = last_synced_at.isoformat() if last_synced_at else None
+        tasks_results = service.tasks().list(tasklist=task_list['id'], updatedMin=updated_min).execute()        
+        
         tasks = tasks_results.get('items', [])
         for task in tasks:
             google_task_id = task.get('id')
@@ -541,6 +550,7 @@ def fetch_google_tasks_and_save(user, creds):
             task_status = task.get('status') == 'completed'
             due_date_raw = task.get('due')
             due_date = datetime.fromisoformat(due_date_raw.replace('Z', '+00:00')) if due_date_raw else None
+
             existing_task = Task.objects.filter(user=user, source_id=google_task_id, source='google').first()
             if existing_task:
                 existing_task.task_name = task_title
@@ -556,11 +566,18 @@ def fetch_google_tasks_and_save(user, creds):
                     creation_date=timezone.now(), last_update_date=timezone.now()
                 )
 
+    token_record.last_synced_at = datetime.now(timezone.utc)
+    token_record.save()
+
 # Fetch and save Microsoft Tasks
 def fetch_microsoft_tasks_and_save(user, access_token):
     """
     Fetch active Microsoft tasks and save them to the database using bulk operations.
     """
+    # Get the token record and last sync time
+    token_record = UserToken.objects.get(user=user, provider='microsoft')
+    last_synced_at = token_record.last_synced_at
+
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
     todo_lists_url = "https://graph.microsoft.com/v1.0/me/todo/lists"
     response = requests.get(todo_lists_url, headers=headers)
@@ -570,13 +587,28 @@ def fetch_microsoft_tasks_and_save(user, access_token):
     for ms_list in microsoft_lists:
         ms_list_id = ms_list["id"]
         ms_list_name = ms_list["displayName"]
+        # Get or create the task list in your database
         ms_task_list, _ = TaskList.objects.get_or_create(
             user=user, 
             list_code=ms_list_id, 
             defaults={'list_name': ms_list_name, 'special_list': False}
         )
-        # Filter to fetch only active (non-completed) tasks
-        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks?$filter=status ne 'completed'"
+
+        # Construct filter for tasks modified since last sync (or all tasks if first sync)
+        if last_synced_at:
+            # Use ISO 8601 format with Z suffix for UTC, without microseconds
+            last_sync_str = last_synced_at.replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+            filter_query = f"lastModifiedDateTime ge {last_sync_str}"
+            logger.info(f"Fetching Microsoft tasks for list id {ms_list_id} with filter: {filter_query}")
+        else:
+            filter_query = ""  # Fetch all tasks for initial sync
+            logger.info("Fetching all Microsoft tasks for initial sync")
+        
+        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks"
+        if filter_query:
+            tasks_url += f"?$filter={filter_query}"
+
+
         all_ms_tasks = []
         next_link = tasks_url
         while next_link:
@@ -586,6 +618,10 @@ def fetch_microsoft_tasks_and_save(user, access_token):
             all_ms_tasks.extend(tasks_data.get("value", []))
             next_link = tasks_data.get("@odata.nextLink")
         process_ms_tasks(user, ms_task_list, all_ms_tasks, headers)
+
+    # Update the last sync time after success
+    token_record.last_synced_at = datetime.now(timezone.utc)
+    token_record.save()    
 
 def process_ms_tasks(user, ms_task_list, ms_tasks, headers):
     """

@@ -15,7 +15,8 @@ class UserToken(models.Model):
     refresh_token = models.TextField(null=True, blank=True)
     token_type = models.CharField(max_length=50, null=True, blank=True)
     expires_in = models.IntegerField(null=True, blank=True)  # Duration in seconds
-    token_expires_at = models.DateTimeField(null=True, blank=True)  # New Field
+    token_expires_at = models.DateTimeField(null=True, blank=True)  
+    last_synced_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
         indexes = [
