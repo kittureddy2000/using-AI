@@ -73,14 +73,14 @@ def ensure_predefined_lists(user):
 # Get all Taks triggered at the start of page load
 @login_required
 def get_all_tasks(request):
-    logger.info("In Get All Tasks function")
+    logger.info("Getting All Tasks called as main function")
 
-    tasks = Task.objects.filter(user=request.user, task_completed=False).order_by('due_date')
+    #tasks = Task.objects.filter(user=request.user, task_completed=False).order_by('due_date')
+    tasks = Task.objects.filter(user=request.user, task_completed=False).order_by('due_date').select_related('list_name')
 
     tasks_data = list(tasks.values(
         'id', 'task_name', 'list_name', 'due_date', 'task_description', 'due_date', 'reminder_time', 'recurrence',
-        'task_completed',
-        'important', 'assigned_to', 'creation_date', 'last_update_date'))  # Replace field names with the actual fields of your Task model
+        'task_completed','important', 'assigned_to', 'creation_date', 'last_update_date'))
 
     return JsonResponse({'tasks': tasks_data})
 
@@ -653,7 +653,7 @@ def sync_user_tasks(user, provider):
     except Exception as e:
         logger.error(f"Error syncing {provider} tasks for user {user.username}: {e}")
         raise# UI-triggered syncs
-    
+
 @login_required
 def sync_google_tasks(request):
     sync_user_tasks(request.user, 'google')
@@ -833,30 +833,31 @@ def is_token_expired(user_token):
 
 @csrf_exempt
 @login_required
+
+@csrf_exempt
+@login_required
 def trigger_user_sync(request):
     """Endpoint triggered from UI to enqueue sync tasks for the current user."""
     logger.info(f"Triggering user sync for user: {request.user.username}")
     if request.method != 'POST':
         return HttpResponse("Method not allowed", status=405)
 
-    if settings.ENVIRONMENT == 'development':
-        from django.test import Client
-        client_http = Client()
-        for provider in ['google', 'microsoft']:
-            if UserToken.objects.filter(user=request.user, provider=provider).exists():
-                logger.info(f"Simulating sync for user {request.user.username} and provider {provider}")
+    for provider in ['google', 'microsoft']:
+        if UserToken.objects.filter(user=request.user, provider=provider).exists():
+            logger.info(f"Enqueuing sync for user {request.user.username} and provider {provider}")
+            if settings.ENVIRONMENT == 'development':
+                from django.test import Client
+                client_http = Client()
                 client_http.post('/task_management/process_sync_task/',
                                  f'{{"user_id": {request.user.id}, "provider": "{provider}"}}',
                                  content_type='application/json')
-    else:
-        client = tasks_v2.CloudTasksClient()
-        project = os.environ.get('PROJECT_ID')
-        location = 'us-west1'
-        queue = 'task-sync-queue'
-        parent = client.queue_path(project, location, queue)
+            else:
+                client = tasks_v2.CloudTasksClient()
+                project = os.environ.get('PROJECT_ID')
+                location = 'us-west1'
+                queue = 'task-sync-queue'
+                parent = client.queue_path(project, location, queue)
 
-        for provider in ['google', 'microsoft']:
-            if UserToken.objects.filter(user=request.user, provider=provider).exists():
                 task = {
                     'http_request': {
                         'http_method': tasks_v2.HttpMethod.POST,

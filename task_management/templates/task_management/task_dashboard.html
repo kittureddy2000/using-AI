@@ -143,12 +143,12 @@
       
           <!-- Sync Buttons -->
           <div class="d-flex align-items-center">
-            <button id="sync-goog-tasks-btn" class="btn btn-primary me-2" title="Sync Google Tasks">
+            <!-- <button id="sync-goog-tasks-btn" class="btn btn-primary me-2" title="Sync Google Tasks">
               <i class="fab fa-google text-white" aria-hidden="true" style="cursor: pointer;"></i>
             </button>
             <button id="sync-ms-tasks-btn" class="btn btn-primary" title="Sync Microsoft Tasks">
               <i class="fab fa-microsoft text-white" aria-hidden="true" style="cursor: pointer;"></i>
-            </button>
+            </button> -->
             <button id="manual-sync-btn" class="btn btn-primary" title="Sync All Tasks">
               <i class="fab fa-microsoft text-white" aria-hidden="true" style="cursor: pointer;"></i>
             </button>
@@ -161,6 +161,7 @@
 
       <!-- Task Cards Section -->
       <section id="tasks-section">
+        <div id="sync-notification"></div>
         <!-- Task cards will be dynamically inserted here -->
       </section>
     </main>
@@ -224,32 +225,6 @@
 
 {% block script_block %}
 <script>
-  // Function to generate task card HTML
-
-  function createTaskCardHTML(task) {
-    const overdueSpan = task.overdue ? `<span class="text-danger">Overdue</span>` : '';
-    const taskNameClass = task.task_completed ? 'strikethrough' : '';
-    const completeIconClass = task.task_completed ? 'text-danger' : 'text-success';
-    const favoriteIconClass = task.important ? 'fa-solid text-primary' : 'fa-regular';
-
-    console.log("Creating task card for:", task);
-    return `
-      <div class="card task-card mb-1" data-task-id="${task.id}" id="task-${task.id}">
-        <div class="card-body p-2 d-flex align-items-center">
-          <i id="completeicon-${task.id}" class="fa-solid fa-circle-check fa-lg complete-task me-3 ${completeIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
-          <div class="task-info flex-grow-1">
-            <h6 class="task-name ${taskNameClass}">${task.task_name}</h6>
-            <p class="task-due-date text-muted mb-0">
-              <i class="fas fa-calendar-alt me-1"></i>
-              ${overdueSpan}
-              ${formatDate(task.due_date)}
-            </p>
-          </div>
-          <i id="favorite-icon-${task.id}" class="fa-star mark-favorite ms-auto ${favoriteIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
-        </div>
-      </div>`;
-  }
-
   // Function to sync tasks
   function syncGoogleTasks() {
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
@@ -335,30 +310,60 @@
       console.error("Error syncing MS tasks:", error);
     });
   }
-  //Function to update Task Table. Called from various functions like search, sort, etc.
-  function updateTasksSection(tasks) {
-    const tasksHtml = tasks
-      .map((task) => createTaskCardHTML(task)) // Call createTaskCardHTML here
-      .join("");
-    $("#tasks-section").html(tasksHtml);
+  function createTaskCardHTML(task) {
+    const overdueSpan = task.overdue ? `<span class="text-danger">Overdue</span>` : '';
+    const taskNameClass = task.task_completed ? 'strikethrough' : '';
+    const completeIconClass = task.task_completed ? 'text-danger' : 'text-success';
+    const favoriteIconClass = task.important ? 'fa-solid text-primary' : 'fa-regular';
+    return `
+      <div class="card task-card mb-1" data-task-id="${task.id}" id="task-${task.id}">
+        <div class="card-body p-2 d-flex align-items-center">
+          <i id="completeicon-${task.id}" class="fa-solid fa-circle-check fa-lg complete-task me-3 ${completeIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
+          <div class="task-info flex-grow-1">
+            <h6 class="task-name ${taskNameClass}">${task.task_name}</h6>
+            <p class="task-due-date text-muted mb-0">
+              <i class="fas fa-calendar-alt me-1"></i>
+              ${overdueSpan}
+              ${formatDate(task.due_date)}
+            </p>
+          </div>
+          <i id="favorite-icon-${task.id}" class="fa-star mark-favorite ms-auto ${favoriteIconClass}" style="cursor: pointer;" data-id="${task.id}"></i>
+        </div>
+      </div>`;
   }
- 
-  // Function to fetch tasks Intial Load 
+
+  function updateTasksSection(tasks) {
+    const tasksHtml = tasks.map((task) => createTaskCardHTML(task)).join("");
+    $("#tasks-section").html(tasksHtml || '<p>No tasks available or loading failed—try refreshing.</p>');
+  }
+
+  function showLoading() {
+    $("#tasks-section").html('<div class="loading-spinner">Loading tasks...</div>');
+  }
+
   function fetchTasksFromDb() {
-    console.log("Task Dashboard : In Fetch Tasks function");
-    fetch("/task_management/get_all_tasks/")
-      .then((response) => response.json())
+    console.log("Task Dashboard: Fetching tasks from DB");
+    showLoading(); // Show loading spinner
+    fetch("/task_management/get_all_tasks/", { timeout: 5000 }) // 5-second timeout
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      })
       .then((data) => {
-        console.log("Task Dashboard : Fetch Tasks response received");
+        console.log("Task Dashboard: Tasks fetched from DB");
         updateTasksSection(data.tasks);
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks from DB:", error);
+        // Fallback: Show cached or default tasks (if available) or a message
+        updateTasksSection([]); // Show empty or placeholder tasks
+        $("#tasks-section").append('<p>Tasks failed to load—please refresh or try later.</p>');
       });
   }
 
-  //Function to trigger async sync for Google and Microsoft tasks
   function triggerAsyncSync(provider) {
-    
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
-    console.log(`Triggering async sync for ${provider} tasks`);
+    console.log(`Triggering async Process for ${provider} tasks`);
     fetch("/task_management/trigger_sync/", {
       method: 'POST',
       headers: {
@@ -367,52 +372,17 @@
       },
       body: JSON.stringify({ provider: provider })
     })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
     .then((data) => {
       console.log(`${provider} sync enqueued:`, data.message);
-      pollSyncStatus(provider);
+      // Optionally, show a notification or skip polling since you’re okay with a delay
+      $("#sync-notification").text(`Syncing ${provider} tasks in background...`).fadeIn();
+      setTimeout(() => $("#sync-notification").fadeOut(), 5000);
     })
     .catch((error) => console.error(`Error triggering ${provider} sync:`, error));
-  }
-
-  //Function to poll the sync status 
-  function pollSyncStatus(provider) {
-    console.log(`Polling for ${provider} sync status...`);
-    let attempts = 0;
-    const maxAttempts = 10; // Poll for up to 30 seconds (3s interval * 10)
-    const interval = 3000; // Poll every 3 seconds
-    const userId = {{ user.id }};
-
-    const poll = setInterval(() => {
-      if (attempts >= maxAttempts) {
-        clearInterval(poll);
-        console.log(`Stopped polling for ${provider} sync after ${maxAttempts} attempts`);
-        return;
-      }
-
-      fetch(`/task_management/check_sync_status/?provider=${provider}&user_id=${userId}`, {
-        method: 'GET',
-        headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr("content") }
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.completed) {
-          clearInterval(poll);
-          console.log(`${provider} sync completed, refreshing tasks`);
-          fetchTasksFromDb(); // Refresh tasks
-          $("#success-message").text(`${provider.capitalize()} Tasks synced successfully`).fadeIn();
-          setTimeout(() => $("#success-message").fadeOut(), 3000);
-        } else if (data.error) {
-          console.error(`Sync status error for ${provider}:`, data.error);
-          clearInterval(poll);
-        }
-      })
-      .catch((error) => {
-        console.error(`Error polling ${provider} sync status:`, error);
-        clearInterval(poll);
-      });
-      attempts++;
-    }, interval);
   }
 
   $(document).ready(function () {
@@ -421,7 +391,7 @@
 
     // Call fetchTasksFromDb function to fetch tasks from the database
     fetchTasksFromDb()
-    //Call syncGoogleTasks functions to sync Google tasks to database and to UI
+
     // Trigger async syncs for Google and Microsoft in the background
     triggerAsyncSync('google');
     triggerAsyncSync('microsoft');

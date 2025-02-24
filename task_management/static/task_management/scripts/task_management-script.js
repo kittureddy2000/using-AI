@@ -31,7 +31,7 @@ function formatDate(dateString) {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize to start of the day
-  console.log("formattedDate: ", formattedDate);
+  //console.log("formattedDate: ", formattedDate);
 
   if (date < today) {
     // If the date is in the past, wrap it in a span with text-danger class

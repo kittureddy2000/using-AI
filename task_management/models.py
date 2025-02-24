@@ -54,6 +54,10 @@ class Task(models.Model):
     class Meta:
         ordering = ['-creation_date']
         unique_together = ('source', 'source_id')
+        indexes = [
+            models.Index(fields=['user', 'task_completed', 'due_date']),
+            models.Index(fields=['source', 'source_id']),
+        ]
         
 class Image(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='images')

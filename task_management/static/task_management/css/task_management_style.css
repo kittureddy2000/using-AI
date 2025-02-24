@@ -349,5 +349,17 @@ color: #0056b3;
     border: 0;
     border-top: 1px solid #007bff; /* Blue color */
     margin: 5px 10px; /* Adjust margins as needed */
-  }
+}
   
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+#sync-notification {
+    display: none;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 10px;
+}  

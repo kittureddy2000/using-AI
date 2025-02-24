@@ -16,6 +16,11 @@ class UserToken(models.Model):
     token_type = models.CharField(max_length=50, null=True, blank=True)
     expires_in = models.IntegerField(null=True, blank=True)  # Duration in seconds
     token_expires_at = models.DateTimeField(null=True, blank=True)  # New Field
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'provider']),
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.provider.capitalize()}"
