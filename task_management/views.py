@@ -558,19 +558,25 @@ def fetch_google_tasks_and_save(user, creds):
 
 # Fetch and save Microsoft Tasks
 def fetch_microsoft_tasks_and_save(user, access_token):
+    """
+    Fetch active Microsoft tasks and save them to the database using bulk operations.
+    """
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
     todo_lists_url = "https://graph.microsoft.com/v1.0/me/todo/lists"
     response = requests.get(todo_lists_url, headers=headers)
-    logger.info("fetch_microsoft_tasks_and_save: Microsoft Tasks Service Created")
     response.raise_for_status()
     microsoft_lists = response.json().get("value", [])
+    
     for ms_list in microsoft_lists:
         ms_list_id = ms_list["id"]
         ms_list_name = ms_list["displayName"]
         ms_task_list, _ = TaskList.objects.get_or_create(
-            user=user, list_code=ms_list_id, defaults={'list_name': ms_list_name, 'special_list': False}
+            user=user, 
+            list_code=ms_list_id, 
+            defaults={'list_name': ms_list_name, 'special_list': False}
         )
-        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks"
+        # Filter to fetch only active (non-completed) tasks
+        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks?$filter=status ne 'completed'"
         all_ms_tasks = []
         next_link = tasks_url
         while next_link:
@@ -582,27 +588,63 @@ def fetch_microsoft_tasks_and_save(user, access_token):
         process_ms_tasks(user, ms_task_list, all_ms_tasks, headers)
 
 def process_ms_tasks(user, ms_task_list, ms_tasks, headers):
+    """
+    Process Microsoft tasks and use bulk operations to create or update them in the database.
+    """
+    new_tasks = []
+    existing_tasks = []
+    
     for task_item in ms_tasks:
+        # Skip completed tasks as a safeguard
+        if task_item.get("status") == 'completed':
+            continue
+        
         ms_task_id = task_item["id"]
         title = task_item.get("title", "Untitled")
         status = task_item.get("status") == 'completed'
+        
+        # Parse due date and make it timezone-aware
         due_date_raw = task_item.get("dueDateTime")
-        due_date = date_parser.parse(due_date_raw["dateTime"]) if due_date_raw and "dateTime" in due_date_raw else None
+        due_date = None
+        if due_date_raw and "dateTime" in due_date_raw:
+            naive_due_date = date_parser.parse(due_date_raw["dateTime"])
+            due_date = timezone.make_aware(naive_due_date, timezone.get_default_timezone())
+        
+        # Check if task exists
         existing_task = Task.objects.filter(user=user, source_id=ms_task_id, source='microsoft').first()
         if existing_task:
+            # Update existing task fields
             existing_task.task_name = title
             existing_task.task_completed = status
             existing_task.due_date = due_date
             existing_task.last_update_date = timezone.now()
             existing_task.list_name = ms_task_list
-            existing_task.save()
+            existing_tasks.append(existing_task)
         else:
-            Task.objects.create(
-                user=user, task_name=title, task_completed=status, due_date=due_date,
-                list_name=ms_task_list, source='microsoft', source_id=ms_task_id,
-                creation_date=timezone.now(), last_update_date=timezone.now()
+            # Create new task object
+            new_task = Task(
+                user=user, 
+                task_name=title, 
+                task_completed=status, 
+                due_date=due_date,
+                list_name=ms_task_list, 
+                source='microsoft', 
+                source_id=ms_task_id,
+                creation_date=timezone.now(), 
+                last_update_date=timezone.now()
             )
-
+            new_tasks.append(new_task)
+    
+    # Bulk create new tasks
+    if new_tasks:
+        Task.objects.bulk_create(new_tasks)
+    
+    # Bulk update existing tasks
+    if existing_tasks:
+        Task.objects.bulk_update(
+            existing_tasks, 
+            ['task_name', 'task_completed', 'due_date', 'last_update_date', 'list_name']
+        )
 # Reusable sync function for both UI and background tasks
 def sync_user_tasks(user, provider):
     """Sync tasks for a user from a given provider (google or microsoft)."""
@@ -728,17 +770,24 @@ def process_sync_task(request):
         user_id = data.get('user_id')
         provider = data.get('provider')
         
-        logger.info("Sync task for user ID: %s, provider: %s", user_id, provider)
-        
+        if not user_id or not provider:
+            return JsonResponse({'error': 'user_id and provider are required'}, status=400)
+
         user = User.objects.get(id=user_id)
         sync_user_tasks(user, provider)
         
-        logger.info("%s sync completed for user ID: %s", provider.capitalize(), user_id)
+        # Update sync status
+        TaskSyncStatus.objects.update_or_create(
+            user=user, provider=provider, defaults={'is_complete': True}
+        )
+        logger.info(f"{provider.capitalize()} sync completed for user ID: {user_id}")
         return HttpResponse(f"{provider.capitalize()} sync completed for user {user_id}", status=200)
+    except User.DoesNotExist:
+        logger.error(f"User not found for ID: {user_id}")
+        return HttpResponse(f"User not found: {user_id}", status=404)
     except Exception as e:
-        logger.error("Error processing sync task for user ID: %s, provider: %s, Error: %s", user_id, provider, e, exc_info=True)
+        logger.error(f"Error processing sync task for user ID: {user_id}, provider: {provider}, Error: {e}", exc_info=True)
         return HttpResponse(f"Error processing sync task: {e}", status=500)
-
 # Microsoft OAuth handlers (unchanged)
 @login_required
 def connect_microsoft(request):
@@ -833,44 +882,44 @@ def is_token_expired(user_token):
 
 @csrf_exempt
 @login_required
-
-@csrf_exempt
-@login_required
 def trigger_user_sync(request):
     """Endpoint triggered from UI to enqueue sync tasks for the current user."""
     logger.info(f"Triggering user sync for user: {request.user.username}")
     if request.method != 'POST':
         return HttpResponse("Method not allowed", status=405)
 
-    for provider in ['google', 'microsoft']:
-        if UserToken.objects.filter(user=request.user, provider=provider).exists():
-            logger.info(f"Enqueuing sync for user {request.user.username} and provider {provider}")
-            if settings.ENVIRONMENT == 'development':
-                from django.test import Client
-                client_http = Client()
-                client_http.post('/task_management/process_sync_task/',
-                                 f'{{"user_id": {request.user.id}, "provider": "{provider}"}}',
-                                 content_type='application/json')
-            else:
-                client = tasks_v2.CloudTasksClient()
-                project = os.environ.get('PROJECT_ID')
-                location = 'us-west1'
-                queue = 'task-sync-queue'
-                parent = client.queue_path(project, location, queue)
-
-                task = {
-                    'http_request': {
-                        'http_method': tasks_v2.HttpMethod.POST,
-                        'url': f'{settings.BASE_URL}/task_management/process_sync_task/',
-                        'body': f'{{"user_id": {request.user.id}, "provider": "{provider}"}}'.encode(),
-                        'headers': {'Content-Type': 'application/json'},
+    try:
+        for provider in ['google', 'microsoft']:
+            if UserToken.objects.filter(user=request.user, provider=provider).exists():
+                logger.info(f"Enqueuing sync for user {request.user.username} and provider {provider}")
+                task_body = json.dumps({"user_id": request.user.id, "provider": provider}).encode()
+                if settings.ENVIRONMENT == 'development':
+                    from django.test import Client
+                    client_http = Client()
+                    client_http.post('/task_management/process_sync_task/',
+                                     task_body,
+                                     content_type='application/json')
+                else:
+                    client = tasks_v2.CloudTasksClient()
+                    project = os.environ.get('PROJECT_ID', 'your-project-id')
+                    location = 'us-west1'
+                    queue = 'task-sync-queue'
+                    parent = client.queue_path(project, location, queue)
+                    task = {
+                        'http_request': {
+                            'http_method': tasks_v2.HttpMethod.POST,
+                            'url': f'{settings.BASE_URL}/task_management/process_sync_task/',
+                            'body': task_body,
+                            'headers': {'Content-Type': 'application/json'},
+                        }
                     }
-                }
-                client.create_task(request={'parent': parent, 'task': task})
-                logger.info(f"Enqueued {provider} sync task for user {request.user.username}")
+                    client.create_task(request={'parent': parent, 'task': task})
+                    logger.info(f"Enqueued {provider} sync task for user {request.user.username}")
 
-    return JsonResponse({'message': 'Sync tasks enqueued for user'})
-
+        return JsonResponse({'message': 'Sync tasks enqueued for user'})
+    except Exception as e:
+        logger.error(f"Error triggering user sync for {request.user.username}: {e}", exc_info=True)
+        return JsonResponse({'error': f'Error enqueuing sync tasks: {e}'}, status=500)
 # View to check sync status
 @csrf_exempt  # Optional, depending on your needs; remove if UI uses CSRF
 def check_sync_status(request):
