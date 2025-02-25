@@ -58,12 +58,15 @@ body {
 /* Search row styles */
 #searchbar_row {
     position: sticky;
+    top: 0; /* Ensure it sticks to the top */
+    z-index: 1000; /* Ensure it stays above other content */
     padding-left: 10px;
     padding-right: 10px;
     margin-left: 10px;
     margin-bottom: 0px; /* removing space above the search bar */
-    display: flex; /* to add horizontal padding*/
-    align-items: center;  /* to vertically align  */
+    display: flex; /* to add horizontal padding */
+    align-items: center;  /* to vertically align */
+    background-color: #f8f9fa; /* Match the background color to avoid overlap issues */
 }
 
 #searchbar_row .col {
