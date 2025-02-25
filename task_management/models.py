@@ -4,13 +4,24 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 class TaskList(models.Model):
+    LIST_TYPE_CHOICES = (
+        ('special', 'Special'),  # For dynamic lists like "Important," "Past Due," "All Tasks"
+        ('google_primary', 'Google Primary'),  # For "G My Tasks"
+        ('microsoft_primary', 'Microsoft Primary'),  # For "MS Tasks"
+        ('normal', 'Normal'),  # For all other lists (e.g., "G Mobile List," "MS Books")
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='task_lists', null=True)
     list_name = models.CharField(max_length=200)
     list_code = models.CharField(max_length=500, null=True)
-    special_list = models.BooleanField(default=False)
+    list_type = models.CharField(max_length=20, choices=LIST_TYPE_CHOICES, default='normal')  # Replace special_list
+    list_source = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.list_name
+
+    class Meta:
+        ordering = ['list_name']  # Optional, for consistency
 
 class Task(models.Model):
     NO_RECURRENCE = 'NO_RECURRENCE'

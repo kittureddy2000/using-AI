@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Task, TaskList, Image, TaskHistory
 from .forms import TaskForm, TaskListForm
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q,Count
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
 from dateutil.relativedelta import relativedelta
@@ -34,7 +34,7 @@ from google.cloud import storage, tasks_v2
 from django.views.decorators.csrf import csrf_exempt
 from core.utils import send_email
 from .models import TaskSyncStatus  # You’ll need to create this model
-
+from django.utils.html import format_html
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +44,6 @@ def ensure_predefined_lists(user):
         {"name": "Past Due", "listcode": "PAST_DUE"},
         {"name": "Important", "listcode": "IMPORTANT"},
         {"name": "All Tasks", "listcode": "ALL_TASKS"},
-        {"name": "Google Tasks", "listcode": "GOOGLE_TASKS"},
-        {"name": "MS Tasks", "listcode": "MS_TASKS"},
     ]
     logger.info("Inside ensure_predefined_lists")
     logger.info(predefined_lists)
@@ -54,7 +52,7 @@ def ensure_predefined_lists(user):
     existing_names = TaskList.objects.filter(
         user=user,
         list_name__in=[predefined["name"] for predefined in predefined_lists],
-        special_list=True
+        list_type='special'
     ).values_list('list_name', flat=True)
 
     logger.info([field.name for field in TaskList._meta.get_fields()])
@@ -67,8 +65,9 @@ def ensure_predefined_lists(user):
                 user=user,
                 list_name=predefined["name"],
                 list_code=predefined["listcode"],
-                special_list=True
+                list_type='special'  # Use list_type instead of special_list
             )
+
 
 # Get all Taks triggered at the start of page load
 @login_required
@@ -89,7 +88,7 @@ def get_all_tasks(request):
 def get_tasks_by_list(request, list_id):
     logger.info("Function: Get Tasks with list id : " + str(list_id))
 
-    sort_by = request.GET.get('sort', 'due_date')  # Replace 'default_field' with your default sort field
+    sort_by = request.GET.get('sort', 'due_date')
     order = request.GET.get('order', 'asc')
     if order == 'desc':
         sort_by = '-' + sort_by
@@ -103,24 +102,19 @@ def get_tasks_by_list(request, list_id):
     tasklist = TaskList.objects.get(id=list_id, user=request.user)
     logger.info("List Name : " + tasklist.list_name)
 
-    if tasklist.special_list:
+    if tasklist.list_type == 'special':
         if tasklist.list_code == "IMPORTANT":
             tasks = Task.objects.filter(user=request.user, important=True, task_completed=False).order_by(sort_by)
         elif tasklist.list_code == "PAST_DUE":
             tasks = Task.objects.filter(user=request.user, due_date__lt=timezone.now(), task_completed=False).order_by(sort_by)
         elif tasklist.list_code == "ALL_TASKS":
             tasks = Task.objects.filter(user=request.user, task_completed=False).order_by(sort_by)
-        elif tasklist.list_code == "GOOGLE_TASKS":
-            tasks = Task.objects.filter(user=request.user, source="google", task_completed=False).order_by(sort_by)
-        elif tasklist.list_code == "MS_TASKS":
-            tasks = Task.objects.filter(user=request.user, task_completed=False,source="microsoft").order_by(sort_by)
     else:
         tasks = Task.objects.filter(user=request.user, list_name=tasklist, task_completed=False).order_by(sort_by)
 
     tasks_data = list(tasks.values(
         'id', 'task_name', 'list_name', 'due_date', 'task_description', 'due_date', 'reminder_time', 'recurrence',
-        'task_completed',
-        'important', 'assigned_to', 'creation_date', 'last_update_date'))  # Replace field names with the actual fields of your Task model
+        'task_completed', 'important', 'assigned_to', 'creation_date', 'last_update_date'))
     return JsonResponse({'tasks': tasks_data})
 
 # Live Search Tasks
@@ -180,19 +174,48 @@ def search_tasks(request):
 def get_lists(request):
     # Ensure predefined lists are created
     ensure_predefined_lists(request.user)
-    # Get all task lists for the user, ordered so that special lists come first.
-    task_lists = TaskList.objects.filter(user=request.user).order_by('-special_list', 'list_name')
+    
+    # Get all task lists, annotated with counts for regular lists
+    task_lists = TaskList.objects.filter(user=request.user).annotate(
+        task_count=Count('task', filter=Q(task__task_completed=False))
+    ).order_by('-list_type', 'list_name')  # Sort by list_type first, then name
 
-    # Split task lists into special and normal lists
-    special_lists = task_lists.filter(special_list=True)
-    normal_lists = task_lists.filter(special_list=False)
+    # Split into special, semi-special, and normal lists
+    special_lists = task_lists.filter(list_type='special')
+    semi_special_lists = task_lists.filter(list_type__in=['google_primary', 'microsoft_primary']).order_by('list_name')
+    normal_lists = task_lists.filter(list_type='normal').order_by('list_name')  # Sort alphabetically by list_name
+
+    # Calculate counts for special lists dynamically
+    special_counts = {
+        "IMPORTANT": Task.objects.filter(user=request.user, important=True, task_completed=False).count(),
+        "PAST_DUE": Task.objects.filter(user=request.user, due_date__lt=timezone.now(), task_completed=False).count(),
+        "ALL_TASKS": Task.objects.filter(user=request.user, task_completed=False).count(),
+    }
+
+    # Calculate counts for semi-special lists
+    semi_special_counts = {
+        "G My Tasks": Task.objects.filter(user=request.user, source="google", list_name__list_name="G My Tasks", task_completed=False).count(),
+        "MS Tasks": Task.objects.filter(user=request.user, source="microsoft", list_name__list_name="MS Tasks", task_completed=False).count(),
+    }
+
+    # Attach counts to special lists
+    for task_list in special_lists:
+        if task_list.list_code in special_counts:
+            task_list.task_count = special_counts[task_list.list_code]
+
+    # Attach counts to semi-special lists (manually, since they're normal lists but treated specially)
+    for task_list in semi_special_lists:
+        if task_list.list_name in semi_special_counts:
+            task_list.task_count = semi_special_counts[task_list.list_name]
 
     context = {
         'special_lists': special_lists,
+        'semi_special_lists': semi_special_lists,
         'normal_lists': normal_lists,
     }
     return render(request, 'task_management/task_dashboard.html', context)
 
+# Create a new task list
 def create_task_list(request):
     if request.method == 'POST':
         form = TaskListForm(request.POST)
@@ -525,24 +548,41 @@ def serve_attachment(request, path):
 
 # Fetch and save Google Tasks
 def fetch_google_tasks_and_save(user, creds):
-
+    updates = []  # Collect updates here
+    service = build('tasks', 'v1', credentials=creds, cache=None)    
+    tasklists_results = service.tasklists().list().execute()
+    task_lists = tasklists_results.get('items', [])
     token_record = UserToken.objects.get(user=user, provider='google')
     last_synced_at = token_record.last_synced_at
 
-    service = build('tasks', 'v1', credentials=creds)
-    logger.info("fetch_google_tasks_and_save: Google Tasks Service Created")
-    tasklists_results = service.tasklists().list().execute()
-    task_lists = tasklists_results.get('items', [])
-
-    # Get or create a general Google Tasks list
-    all_tasks_list, _ = TaskList.objects.get_or_create(
-        user=user, list_name="Google Tasks", defaults={'special_list': True, 'list_code': 'GOOGLE_TASKS'}
-    )
-
     for task_list in task_lists:
+    # Create or get a TaskList for each Google task list
+# Check if this is the "My Tasks" list (typical default name in Google Tasks)
+        if task_list['title'] == "My Tasks":
+            # Create or get "G My Tasks" as a google_primary list
+            google_task_list, _ = TaskList.objects.get_or_create(
+                user=user,
+                list_code=task_list['id'],
+                defaults={
+                    'list_name': "G My Tasks",
+                    'list_type': 'google_primary',
+                    'list_source': 'Google'
+                }
+            )
+        else:
+            # Create or get other Google lists as normal lists with "G" prefix
+            google_task_list, _ = TaskList.objects.get_or_create(
+                user=user,
+                list_code=task_list['id'],
+                defaults={
+                    'list_name': f"G {task_list['title']}",
+                    'list_type': 'normal',
+                    'list_source': 'Google'
+                }
+            )
+
         updated_min = last_synced_at.isoformat() if last_synced_at else None
-        tasks_results = service.tasks().list(tasklist=task_list['id'], updatedMin=updated_min).execute()        
-        
+        tasks_results = service.tasks().list(tasklist=task_list['id'], updatedMin=updated_min).execute()
         tasks = tasks_results.get('items', [])
         for task in tasks:
             google_task_id = task.get('id')
@@ -553,31 +593,52 @@ def fetch_google_tasks_and_save(user, creds):
 
             existing_task = Task.objects.filter(user=user, source_id=google_task_id, source='google').first()
             if existing_task:
-                existing_task.task_name = task_title
-                existing_task.task_completed = task_status
-                existing_task.due_date = due_date
-                existing_task.last_update_date = timezone.now()
-                existing_task.source = 'google'
-                existing_task.save()
+                updated_fields = {}
+                if existing_task.task_name != task_title:
+                    updated_fields['task_name'] = task_title
+                if existing_task.task_completed != task_status:
+                    updated_fields['task_completed'] = task_status
+                if existing_task.due_date != due_date:
+                    updated_fields['due_date'] = due_date.strftime('%Y-%m-%d') if due_date else None
+                if updated_fields:
+                    existing_task.task_name = task_title
+                    existing_task.task_completed = task_status
+                    existing_task.due_date = due_date
+                    existing_task.last_update_date = timezone.now()
+                    existing_task.save()
+                    updates.append({
+                        'provider': 'Google Tasks',
+                        'task_name': task_title,
+                        'action': 'Updated',
+                        'timestamp': timezone.now(),
+                        'list_name': existing_task.list_name.list_name,
+                        'updated_fields': updated_fields
+                    })
             else:
-                Task.objects.create(
+                new_task = Task.objects.create(
                     user=user, task_name=task_title, task_completed=task_status, due_date=due_date,
-                    list_name=all_tasks_list, source_id=google_task_id, source='google',
+                    list_name=google_task_list, source_id=google_task_id, source='google',
                     creation_date=timezone.now(), last_update_date=timezone.now()
                 )
+                updates.append({
+                    'provider': 'Google Tasks',
+                    'task_name': task_title,
+                    'action': 'Created',
+                    'timestamp': timezone.now(),
+                    'list_name': google_task_list.list_name
+                })
 
     token_record.last_synced_at = datetime.now(timezone.utc)
     token_record.save()
+    logger.debug(f"Google sync updates: {updates}")
+    return updates  # Return updates for email report
 
 # Fetch and save Microsoft Tasks
+
 def fetch_microsoft_tasks_and_save(user, access_token):
-    """
-    Fetch active Microsoft tasks and save them to the database using bulk operations.
-    """
-    # Get the token record and last sync time
+    updates = []
     token_record = UserToken.objects.get(user=user, provider='microsoft')
     last_synced_at = token_record.last_synced_at
-
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
     todo_lists_url = "https://graph.microsoft.com/v1.0/me/todo/lists"
     response = requests.get(todo_lists_url, headers=headers)
@@ -585,30 +646,42 @@ def fetch_microsoft_tasks_and_save(user, access_token):
     microsoft_lists = response.json().get("value", [])
     
     for ms_list in microsoft_lists:
-        ms_list_id = ms_list["id"]
-        ms_list_name = ms_list["displayName"]
-        # Get or create the task list in your database
-        ms_task_list, _ = TaskList.objects.get_or_create(
-            user=user, 
-            list_code=ms_list_id, 
-            defaults={'list_name': ms_list_name, 'special_list': False}
-        )
+        # Check if this is the "Tasks" list (typical default name in Microsoft To Do)
+        if ms_list["displayName"] == "Tasks":
+            # Create or get "MS Tasks" as a microsoft_primary list
+            ms_task_list, _ = TaskList.objects.get_or_create(
+                user=user,
+                list_code=ms_list["id"],
+                defaults={
+                    'list_name': "MS Tasks",
+                    'list_type': 'microsoft_primary',
+                    'list_source': 'Microsoft'
+                }
+            )
+        else:
+            # Create or get other Microsoft lists as normal lists with "MS" prefix
+            ms_task_list, _ = TaskList.objects.get_or_create(
+                user=user,
+                list_code=ms_list["id"],
+                defaults={
+                    'list_name': f"MS {ms_list['displayName']}",
+                    'list_type': 'normal',
+                    'list_source': 'Microsoft'
+                }
+            )
 
-        # Construct filter for tasks modified since last sync (or all tasks if first sync)
         if last_synced_at:
-            # Use ISO 8601 format with Z suffix for UTC, without microseconds
             last_sync_str = last_synced_at.replace(microsecond=0).isoformat().replace('+00:00', 'Z')
             filter_query = f"lastModifiedDateTime ge {last_sync_str}"
-            logger.info(f"Fetching Microsoft tasks for list id {ms_list_id} with filter: {filter_query}")
         else:
-            filter_query = ""  # Fetch all tasks for initial sync
-            logger.info("Fetching all Microsoft tasks for initial sync")
+            filter_query = ""
         
-        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{ms_list_id}/tasks"
+        list_id = str(ms_list["id"])  # Convert to string explicitly
+        tasks_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{list_id}/tasks"     
+           
         if filter_query:
             tasks_url += f"?$filter={filter_query}"
-
-
+        
         all_ms_tasks = []
         next_link = tasks_url
         while next_link:
@@ -617,75 +690,82 @@ def fetch_microsoft_tasks_and_save(user, access_token):
             tasks_data = tasks_response.json()
             all_ms_tasks.extend(tasks_data.get("value", []))
             next_link = tasks_data.get("@odata.nextLink")
-        process_ms_tasks(user, ms_task_list, all_ms_tasks, headers)
+        updates.extend(process_ms_tasks(user, ms_task_list, all_ms_tasks, headers))
 
-    # Update the last sync time after success
     token_record.last_synced_at = datetime.now(timezone.utc)
-    token_record.save()    
+    token_record.save()
+    logger.debug(f"Google sync updates: {updates}")
+    return updates
 
+#  Process Microsoft tasks and save them to the database
 def process_ms_tasks(user, ms_task_list, ms_tasks, headers):
-    """
-    Process Microsoft tasks and use bulk operations to create or update them in the database.
-    """
+    updates = []
     new_tasks = []
     existing_tasks = []
-    
+    logger.debug(f"Processing {len(ms_tasks)} Microsoft tasks for list {ms_task_list.list_name}")
+
     for task_item in ms_tasks:
-        # Skip completed tasks as a safeguard
         if task_item.get("status") == 'completed':
             continue
-        
         ms_task_id = task_item["id"]
         title = task_item.get("title", "Untitled")
         status = task_item.get("status") == 'completed'
-        
-        # Parse due date and make it timezone-aware
         due_date_raw = task_item.get("dueDateTime")
         due_date = None
         if due_date_raw and "dateTime" in due_date_raw:
             naive_due_date = date_parser.parse(due_date_raw["dateTime"])
             due_date = timezone.make_aware(naive_due_date, timezone.get_default_timezone())
         
-        # Check if task exists
         existing_task = Task.objects.filter(user=user, source_id=ms_task_id, source='microsoft').first()
         if existing_task:
-            # Update existing task fields
-            existing_task.task_name = title
-            existing_task.task_completed = status
-            existing_task.due_date = due_date
-            existing_task.last_update_date = timezone.now()
-            existing_task.list_name = ms_task_list
-            existing_tasks.append(existing_task)
+            updated_fields = {}
+            if existing_task.task_name != title:
+                updated_fields['task_name'] = title
+            if existing_task.task_completed != status:
+                updated_fields['task_completed'] = status
+            if existing_task.due_date != due_date:
+                updated_fields['due_date'] = due_date.strftime('%Y-%m-%d') if due_date else None
+            if updated_fields:
+                existing_task.task_name = title
+                existing_task.task_completed = status
+                existing_task.due_date = due_date
+                existing_task.last_update_date = timezone.now()
+                existing_task.list_name = ms_task_list
+                existing_tasks.append(existing_task)
+                updates.append({
+                    'provider': 'Microsoft To Do',
+                    'task_name': title,
+                    'action': 'Updated',
+                    'timestamp': timezone.now(),
+                    'list_name': ms_task_list.list_name,
+                    'updated_fields': updated_fields
+                })
         else:
-            # Create new task object
             new_task = Task(
-                user=user, 
-                task_name=title, 
-                task_completed=status, 
-                due_date=due_date,
-                list_name=ms_task_list, 
-                source='microsoft', 
-                source_id=ms_task_id,
-                creation_date=timezone.now(), 
-                last_update_date=timezone.now()
+                user=user, task_name=title, task_completed=status, due_date=due_date,
+                list_name=ms_task_list, source='microsoft', source_id=ms_task_id,
+                creation_date=timezone.now(), last_update_date=timezone.now()
             )
             new_tasks.append(new_task)
+            updates.append({
+                'provider': 'Microsoft To Do',
+                'task_name': title,
+                'action': 'Created',
+                'timestamp': timezone.now(),
+                'list_name': ms_task_list.list_name
+            })
     
-    # Bulk create new tasks
     if new_tasks:
         Task.objects.bulk_create(new_tasks)
-    
-    # Bulk update existing tasks
     if existing_tasks:
-        Task.objects.bulk_update(
-            existing_tasks, 
-            ['task_name', 'task_completed', 'due_date', 'last_update_date', 'list_name']
-        )
+        Task.objects.bulk_update(existing_tasks, ['task_name', 'task_completed', 'due_date', 'last_update_date', 'list_name'])
+    return updates
+
 # Reusable sync function for both UI and background tasks
 def sync_user_tasks(user, provider):
-    """Sync tasks for a user from a given provider (google or microsoft)."""
     try:
         logger.info(f"Starting sync for user: {user.username} with provider: {provider}")
+        updates = []
         if provider == 'google':
             google_token = UserToken.objects.get(user=user, provider='google')
             creds = Credentials(
@@ -695,42 +775,45 @@ def sync_user_tasks(user, provider):
                 scopes=['https://www.googleapis.com/auth/tasks'],
             )
             if creds.expired and creds.refresh_token:
-                try:
-                    creds.refresh(Request())
-                    google_token.access_token = creds.token
-                    google_token.save()
-                except Exception as e:
-                    logger.error(f"Failed to refresh Google token for {user.username}: {e}")
-                    raise Exception(f"Google token refresh failed - please re-authenticate: {e}")
-            fetch_google_tasks_and_save(user, creds)
-            logger.info(f"Google Tasks synced for user: {user.username}")
+                creds.refresh(Request())
+                google_token.access_token = creds.token
+                google_token.save()
+            updates = fetch_google_tasks_and_save(user, creds)
         elif provider == 'microsoft':
             ms_token = UserToken.objects.get(user=user, provider='microsoft')
             access_token = ms_token.access_token if not is_token_expired(ms_token) else refresh_microsoft_token(ms_token)
             if not access_token:
-                logger.error(f"Microsoft token refresh failed for {user.username}")
                 raise Exception("Microsoft token refresh failed - please re-authenticate")
-            fetch_microsoft_tasks_and_save(user, access_token)
-            logger.info(f"Microsoft Tasks synced for user: {user.username}")
+            updates = fetch_microsoft_tasks_and_save(user, access_token)
         
-        # Mark sync as complete in TaskSyncStatus
         TaskSyncStatus.objects.update_or_create(
             user=user, provider=provider, defaults={'is_complete': True}
         )
 
-        # Send email only in production, skip in development
-        if settings.ENVIRONMENT != 'development':
+        # Send email with report only in production
+        if updates:  # Remove development check for testing
+            report_html = generate_sync_report(updates)
+            subject = f"Task Sync Report for {provider.capitalize()} - {timezone.now().strftime('%Y-%m-%d %H:%M UTC')}"
+            message = f"""
+            <h2>Task Sync Report for {provider.capitalize()}</h2>
+            <p>Below is the summary of updates applied during the latest sync operation:</p>
+            {report_html}
+            """
             send_email(
-                subject=f"Task Sync Completed for {provider.capitalize()}",
-                message=f"Your {provider.capitalize()} tasks have been synced successfully.",
+                subject=subject,
+                message=message,  # Plain text fallback
                 recipient_list=[user.email],
+                html_message=message  # HTML version
             )
-            logger.info(f"Email notification sent to user: {user.username} for {provider} sync completion")
+            logger.info(f"Sync report email sent to {user.username} for {provider}")
+        elif not updates:
+            logger.info(f"No updates to report for {user.username} and {provider}")
         else:
-            logger.info(f"Skipping email notification in development for user: {user.username} and provider: {provider}")
+            logger.info(f"Skipping email in development for {user.username} and {provider}")
+
     except Exception as e:
         logger.error(f"Error syncing {provider} tasks for user {user.username}: {e}")
-        raise# UI-triggered syncs
+        raise
 
 @login_required
 def sync_google_tasks(request):
@@ -937,7 +1020,7 @@ def trigger_user_sync(request):
                                      content_type='application/json')
                 else:
                     client = tasks_v2.CloudTasksClient()
-                    project = os.environ.get('PROJECT_ID', 'your-project-id')
+                    project = os.environ.get('PROJECT_ID', 'using-ai-405105')
                     location = 'us-west1'
                     queue = 'task-sync-queue'
                     parent = client.queue_path(project, location, queue)
@@ -988,3 +1071,115 @@ def check_sync_status(request):
     is_complete = sync_status.is_complete
 
     return JsonResponse({'completed': is_complete})
+
+# Helper function to generate the HTML report
+def generate_sync_report(updates):
+    if not updates:
+        return "<p>No updates were made during this sync.</p>"
+    
+    html = """
+    <table border="1" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 8px;">Source</th>
+                <th style="padding: 8px;">Task Name</th>
+                <th style="padding: 8px;">Action</th>
+                <th style="padding: 8px;">Timestamp</th>
+                <th style="padding: 8px;">List Name</th>
+                <th style="padding: 8px;">Key Fields Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for update in updates:
+        fields_updated = ", ".join([f"{k}: {v}" for k, v in update.get('updated_fields', {}).items()]) if update.get('updated_fields') else "-"
+        html += format_html(
+            """
+            <tr>
+                <td style="padding: 8px;">{}</td>
+                <td style="padding: 8px;">{}</td>
+                <td style="padding: 8px;">{}</td>
+                <td style="padding: 8px;">{}</td>
+                <td style="padding: 8px;">{}</td>
+                <td style="padding: 8px;">{}</td>
+            </tr>
+            """,
+            update['provider'],
+            update['task_name'],
+            update['action'],
+            update['timestamp'].strftime('%Y-%m-%d %H:%M:%S UTC'),
+            update['list_name'] if update['list_name'] else "N/A",
+            fields_updated
+        )
+    html += """
+        </tbody>
+    </table>
+    """
+    return html
+
+@login_required
+def get_task_counts(request):
+    # Counts for regular (normal) lists
+    task_lists = TaskList.objects.filter(user=request.user, list_type='normal').annotate(
+        task_count=Count('task', filter=Q(task__task_completed=False))
+    ).values('id', 'task_count')
+
+    # Convert to a dictionary for easier lookup
+    counts = {str(tl['id']): tl['task_count'] for tl in task_lists}
+
+    # Special list counts (dynamic special lists: Important, Past Due, All Tasks)
+    special_counts = {
+        "IMPORTANT": Task.objects.filter(user=request.user, important=True, task_completed=False).count(),
+        "PAST_DUE": Task.objects.filter(user=request.user, due_date__lt=timezone.now(), task_completed=False).count(),
+        "ALL_TASKS": Task.objects.filter(user=request.user, task_completed=False).count(),
+    }
+
+    # Semi-special list counts (G My Tasks and MS Tasks)
+    semi_special_counts = {
+        "G My Tasks": Task.objects.filter(user=request.user, source="google", list_name__list_name="G My Tasks", task_completed=False).count(),
+        "MS Tasks": Task.objects.filter(user=request.user, source="microsoft", list_name__list_name="MS Tasks", task_completed=False).count(),
+    }
+
+    # Add special counts to the response using list IDs
+    for task_list in TaskList.objects.filter(user=request.user, list_type='special'):
+        if task_list.list_code in special_counts:
+            counts[str(task_list.id)] = special_counts[task_list.list_code]
+
+    # Add semi-special counts to the response using list IDs
+    for task_list in TaskList.objects.filter(user=request.user, list_type__in=['google_primary', 'microsoft_primary']):
+        if task_list.list_name == "G My Tasks":
+            counts[str(task_list.id)] = semi_special_counts["G My Tasks"]
+        elif task_list.list_name == "MS Tasks":
+            counts[str(task_list.id)] = semi_special_counts["MS Tasks"]
+
+    return JsonResponse({'counts': counts})
+    # Counts for regular lists
+    task_lists = TaskList.objects.filter(user=request.user).annotate(
+        task_count=Count('task', filter=Q(task__task_completed=False))
+    ).values('id', 'task_count')
+
+    # Convert to a dictionary for easier lookup
+    counts = {str(tl['id']): tl['task_count'] for tl in task_lists}
+
+    # Special list counts
+    tasks_list, _ = TaskList.objects.get_or_create(
+        user=request.user, list_name="Tasks", defaults={'special_list': False}
+    )
+    special_counts = {
+        "IMPORTANT": Task.objects.filter(user=request.user, important=True, task_completed=False).count(),
+        "PAST_DUE": Task.objects.filter(user=request.user, due_date__lt=timezone.now(), task_completed=False).count(),
+        "GOOGLE_TASKS": Task.objects.filter(user=request.user, source="google", task_completed=False).count(),
+        "MS_TASKS": Task.objects.filter(user=request.user, source="microsoft", list_name=tasks_list, task_completed=False).count(),
+    }
+    google_tasks_count = special_counts.get("GOOGLE_TASKS", 0)
+    non_special_tasks_count = Task.objects.filter(
+        user=request.user, task_completed=False, list_name__special_list=False
+    ).count()
+    special_counts["ALL_TASKS"] = google_tasks_count + non_special_tasks_count
+
+    # Add special counts to the response using list IDs
+    for task_list in TaskList.objects.filter(user=request.user, special_list=True):
+        if task_list.list_code in special_counts:
+            counts[str(task_list.id)] = special_counts[task_list.list_code]
+
+    return JsonResponse({'counts': counts})

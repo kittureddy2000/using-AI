@@ -29,7 +29,7 @@ urlpatterns = [
     path('sync_microsoft_tasks/', views.sync_microsoft_tasks, name='sync_microsoft_tasks'),    
     path('sync_tasks/', views.trigger_background_sync, name='trigger_background_sync'),
     path('process_sync_task/', views.process_sync_task, name='process_sync_task'),
-    path('trigger_sync/', views.trigger_user_sync, name='trigger_user_sync'),
-
+    path('trigger_user_sync/', views.trigger_user_sync, name='trigger_user_sync'),
+    path('get_task_counts/', views.get_task_counts, name='get_task_counts'),
 ] 
 

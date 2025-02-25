@@ -9,7 +9,7 @@ from django.utils import timezone
 class TaskListForm(forms.ModelForm):
     class Meta:
         model = TaskList
-        fields = ['list_name', 'list_code', 'special_list']
+        fields = ['list_name', 'list_code', 'list_type']
         widgets = {
             'list_name': forms.TextInput(attrs={'class': 'form-control'}),
             'list_code': forms.TextInput(attrs={'class': 'form-control'}),
